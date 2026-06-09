@@ -119,6 +119,10 @@ body {
 #content h1:hover .header-anchor, #content h2:hover .header-anchor,
 #content h3:hover .header-anchor, #content h4:hover .header-anchor { opacity: 0.6; }
 
+/* ---- Math (KaTeX, #9c) ---- */
+#content .katex { color: var(--text); }
+#content .katex-display { margin: 1.1em 0; overflow-x: auto; overflow-y: hidden; }
+
 /* ---- Prism token colors (theme-driven) ---- */
 #content code[class*="language-"], #content pre[class*="language-"] {
   color: var(--code-ink); text-shadow: none; background: none;

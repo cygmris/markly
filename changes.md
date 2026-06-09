@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### preview-math (spec #9c) — 2026-06-09
+* 预览数学公式：KaTeX(离线同步)+markdown-it-texmath 渲染 $...$ 行内/$$...$$ 块级公式。接入 #9 preview.html。
+* 资源:katex.min.js/css+20 woff2 字体+texmath 打包 QRC;defensive md.use(dollars,throwOnError:false)。preview.css 公式继承文本色。
+* 为何 KaTeX:vnote mathjax.js 是 CDN 加载器(需联网),KaTeX 离线同步可验证。
+* ctest 15/15(不回归)；导出 HTML 验证 katex-display/mfrac×2/sqrt×1(行内+块级公式均渲染)。
+* 已知:offscreen 实时预览截图 1200ms 抓帧 KaTeX 可能未渲染完(导出确证正确)。
+* 再规划:Mermaid 等图表引擎拆出 #9d diagram-rendering。
+
 ### settings-dialog (spec #19) — 2026-06-09
 * 可搜索设置对话框：分类(编辑器/外观/关于)+搜索过滤+即时生效。三外壳 gear 入口打开。
 * EditorCfgQml 可写(WRITE setter→EditorConfig setter+changed,fontSize/tabWidth clamp)：编辑器选项设置里可改即时刷新。

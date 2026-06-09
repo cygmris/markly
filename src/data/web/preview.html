@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="katex/katex.min.css">
   <link rel="stylesheet" href="preview.css">
 </head>
 <body>
@@ -19,11 +20,18 @@
   <script src="markdownItTocDoneRight.umd.js"></script>
   <!-- Code highlighting -->
   <script src="prism.min.js"></script>
+  <!-- Math (KaTeX + markdown-it-texmath, #9c) -->
+  <script src="katex/katex.min.js"></script>
+  <script src="markdown-it-texmath.js"></script>
   <script>
     var md = window.markdownit({ html: false, linkify: true, typographer: true, breaks: false });
 
     // Defensive plugin wiring: a missing plugin must not break rendering.
     function usePlugin(p, opts) { try { if (p) md.use(p, opts); } catch (e) {} }
+    if (window.texmath && window.katex) {
+      usePlugin(window.texmath, { engine: window.katex, delimiters: 'dollars',
+                                  katexOptions: { throwOnError: false } });
+    }
     usePlugin(window.markdownitFootnote);
     usePlugin(window.markdownitSub);
     usePlugin(window.markdownitSup);
