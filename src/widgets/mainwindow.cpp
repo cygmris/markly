@@ -1,23 +1,47 @@
 #include "mainwindow.h"
 
+#include <QApplication>
 #include <QCloseEvent>
 #include <QDebug>
-#include <QLabel>
+#include <QQmlContext>
+#include <QQuickWidget>
+#include <QUrl>
 
 #include <core/configmgr.h>
+#include <core/marklyapp.h>
 #include <core/sessionconfig.h>
+#include <core/theme/appearance.h>
+#include <core/thememgr.h>
 
 using namespace markly;
 
 MainWindow::MainWindow(QWidget *p_parent) : QMainWindow(p_parent) {
   setWindowTitle(QStringLiteral("Markly"));
 
-  auto label = new QLabel(QStringLiteral("Markly — foundation"), this);
-  label->setAlignment(Qt::AlignCenter);
-  setCentralWidget(label);
+  setupContent();
 
   resize(1100, 720);
   loadStateAndGeometry();
+}
+
+void MainWindow::setupContent() {
+  auto &themeMgr = MarklyApp::getInst().getThemeMgr();
+
+  m_quick = new QQuickWidget(this);
+  m_quick->setResizeMode(QQuickWidget::SizeRootObjectToView);
+  m_quick->rootContext()->setContextProperty(QStringLiteral("Theme"), &themeMgr);
+  m_quick->rootContext()->setContextProperty(QStringLiteral("Appearance"),
+                                             themeMgr.getAppearance());
+  m_quick->setSource(QUrl(QStringLiteral("qrc:/qml/theme/ThemePreview.qml")));
+  if (m_quick->status() == QQuickWidget::Error) {
+    qCritical() << "failed to load ThemePreview.qml:" << m_quick->errors();
+  }
+  setCentralWidget(m_quick);
+
+  // Keep the QWidget chrome in sync with the active theme.
+  connect(&themeMgr, &ThemeMgr::themeChanged, this, []() {
+    qApp->setStyleSheet(MarklyApp::getInst().getThemeMgr().fetchQtStyleSheet());
+  });
 }
 
 void MainWindow::loadStateAndGeometry() {

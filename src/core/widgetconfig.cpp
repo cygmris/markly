@@ -15,3 +15,13 @@ void WidgetConfig::init(const QJsonObject &p_app, const QJsonObject &p_user) {
 }
 
 QJsonObject WidgetConfig::toJson() const { return m_jobj; }
+
+AppearanceConfig WidgetConfig::getAppearance() const {
+  return AppearanceConfig::fromJson(m_jobj.value(QStringLiteral("appearance")).toObject());
+}
+
+void WidgetConfig::setAppearance(const AppearanceConfig &p_appearance) {
+  m_jobj[QStringLiteral("appearance")] = p_appearance.toJson();
+  ++m_revision;
+  writeToSettings();
+}

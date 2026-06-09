@@ -1,18 +1,24 @@
 #include "thememgr.h"
 
+#include "theme/appearance.h"
+#include "theme/stylesheetgenerator.h"
+#include "theme/thememodel.h"
+
 using namespace markly;
 
-ThemeMgr::ThemeMgr(const QString &p_currentThemeName, QObject *p_parent)
-    : QObject(p_parent), m_currentThemeName(p_currentThemeName) {}
+ThemeMgr::ThemeMgr(QObject *p_parent) : QObject(p_parent) {
+  m_appearance = new Appearance(this);
 
-QString ThemeMgr::fetchQtStyleSheet() const {
-  // Foundation phase: no themed stylesheet yet.
-  return QString();
+  connect(m_appearance, &Appearance::changed, this, &ThemeMgr::refreshCurrentTheme);
+
+  refreshCurrentTheme();
 }
 
 void ThemeMgr::refreshCurrentTheme() {
-  // Placeholder: spec #2 reloads theme resources here.
+  m_tokens = ThemeModel::buildTokens(m_appearance->getStyle(), m_appearance->resolvedDark(),
+                                     m_appearance->accentOverride());
+  m_tokens.contentZoom = m_appearance->contentZoom();
   emit themeChanged();
 }
 
-const QString &ThemeMgr::getCurrentThemeName() const { return m_currentThemeName; }
+QString ThemeMgr::fetchQtStyleSheet() const { return StyleSheetGenerator::generate(m_tokens); }

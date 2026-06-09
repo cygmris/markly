@@ -25,6 +25,17 @@ set(MARKLY_CORE_SOURCES
     core/thememgr.h
     core/widgetconfig.cpp
     core/widgetconfig.h
+    core/theme/tokens.h
+    core/theme/thememodel.cpp
+    core/theme/thememodel.h
+    core/theme/appearanceconfig.cpp
+    core/theme/appearanceconfig.h
+    core/theme/appearance.cpp
+    core/theme/appearance.h
+    core/theme/stylesheetgenerator.cpp
+    core/theme/stylesheetgenerator.h
+    utils/colorutils.cpp
+    utils/colorutils.h
     utils/fileutils.cpp
     utils/fileutils.h
     utils/pathutils.cpp
@@ -61,7 +72,20 @@ qt_add_executable(markly
     widgets/mainwindow.h
 )
 
-target_link_libraries(markly PRIVATE markly_core)
+target_link_libraries(markly PRIVATE
+    markly_core
+    Qt6::Qml
+    Qt6::Quick
+    Qt6::QuickWidgets
+)
+
+# QML files (loaded by QQuickWidget via qrc:/qml/...).
+qt_add_resources(markly "markly_qml"
+    PREFIX "/"
+    FILES
+        "qml/theme/ThemePreview.qml"
+        "qml/theme/AppearancePanel.qml"
+)
 
 install(TARGETS markly
     BUNDLE DESTINATION .

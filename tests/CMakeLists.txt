@@ -4,6 +4,7 @@ set(MARKLY_TESTS
     test_configmgr
     test_commandlineoptions
     test_singleinstanceguard
+    test_thememodel
 )
 
 foreach(test_name ${MARKLY_TESTS})

@@ -3,8 +3,6 @@
 #include <QCoreApplication>
 #include <QDateTime>
 
-#include "configmgr.h"
-#include "coreconfig.h"
 #include "thememgr.h"
 
 using namespace markly;
@@ -16,10 +14,7 @@ MarklyApp::MarklyApp(QObject *p_parent) : QObject(p_parent) {
   initThemeMgr();
 }
 
-void MarklyApp::initThemeMgr() {
-  const auto themeName = ConfigMgr::getInst().getCoreConfig().getTheme();
-  m_themeMgr = new ThemeMgr(themeName, this);
-}
+void MarklyApp::initThemeMgr() { m_themeMgr = new ThemeMgr(this); }
 
 void MarklyApp::initLoad() {
   // Foundation phase: nothing heavy to load yet. Later specs load notebooks here.

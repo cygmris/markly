@@ -3,6 +3,8 @@
 
 #include "iconfig.h"
 
+#include "theme/appearanceconfig.h"
+
 namespace markly {
 // Widget configuration framework.
 // NOTE: foundation scaffolding only; UI specs (#3/#5/#20) add concrete fields.
@@ -14,6 +16,10 @@ public:
   void init(const QJsonObject &p_app, const QJsonObject &p_user) Q_DECL_OVERRIDE;
 
   QJsonObject toJson() const Q_DECL_OVERRIDE;
+
+  // Appearance preferences (theme-appearance spec).
+  AppearanceConfig getAppearance() const;
+  void setAppearance(const AppearanceConfig &p_appearance);
 
 private:
   QJsonObject m_jobj;
