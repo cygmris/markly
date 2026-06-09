@@ -45,6 +45,7 @@ Rectangle {
                 SearchPanel { anchors.fill: parent; visible: shell.leftPage === "search" }
                 TagsPanel { anchors.fill: parent; visible: shell.leftPage === "tags" }
                 QuickAccessPanel { anchors.fill: parent; visible: shell.leftPage === "quick" }
+                SnippetPanel { anchors.fill: parent; visible: shell.leftPage === "snippet" }
                 Column {
                     visible: shell.leftPage === "explorer"
                     anchors.fill: parent; anchors.margins: 10; spacing: 2

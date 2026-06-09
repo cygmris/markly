@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### snippet-template (spec #14) — 2026-06-09
+* 代码片段/魔法词/模板：左 dock「片段」页(列表+插入+删除+新增)，插入展开到编辑器光标；右键文件夹「从模板新建笔记」。
+* SnippetMgr(core):片段存 <config>/snippets/*.json;apply 展开魔法词(%date%/%time%/%datetime%/%note%/%uuid%)+$$ 选区+@@ 光标(移除记 offset);seedDefaults(日期/代码块)。
+* SnippetBridge(context property Snippets)list+apply/add/remove;ViewArea.requestInsert→insertText 信号→MarkdownEditor 光标插入定位(同 #9b 模式)+currentFileName。
+* NotebookExplorer.newNoteFromTemplate(展开模板写入新笔记);三外壳 A/B snippet 按钮→leftPage=snippet。
+* ctest 14/14(新增 test_snippet)；截图验证片段页内置代码块/日期+按钮。
+* 再规划：脚本型片段/快捷键绑定/模板选择器对话框 → 后续小迭代。
+
 ### quickaccess-history-flash (spec #13) — 2026-06-09
 * 快速访问/历史/闪念：左 dock「快速访问」页(已固定 + 最近 MRU)，右键笔记「固定到快速访问」，「快速记录」一键打开闪念 flash.md。
 * HistoryMgr(core,markly_core):addToHistory(MRU 去重+cap 50)/pin/unpin/isPinned/ensureFlashFile(AppConfigLocation/flash.md);MarklyApp connect openFileRequested→addToHistory(所有打开来源进历史)。

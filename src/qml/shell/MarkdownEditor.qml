@@ -256,10 +256,16 @@ Flickable {
         edit.select(bs, bs + out.length);
     }
 
-    // Outline / search jump-to-line for the already-open buffer (#9b).
+    // Outline / search jump-to-line for the already-open buffer (#9b); snippet insert (#14).
     Connections {
         target: (typeof Views !== "undefined") ? Views : null
         function onGotoLineNow(line) { root.gotoLine(line); }
+        function onInsertText(text, off) {
+            var p = edit.cursorPosition;
+            edit.insert(p, text);
+            edit.cursorPosition = p + off;
+            edit.forceActiveFocus();
+        }
     }
 
     // Drag-and-drop image files (#10): copy into vx_images and insert image syntax.

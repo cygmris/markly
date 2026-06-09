@@ -1,9 +1,11 @@
 #include "notebookexplorer.h"
 
+#include <QFile>
 #include <QSet>
 
 #include <core/exception.h>
 #include <core/marklyapp.h>
+#include <core/snippet/snippetmgr.h>
 #include <core/notebook/node.h>
 #include <core/notebook/notebook.h>
 #include <core/notebookbackend/inotebookbackend.h>
@@ -304,6 +306,41 @@ QString NotebookExplorer::nodeTagsCsv(double p_nodeId) const {
 QString NotebookExplorer::nodeAbsPath(double p_nodeId) const {
   auto node = resolveNode(static_cast<ID>(p_nodeId));
   return node ? node->fetchAbsolutePath() : QString();
+}
+
+QString NotebookExplorer::newNoteFromTemplate(double p_parentId, const QString &p_name,
+                                              const QString &p_templateName) {
+  auto nb = currentNotebook();
+  auto parent = resolveNode(static_cast<ID>(p_parentId));
+  if (!nb || !parent) {
+    return tr("无效的父节点");
+  }
+  const auto err = validateName(parent, p_name);
+  if (!err.isEmpty()) {
+    return err;
+  }
+  QSharedPointer<Node> node;
+  try {
+    node = nb->newNode(parent, Node::Type::File, p_name);
+  } catch (Exception &e) {
+    return QString::fromUtf8(e.what());
+  }
+  // Expand the template snippet and write it into the new note.
+  if (node && !p_templateName.isEmpty()) {
+    int offset = 0;
+    const auto content = MarklyApp::getInst().getSnippetMgr()->apply(
+        p_templateName, QString(), p_name, offset);
+    if (!content.isEmpty()) {
+      QFile f(node->fetchAbsolutePath());
+      if (f.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        f.write(content.toUtf8());
+        f.close();
+      }
+    }
+  }
+  m_expanded.insert(parent->getId());
+  rebuild();
+  return QString();
 }
 
 void NotebookExplorer::setNodeTags(double p_nodeId, const QString &p_csv) {

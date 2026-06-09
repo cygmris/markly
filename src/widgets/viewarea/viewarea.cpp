@@ -38,6 +38,20 @@ QString ViewArea::currentFileDir() const {
   return QFileInfo(buffer->getPath()).absolutePath();
 }
 
+QString ViewArea::currentFileName() const {
+  if (m_activeSplit >= m_splits.size() || !m_bufferMgr) {
+    return QString();
+  }
+  auto *buffer = m_bufferMgr->get(m_splits[m_activeSplit].m_active);
+  return buffer ? buffer->getName() : QString();
+}
+
+void ViewArea::requestInsert(const QString &p_text, int p_cursorOffset) {
+  if (!p_text.isEmpty()) {
+    emit insertText(p_text, p_cursorOffset);
+  }
+}
+
 QVariantList ViewArea::outline() const {
   QVariantList items;
   if (m_activeSplit >= m_splits.size() || !m_bufferMgr) {

@@ -27,6 +27,7 @@ class ViewArea : public QObject {
   Q_PROPERTY(QString viewMode READ viewMode NOTIFY viewModeChanged)
   Q_PROPERTY(QVariantList outline READ outline NOTIFY outlineChanged)
   Q_PROPERTY(QString currentFileDir READ currentFileDir NOTIFY changed)
+  Q_PROPERTY(QString currentFileName READ currentFileName NOTIFY changed)
 public:
   explicit ViewArea(BufferMgr *p_bufferMgr, QObject *p_parent = nullptr);
 
@@ -61,6 +62,10 @@ public:
 
   // Absolute directory of the active note's file ("" if none). For image saving (#10).
   QString currentFileDir() const;
+  // File name (basename) of the active note ("" if none). For %note% magic word (#14).
+  QString currentFileName() const;
+  // Insert text at the active editor's cursor, then offset the cursor (snippets #14).
+  Q_INVOKABLE void requestInsert(const QString &p_text, int p_cursorOffset);
 
   // Outline (headings) of the active buffer; [{level, text, line}] (1-based line).
   QVariantList outline() const;
@@ -77,6 +82,8 @@ signals:
   void outlineChanged();
   // Jump the active editor to a 1-based line right now (outline / already-open hit).
   void gotoLineNow(int p_line);
+  // Insert text at the active editor's cursor, then move cursor by p_cursorOffset.
+  void insertText(const QString &p_text, int p_cursorOffset);
 
 private:
   struct Split {

@@ -57,6 +57,7 @@ Rectangle {
                     C.RailButton { icon: "star"; iconSize: 20 }
                     C.RailButton { icon: "search"; active: shell.leftPage === "search"; iconSize: 20; onClicked: shell.leftPage = "search" }
                     C.RailButton { icon: "tag"; active: shell.leftPage === "tags"; iconSize: 20; onClicked: shell.leftPage = "tags" }
+                    C.RailButton { icon: "snippet"; active: shell.leftPage === "snippet"; iconSize: 20; onClicked: shell.leftPage = "snippet" }
                     C.RailButton { icon: "history"; active: shell.leftPage === "quick"; iconSize: 20; onClicked: shell.leftPage = "quick" }
                 }
                 C.RailButton { icon: "settings"; iconSize: 20; anchors.horizontalCenter: parent.horizontalCenter; anchors.bottom: parent.bottom; anchors.bottomMargin: 10 }
@@ -70,6 +71,7 @@ Rectangle {
                 SearchPanel { anchors.fill: parent; visible: shell.leftPage === "search" }
                 TagsPanel { anchors.fill: parent; visible: shell.leftPage === "tags" }
                 QuickAccessPanel { anchors.fill: parent; visible: shell.leftPage === "quick" }
+                SnippetPanel { anchors.fill: parent; visible: shell.leftPage === "snippet" }
                 Column {
                     visible: shell.leftPage === "explorer"
                     anchors.fill: parent

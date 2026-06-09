@@ -27,6 +27,11 @@ Item {
         if (loader.item) loader.item.leftPage = "quick";
     }
 
+    // Dev/test hook: switch to the snippet page.
+    function showSnippet() {
+        if (loader.item) loader.item.leftPage = "snippet";
+    }
+
     Loader {
         id: loader
         anchors.fill: parent

@@ -6,6 +6,7 @@
 #include "buffer/buffermgr.h"
 #include "historymgr.h"
 #include "notebookmgr.h"
+#include "snippet/snippetmgr.h"
 #include "thememgr.h"
 
 using namespace markly;
@@ -20,6 +21,7 @@ MarklyApp::MarklyApp(QObject *p_parent) : QObject(p_parent) {
   m_historyMgr = new HistoryMgr(this);
   // Every open (explorer / search / tags / history) records into history.
   connect(this, &MarklyApp::openFileRequested, m_historyMgr, &HistoryMgr::addToHistory);
+  m_snippetMgr = new SnippetMgr(this);
 }
 
 void MarklyApp::initThemeMgr() { m_themeMgr = new ThemeMgr(this); }
@@ -32,9 +34,12 @@ void MarklyApp::initLoad() {
   // Restore previously open notebooks (good to call after MainWindow is shown).
   m_notebookMgr->loadNotebooks();
   m_historyMgr->load();
+  m_snippetMgr->load();
 }
 
 HistoryMgr *MarklyApp::getHistoryMgr() const { return m_historyMgr; }
+
+SnippetMgr *MarklyApp::getSnippetMgr() const { return m_snippetMgr; }
 
 ThemeMgr &MarklyApp::getThemeMgr() const { return *m_themeMgr; }
 

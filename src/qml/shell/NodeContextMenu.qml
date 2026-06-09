@@ -29,6 +29,16 @@ Menu {
         }
     }
     MenuItem {
+        text: "从模板新建笔记…"
+        onTriggered: {
+            var tpl = Dialogs.promptText("从模板新建", "模板（片段）名称", "");
+            if (tpl.length > 0) {
+                var name = Dialogs.promptText("新建笔记", "笔记名称（含 .md）", "新笔记.md");
+                if (name.length > 0) menu.reportError(Explorer.newNoteFromTemplate(menu.containerId, name, tpl));
+            }
+        }
+    }
+    MenuItem {
         text: "新建文件夹"
         enabled: !menu.targetIsExternal
         onTriggered: {

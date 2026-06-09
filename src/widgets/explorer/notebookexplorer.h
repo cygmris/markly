@@ -60,6 +60,10 @@ public:
   // Absolute on-disk path of a node ("" if not resolvable). For quick-access pin (#13).
   Q_INVOKABLE QString nodeAbsPath(double p_nodeId) const;
 
+  // Create a note from a snippet template (#14). Returns "" on success, else error.
+  Q_INVOKABLE QString newNoteFromTemplate(double p_parentId, const QString &p_name,
+                                          const QString &p_templateName);
+
 signals:
   void changed();
 

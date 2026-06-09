@@ -19,6 +19,7 @@
 #include "images/imagehelper.h"
 #include "quick/quickbridge.h"
 #include "search/searchbridge.h"
+#include "snippet/snippetbridge.h"
 #include "tags/tagbridge.h"
 #include "viewarea/viewarea.h"
 #include <core/configmgr.h>
@@ -69,6 +70,9 @@ void MainWindow::setupContent() {
   // Quick access / history / flash bridge (#13).
   m_quick->rootContext()->setContextProperty(
       QStringLiteral("Quick"), new QuickBridge(MarklyApp::getInst().getHistoryMgr(), this));
+  // Snippets bridge (#14).
+  m_quick->rootContext()->setContextProperty(
+      QStringLiteral("Snippets"), new SnippetBridge(MarklyApp::getInst().getSnippetMgr(), this));
   // Markdown editor: QML-instantiable highlighter + editor config bridge.
   qmlRegisterType<MarkdownHighlighter>("Markly.Editor", 1, 0, "MarkdownHighlighter");
   m_quick->rootContext()->setContextProperty(QStringLiteral("EditorCfg"),
@@ -109,6 +113,13 @@ void MainWindow::setupContent() {
       QTimer::singleShot(800, this, [this]() {
         if (auto *root = m_quick->rootObject()) {
           QMetaObject::invokeMethod(root, "showQuick");
+        }
+      });
+    }
+    if (!qEnvironmentVariable("MARKLY_SHOT_SNIPPET").isEmpty()) {
+      QTimer::singleShot(800, this, [this]() {
+        if (auto *root = m_quick->rootObject()) {
+          QMetaObject::invokeMethod(root, "showSnippet");
         }
       });
     }
