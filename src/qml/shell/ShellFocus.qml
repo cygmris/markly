@@ -56,7 +56,7 @@ Rectangle {
                     C.RailButton { icon: "notebook"; active: shell.leftPage === "explorer"; iconSize: 20; onClicked: shell.leftPage = "explorer" }
                     C.RailButton { icon: "star"; iconSize: 20 }
                     C.RailButton { icon: "search"; active: shell.leftPage === "search"; iconSize: 20; onClicked: shell.leftPage = "search" }
-                    C.RailButton { icon: "tag"; iconSize: 20 }
+                    C.RailButton { icon: "tag"; active: shell.leftPage === "tags"; iconSize: 20; onClicked: shell.leftPage = "tags" }
                     C.RailButton { icon: "history"; iconSize: 20 }
                 }
                 C.RailButton { icon: "settings"; iconSize: 20; anchors.horizontalCenter: parent.horizontalCenter; anchors.bottom: parent.bottom; anchors.bottomMargin: 10 }
@@ -68,6 +68,7 @@ Rectangle {
                 width: 312; height: parent.height; color: Theme.sidebar
                 Rectangle { anchors.right: parent.right; width: 1; height: parent.height; color: Theme.border }
                 SearchPanel { anchors.fill: parent; visible: shell.leftPage === "search" }
+                TagsPanel { anchors.fill: parent; visible: shell.leftPage === "tags" }
                 Column {
                     visible: shell.leftPage === "explorer"
                     anchors.fill: parent

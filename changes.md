@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### tags-system (spec #11) — 2026-06-09
+* 标签系统 UI：左 dock 标签页(标签 Chip+笔记数+点击筛选+选中标签的笔记列表)，复用 #4 数据层(tag/tag_node/NotebookTagMgr/updateNodeTags)+#12 queryNodesByTag。
+* TagBridge(context property Tags) tags/selectedTag/taggedNodes + selectTag/openTaggedNode/refresh；监听 currentNotebookChanged + MarklyApp.tagsChanged 刷新。
+* NotebookExplorer 加 nodeTagsCsv/setNodeTags；NodeContextMenu「标签…」(promptText 编辑逗号分隔)；三外壳 tag 按钮/标题切 leftPage=tags。
+* 修复两个 #4 既有 Bug(被 #11 暴露)：(1) addTag INSERT OR REPLACE→OR IGNORE(避免 FK CASCADE 连带删 tag_node)；(2) open() tagMgr.load 早于 rebuildDatabase→rebuild 后重 load。
+* ctest 11/11(新增 test_tags)；截图验证标签 chip+计数+筛选笔记列表。
+* 再规划：标签父子层级树/管理(重命名删除)/拖拽打标 → polish 或后续小迭代。
+
 ### markdown-editor-input (spec #8) — 2026-06-09
 * 编辑器输入辅助：自动缩进、列表续行(无序/有序/任务项,空标记清除)、括号/引号配对(含包裹选区/跳过/成对退格)、多行缩进反缩进、查找替换栏、跳转到行。
 * 纯文本算法抽到可单测 EditInputHelper(core/editor/)；EditInputQml(context property EditInput) 暴露 QML；EditorConfig 加 auto_indent/continue_list/auto_pair。

@@ -51,6 +51,8 @@ set(MARKLY_CORE_SOURCES
     core/search/searcher.h
     widgets/search/searchbridge.cpp
     widgets/search/searchbridge.h
+    widgets/tags/tagbridge.cpp
+    widgets/tags/tagbridge.h
     widgets/editors/markdownhighlighter.cpp
     widgets/editors/markdownhighlighter.h
     widgets/editors/editorcfgqml.cpp
@@ -149,6 +151,7 @@ qt_add_resources(markly "markly_qml"
         "qml/shell/MarkdownEditor.qml"
         "qml/shell/PreviewPane.qml"
         "qml/shell/SearchPanel.qml"
+        "qml/shell/TagsPanel.qml"
         "qml/shell/components/FindReplaceBar.qml"
         "qml/theme/ThemePreview.qml"
         "qml/theme/AppearancePanel.qml"

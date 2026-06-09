@@ -15,6 +15,13 @@ Item {
         Search.search(keyword, 0, 0x1 | 0x2, "");
     }
 
+    // Dev/test hook: switch to the tags page and select a tag.
+    function showTags(tag) {
+        if (loader.item) loader.item.leftPage = "tags";
+        Tags.refresh();
+        if (tag.length > 0) Tags.selectTag(tag);
+    }
+
     Loader {
         id: loader
         anchors.fill: parent

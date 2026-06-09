@@ -86,6 +86,9 @@ signals:
   // Request that the next opened editor jump to this 1-based line (e.g. a search hit).
   void gotoLineRequested(int p_line);
 
+  // Emitted after a node's tags change; the tags panel refreshes on this.
+  void tagsChanged();
+
   void exportRequested();
 
   void pinToQuickAccessRequested(const QStringList &p_files);

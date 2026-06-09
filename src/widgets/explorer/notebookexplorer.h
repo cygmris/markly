@@ -53,6 +53,10 @@ public:
                                  const QString &p_description);
   Q_INVOKABLE bool openNotebookAt(const QString &p_rootDir);
 
+  // Tags on a node (#11). CSV = comma-separated tag names.
+  Q_INVOKABLE QString nodeTagsCsv(double p_nodeId) const;
+  Q_INVOKABLE void setNodeTags(double p_nodeId, const QString &p_csv);
+
 signals:
   void changed();
 

@@ -43,6 +43,7 @@ Rectangle {
                 visible: Appearance.showLeft
                 width: 244; height: parent.height; color: Theme.rail
                 SearchPanel { anchors.fill: parent; visible: shell.leftPage === "search" }
+                TagsPanel { anchors.fill: parent; visible: shell.leftPage === "tags" }
                 Column {
                     visible: shell.leftPage === "explorer"
                     anchors.fill: parent; anchors.margins: 10; spacing: 2
@@ -77,7 +78,10 @@ Rectangle {
                             MouseArea { anchors.fill: parent; onClicked: Explorer.switchNotebook(modelData.id) }
                         }
                     }
-                    Text { text: "标签"; color: Theme.railDim; font.pixelSize: 11; font.bold: true; font.family: Theme.fontUi; leftPadding: 8; topPadding: 10 }
+                    Text {
+                        text: "标签"; color: Theme.railDim; font.pixelSize: 11; font.bold: true; font.family: Theme.fontUi; leftPadding: 8; topPadding: 10
+                        MouseArea { anchors.fill: parent; onClicked: shell.leftPage = "tags" }
+                    }
                     Flow {
                         width: parent.width; spacing: 6; leftPadding: 6
                         Repeater {

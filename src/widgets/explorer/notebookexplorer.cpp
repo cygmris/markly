@@ -296,6 +296,30 @@ void NotebookExplorer::setNodeColor(double p_nodeId, const QString &p_bg, const 
   }
 }
 
+QString NotebookExplorer::nodeTagsCsv(double p_nodeId) const {
+  auto node = resolveNode(static_cast<ID>(p_nodeId));
+  return node ? node->getTags().join(QStringLiteral(", ")) : QString();
+}
+
+void NotebookExplorer::setNodeTags(double p_nodeId, const QString &p_csv) {
+  auto nb = currentNotebook();
+  auto node = resolveNode(static_cast<ID>(p_nodeId));
+  if (!nb || !node) {
+    return;
+  }
+  QStringList tags;
+  const auto parts = p_csv.split(QLatin1Char(','));
+  for (const auto &raw : parts) {
+    const auto t = raw.trimmed();
+    if (!t.isEmpty() && !tags.contains(t)) {
+      tags.append(t);
+    }
+  }
+  nb->updateNodeTags(node, tags);
+  emit MarklyApp::getInst().tagsChanged();
+  rebuild();
+}
+
 void NotebookExplorer::clearNodeColor(double p_nodeId) {
   setNodeColor(p_nodeId, QString(), QString(), QString());
 }

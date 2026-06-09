@@ -68,6 +68,8 @@ void Notebook::open() {
   // Build the index from disk if absent.
   if (!m_db->nodeExists(m_root->getId())) {
     rebuildDatabase();
+    // Tags were just written by the rebuild; reload them into the tag manager.
+    m_tagMgr->load(m_db.data(), m_config.m_tagGraph);
   }
 }
 

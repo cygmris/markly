@@ -11,6 +11,7 @@ set(MARKLY_TESTS
     test_editorconfig
     test_search
     test_editorinput
+    test_tags
 )
 
 foreach(test_name ${MARKLY_TESTS})

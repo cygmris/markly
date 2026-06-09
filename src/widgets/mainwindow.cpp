@@ -17,6 +17,7 @@
 #include "explorer/dialoghelper.h"
 #include "explorer/notebookexplorer.h"
 #include "search/searchbridge.h"
+#include "tags/tagbridge.h"
 #include "viewarea/viewarea.h"
 #include <core/configmgr.h>
 #include <core/marklyapp.h>
@@ -57,6 +58,9 @@ void MainWindow::setupContent() {
   // Full-text search bridge (#12).
   auto *search = new SearchBridge(MarklyApp::getInst().getNotebookMgr(), this);
   m_quick->rootContext()->setContextProperty(QStringLiteral("Search"), search);
+  // Tags panel bridge (#11).
+  auto *tags = new TagBridge(MarklyApp::getInst().getNotebookMgr(), this);
+  m_quick->rootContext()->setContextProperty(QStringLiteral("Tags"), tags);
   // Markdown editor: QML-instantiable highlighter + editor config bridge.
   qmlRegisterType<MarkdownHighlighter>("Markly.Editor", 1, 0, "MarkdownHighlighter");
   m_quick->rootContext()->setContextProperty(QStringLiteral("EditorCfg"),
@@ -82,6 +86,14 @@ void MainWindow::setupContent() {
       QTimer::singleShot(800, this, [this, shotSearch]() {
         if (auto *root = m_quick->rootObject()) {
           QMetaObject::invokeMethod(root, "showSearch", Q_ARG(QVariant, shotSearch));
+        }
+      });
+    }
+    const auto shotTags = qEnvironmentVariable("MARKLY_SHOT_TAGS");
+    if (!shotTags.isEmpty()) {
+      QTimer::singleShot(800, this, [this, shotTags]() {
+        if (auto *root = m_quick->rootObject()) {
+          QMetaObject::invokeMethod(root, "showTags", Q_ARG(QVariant, shotTags));
         }
       });
     }

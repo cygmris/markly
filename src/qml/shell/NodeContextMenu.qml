@@ -46,6 +46,15 @@ Menu {
         }
     }
     MenuItem {
+        text: "标签…"
+        visible: menu.targetType === "file" && !menu.targetIsExternal
+        onTriggered: {
+            var cur = Explorer.nodeTagsCsv(menu.targetId);
+            var v = Dialogs.promptText("编辑标签", "逗号分隔（留空清除）", cur);
+            Explorer.setNodeTags(menu.targetId, v);
+        }
+    }
+    MenuItem {
         text: "设置颜色"
         visible: !menu.targetIsExternal
         onTriggered: {

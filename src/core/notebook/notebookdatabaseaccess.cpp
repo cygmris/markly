@@ -158,7 +158,9 @@ QVector<NotebookDatabaseAccess::NodeRow> NotebookDatabaseAccess::queryChildren(I
 bool NotebookDatabaseAccess::addTag(const QString &p_name, const QString &p_parentName) {
   auto db = QSqlDatabase::database(m_connectionName);
   QSqlQuery query(db);
-  query.prepare(QStringLiteral("INSERT OR REPLACE INTO tag (name, parent_name) VALUES (?, ?)"));
+  // OR IGNORE (not OR REPLACE): re-adding an existing tag must not delete-and-reinsert
+  // its row, which would CASCADE-delete its tag_node links (FK ON DELETE CASCADE).
+  query.prepare(QStringLiteral("INSERT OR IGNORE INTO tag (name, parent_name) VALUES (?, ?)"));
   query.addBindValue(p_name);
   query.addBindValue(p_parentName.isEmpty() ? QVariant() : QVariant(p_parentName));
   return query.exec();

@@ -105,7 +105,7 @@ Rectangle {
                     y: 8
                     spacing: 4
                     C.RailButton { icon: "notebook"; active: shell.leftPage === "explorer"; onClicked: shell.leftPage = "explorer" }
-                    C.RailButton { icon: "tag" }
+                    C.RailButton { icon: "tag"; active: shell.leftPage === "tags"; onClicked: shell.leftPage = "tags" }
                     C.RailButton { icon: "search"; active: shell.leftPage === "search"; onClicked: shell.leftPage = "search" }
                     C.RailButton { icon: "snippet" }
                     C.RailButton { icon: "history" }
@@ -121,6 +121,7 @@ Rectangle {
                 color: Theme.sidebar
                 Rectangle { anchors.right: parent.right; width: 1; height: parent.height; color: Theme.border }
                 SearchPanel { anchors.fill: parent; visible: shell.leftPage === "search" }
+                TagsPanel { anchors.fill: parent; visible: shell.leftPage === "tags" }
                 Column {
                     visible: shell.leftPage === "explorer"
                     anchors.fill: parent
