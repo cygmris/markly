@@ -79,6 +79,10 @@ signals:
   // Simplified open-file signal (FileOpenParameters added in the buffer spec #6).
   void openFileRequested(const QString &p_filePath);
 
+  // Emitted after a note buffer is successfully saved to disk (path = absolute file path).
+  // Used by the search index to incrementally re-index the note's content.
+  void noteSaved(const QString &p_filePath);
+
   void exportRequested();
 
   void pinToQuickAccessRequested(const QStringList &p_files);

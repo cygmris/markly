@@ -15,6 +15,7 @@
 
 #include "explorer/dialoghelper.h"
 #include "explorer/notebookexplorer.h"
+#include "search/searchbridge.h"
 #include "viewarea/viewarea.h"
 #include <core/configmgr.h>
 #include <core/marklyapp.h>
@@ -52,6 +53,9 @@ void MainWindow::setupContent() {
   m_views = new ViewArea(MarklyApp::getInst().getBufferMgr(), this);
   m_quick->rootContext()->setContextProperty(QStringLiteral("Views"), m_views);
   connect(&MarklyApp::getInst(), &MarklyApp::openFileRequested, m_views, &ViewArea::openFile);
+  // Full-text search bridge (#12).
+  auto *search = new SearchBridge(MarklyApp::getInst().getNotebookMgr(), this);
+  m_quick->rootContext()->setContextProperty(QStringLiteral("Search"), search);
   // Markdown editor: QML-instantiable highlighter + editor config bridge.
   qmlRegisterType<MarkdownHighlighter>("Markly.Editor", 1, 0, "MarkdownHighlighter");
   m_quick->rootContext()->setContextProperty(QStringLiteral("EditorCfg"),
@@ -70,6 +74,14 @@ void MainWindow::setupContent() {
   // Dev screenshot hook: MARKLY_SHOT=/path.png grabs the shell then quits.
   const auto shotPath = qEnvironmentVariable("MARKLY_SHOT");
   if (!shotPath.isEmpty()) {
+    const auto shotSearch = qEnvironmentVariable("MARKLY_SHOT_SEARCH");
+    if (!shotSearch.isEmpty()) {
+      QTimer::singleShot(800, this, [this, shotSearch]() {
+        if (auto *root = m_quick->rootObject()) {
+          QMetaObject::invokeMethod(root, "showSearch", Q_ARG(QVariant, shotSearch));
+        }
+      });
+    }
     QTimer::singleShot(1200, this, [this, shotPath]() {
       const QImage img = m_quick->grabFramebuffer();
       if (img.save(shotPath)) {

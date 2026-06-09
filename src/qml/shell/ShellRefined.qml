@@ -8,6 +8,9 @@ Rectangle {
     id: shell
     color: Theme.window
 
+    // Left dock page: "explorer" (notebook tree) or "search".
+    property string leftPage: "explorer"
+
     function roleColor(role) {
         if (!role || role === "text") return Theme.text;
         var c = Theme[role];
@@ -101,9 +104,9 @@ Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                     y: 8
                     spacing: 4
-                    C.RailButton { icon: "notebook"; active: true }
+                    C.RailButton { icon: "notebook"; active: shell.leftPage === "explorer"; onClicked: shell.leftPage = "explorer" }
                     C.RailButton { icon: "tag" }
-                    C.RailButton { icon: "search" }
+                    C.RailButton { icon: "search"; active: shell.leftPage === "search"; onClicked: shell.leftPage = "search" }
                     C.RailButton { icon: "snippet" }
                     C.RailButton { icon: "history" }
                 }
@@ -117,7 +120,9 @@ Rectangle {
                 height: parent.height
                 color: Theme.sidebar
                 Rectangle { anchors.right: parent.right; width: 1; height: parent.height; color: Theme.border }
+                SearchPanel { anchors.fill: parent; visible: shell.leftPage === "search" }
                 Column {
+                    visible: shell.leftPage === "explorer"
                     anchors.fill: parent
                     Item {
                         width: parent.width; height: 42

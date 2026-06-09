@@ -10,6 +10,9 @@ Rectangle {
 
     function tok(role) { var c = Theme[role]; return c !== undefined ? c : Theme.accent; }
 
+    // Left dock page: "explorer" (ink nav) or "search".
+    property string leftPage: "explorer"
+
     Column {
         anchors.fill: parent
 
@@ -22,7 +25,11 @@ Rectangle {
                 width: 19; height: 19; radius: 6; color: Theme.accent
                 Text { anchors.centerIn: parent; text: "V"; color: "#ffffff"; font.pixelSize: 12; font.bold: true; font.family: Theme.fontDisplay }
             }
-            C.Omnibar { anchors.centerIn: parent; width: Math.min(380, parent.width * 0.5) }
+            Item {
+                anchors.centerIn: parent; width: Math.min(380, parent.width * 0.5); height: 30
+                C.Omnibar { anchors.fill: parent }
+                MouseArea { anchors.fill: parent; onClicked: shell.leftPage = "search" }
+            }
             C.WinControls { anchors.right: parent.right; anchors.rightMargin: 8; anchors.verticalCenter: parent.verticalCenter }
         }
 
@@ -35,7 +42,9 @@ Rectangle {
             Rectangle {
                 visible: Appearance.showLeft
                 width: 244; height: parent.height; color: Theme.rail
+                SearchPanel { anchors.fill: parent; visible: shell.leftPage === "search" }
                 Column {
+                    visible: shell.leftPage === "explorer"
                     anchors.fill: parent; anchors.margins: 10; spacing: 2
                     Repeater {
                         model: Demo.NAV_ITEMS
@@ -49,6 +58,7 @@ Rectangle {
                                 Text { anchors.verticalCenter: parent.verticalCenter; width: parent.width - 50; text: modelData.label; color: modelData.label === "收件箱" ? Theme.railActive : Theme.railDim; font.pixelSize: 13; font.family: Theme.fontUi }
                                 Text { anchors.verticalCenter: parent.verticalCenter; visible: modelData.count !== ""; text: modelData.count; color: Theme.railDim; font.pixelSize: 11; font.family: Theme.fontMono }
                             }
+                            MouseArea { anchors.fill: parent; onClicked: shell.leftPage = "explorer" }
                         }
                     }
                     Rectangle { width: parent.width; height: 1; color: Theme.border; opacity: 0.6 }

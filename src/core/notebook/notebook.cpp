@@ -165,6 +165,26 @@ void Notebook::ensureLoaded(const QSharedPointer<Node> &p_node) {
   }
 }
 
+void Notebook::collectMarkdownNodes(const QSharedPointer<Node> &p_node,
+                                    QVector<QSharedPointer<Node>> &p_out) {
+  if (p_node->isContainer()) {
+    ensureLoaded(p_node);
+    for (const auto &child : p_node->getChildren()) {
+      collectMarkdownNodes(child, p_out);
+    }
+  } else if (p_node->getName().endsWith(QStringLiteral(".md"), Qt::CaseInsensitive)) {
+    p_out.append(p_node);
+  }
+}
+
+QVector<QSharedPointer<Node>> Notebook::collectMarkdownNodes() {
+  QVector<QSharedPointer<Node>> out;
+  if (m_root) {
+    collectMarkdownNodes(m_root, out);
+  }
+  return out;
+}
+
 void Notebook::loadNodeChildren(const QSharedPointer<Node> &p_node) {
   if (!p_node->isContainer() || p_node->isLoaded()) {
     return;
@@ -286,6 +306,8 @@ void Notebook::renameNode(const QSharedPointer<Node> &p_node, const QString &p_n
   row.m_signature = p_node->getSignature();
   row.m_parentId = p_node->getParent() ? p_node->getParent()->getId() : 0;
   m_db->updateNode(row);
+  // Name/path changed -> drop the stale FTS row; it is re-indexed on next search.
+  m_db->ftsRemove(p_node->getId());
 
   if (p_node->getParent()) {
     writeNodeConfig(p_node->getParent());
@@ -303,6 +325,7 @@ void Notebook::removeNode(const QSharedPointer<Node> &p_node) {
     m_backend->removeFile(rel);
   }
   m_db->removeNode(p_node->getId()); // CASCADE removes descendants + tag_node
+  m_db->ftsRemove(p_node->getId());
 
   auto *parent = p_node->getParent();
   if (parent) {
@@ -326,6 +349,7 @@ void Notebook::moveNodeToRecycleBin(const QSharedPointer<Node> &p_node) {
     m_backend->copyFile(rel, dest, true);
   }
   m_db->removeNode(p_node->getId());
+  m_db->ftsRemove(p_node->getId());
 
   auto *parent = p_node->getParent();
   if (parent) {

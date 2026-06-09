@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### search-fts (spec #12) — 2026-06-09
+* 全文搜索（技术栈关键点 SQLite FTS5 落地）：每笔记本 DB 建 `node_fts` FTS5 虚拟表索引 名称/路径/正文。
+* 与源差异：源 FileSearchEngine 遍历文件无索引；本应用按技术栈用 FTS5 索引 + 单一同步 Searcher（精简 token/异步引擎）。
+* Searcher 按 scope(笔记本/全部/文件夹/已打开) × object(名称/内容/路径/标签) 查询：内容 FTS5 MATCH+snippet、名称/路径内存匹配、标签查节点 tags；去重组装结果。
+* SearchBridge(context property Search) results/state/count + search/openResult/clear；openResult→openFileRequested；监听 MarklyApp.noteSaved 增量 reindex。
+* SearchPanel.qml：关键词+scope 段按钮+object toggle+结果列表(snippet `<mark>`→accent 高亮)；接入三外壳左 dock 搜索页(A 活动栏 / B 搜索框+活动栏 / C Omnibar)。
+* ctest 9/9（新增 test_search：内容/名称/空词/增量）；截图验证搜索「桥接」命中+高亮 snippet+路径。
+* 再规划：跳转到行→#8；重命名 name 索引更新/正则·magic-switch→polish；搜索历史→#13。
+
 ### markdown-preview (spec #9) — 2026-06-09
 * Markdown 渲染预览：QtWebEngine 的 QML WebEngineView 加载内置 preview.html(markdown-it)，编辑/阅读/分栏三模式。
 * 架构决策验证：QML WebEngineView 在 QQuickWidget(Qt6.8 RHI) 渲染成功，无需 QWidget 回退；main 在 QApplication 前 QtWebEngineQuick::initialize()。

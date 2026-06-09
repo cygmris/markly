@@ -46,6 +46,11 @@ set(MARKLY_CORE_SOURCES
     widgets/explorer/dialoghelper.h
     widgets/viewarea/viewarea.cpp
     widgets/viewarea/viewarea.h
+    core/search/searchdata.h
+    core/search/searcher.cpp
+    core/search/searcher.h
+    widgets/search/searchbridge.cpp
+    widgets/search/searchbridge.h
     widgets/editors/markdownhighlighter.cpp
     widgets/editors/markdownhighlighter.h
     widgets/editors/editorcfgqml.cpp
@@ -139,6 +144,7 @@ qt_add_resources(markly "markly_qml"
         "qml/shell/EditorArea.qml"
         "qml/shell/MarkdownEditor.qml"
         "qml/shell/PreviewPane.qml"
+        "qml/shell/SearchPanel.qml"
         "qml/theme/ThemePreview.qml"
         "qml/theme/AppearancePanel.qml"
         "qml/icons/Icon.qml"

@@ -214,3 +214,92 @@ QStringList NotebookDatabaseAccess::queryNodeTags(ID p_nodeId) const {
   }
   return tags;
 }
+
+QVector<ID> NotebookDatabaseAccess::queryNodesByTag(const QString &p_tagName) const {
+  QVector<ID> ids;
+  auto db = QSqlDatabase::database(m_connectionName);
+  QSqlQuery query(db);
+  query.prepare(QStringLiteral("SELECT node_id FROM tag_node WHERE tag_name = ?"));
+  query.addBindValue(p_tagName);
+  if (query.exec()) {
+    while (query.next()) {
+      ids.append(query.value(0).toULongLong());
+    }
+  }
+  return ids;
+}
+
+bool NotebookDatabaseAccess::ensureFtsTable() {
+  auto db = QSqlDatabase::database(m_connectionName);
+  QSqlQuery query(db);
+  const bool ok = query.exec(QStringLiteral(
+      "CREATE VIRTUAL TABLE IF NOT EXISTS node_fts USING fts5("
+      "  node_id UNINDEXED, name, path, content, tokenize='unicode61')"));
+  if (!ok) {
+    qWarning() << "ensureFtsTable failed" << query.lastError().text();
+  }
+  return ok;
+}
+
+bool NotebookDatabaseAccess::ftsIsEmpty() const {
+  auto db = QSqlDatabase::database(m_connectionName);
+  QSqlQuery query(db);
+  if (query.exec(QStringLiteral("SELECT count(*) FROM node_fts")) && query.next()) {
+    return query.value(0).toLongLong() == 0;
+  }
+  return true;
+}
+
+bool NotebookDatabaseAccess::ftsUpsert(ID p_nodeId, const QString &p_name,
+                                       const QString &p_path, const QString &p_content) {
+  auto db = QSqlDatabase::database(m_connectionName);
+  QSqlQuery del(db);
+  del.prepare(QStringLiteral("DELETE FROM node_fts WHERE node_id = ?"));
+  del.addBindValue(static_cast<qulonglong>(p_nodeId));
+  del.exec();
+
+  QSqlQuery ins(db);
+  ins.prepare(QStringLiteral(
+      "INSERT INTO node_fts (node_id, name, path, content) VALUES (?, ?, ?, ?)"));
+  ins.addBindValue(static_cast<qulonglong>(p_nodeId));
+  ins.addBindValue(p_name);
+  ins.addBindValue(p_path);
+  ins.addBindValue(p_content);
+  if (!ins.exec()) {
+    qWarning() << "ftsUpsert failed" << ins.lastError().text();
+    return false;
+  }
+  return true;
+}
+
+bool NotebookDatabaseAccess::ftsRemove(ID p_nodeId) {
+  auto db = QSqlDatabase::database(m_connectionName);
+  QSqlQuery query(db);
+  query.prepare(QStringLiteral("DELETE FROM node_fts WHERE node_id = ?"));
+  query.addBindValue(static_cast<qulonglong>(p_nodeId));
+  return query.exec();
+}
+
+QVector<QPair<ID, QString>>
+NotebookDatabaseAccess::ftsQueryContent(const QString &p_ftsExpr) const {
+  QVector<QPair<ID, QString>> hits;
+  if (p_ftsExpr.isEmpty()) {
+    return hits;
+  }
+  auto db = QSqlDatabase::database(m_connectionName);
+  QSqlQuery query(db);
+  // snippet(): column 3 == content; wrap hits with <mark>..</mark>, ellipsis "…", 12 tokens.
+  query.prepare(QStringLiteral(
+      "SELECT node_id, snippet(node_fts, 3, '<mark>', '</mark>', '…', 12) "
+      "FROM node_fts WHERE node_fts MATCH ? ORDER BY rank"));
+  query.addBindValue(p_ftsExpr);
+  if (query.exec()) {
+    while (query.next()) {
+      hits.append(qMakePair(static_cast<ID>(query.value(0).toULongLong()),
+                            query.value(1).toString()));
+    }
+  } else {
+    qWarning() << "ftsQueryContent failed" << query.lastError().text();
+  }
+  return hits;
+}

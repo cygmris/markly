@@ -1,6 +1,7 @@
 #ifndef NOTEBOOKDATABASEACCESS_H
 #define NOTEBOOKDATABASEACCESS_H
 
+#include <QPair>
 #include <QString>
 #include <QStringList>
 #include <QVector>
@@ -46,6 +47,19 @@ public:
   bool addNodeTag(ID p_nodeId, const QString &p_tagName);
   bool removeNodeTags(ID p_nodeId);
   QStringList queryNodeTags(ID p_nodeId) const;
+  // Node ids carrying a given tag (exact tag name match).
+  QVector<ID> queryNodesByTag(const QString &p_tagName) const;
+
+  // Full-text search index (FTS5 virtual table node_fts). The vx.json/markdown
+  // files remain the source of truth; this is a queryable content index.
+  bool ensureFtsTable();
+  bool ftsIsEmpty() const;
+  // Upsert (delete-then-insert) the indexed row for a node.
+  bool ftsUpsert(ID p_nodeId, const QString &p_name, const QString &p_path,
+                 const QString &p_content);
+  bool ftsRemove(ID p_nodeId);
+  // Content MATCH: returns (node_id, snippet) ordered by rank.
+  QVector<QPair<ID, QString>> ftsQueryContent(const QString &p_ftsExpr) const;
 
   bool isOpen() const { return m_open; }
 

@@ -8,6 +8,9 @@ Rectangle {
     id: shell
     color: Theme.window
 
+    // Left dock page: "explorer" (notes list) or "search".
+    property string leftPage: "explorer"
+
     Column {
         anchors.fill: parent
 
@@ -50,8 +53,9 @@ Rectangle {
                 width: 52; height: parent.height; color: Theme.rail
                 Column {
                     anchors.horizontalCenter: parent.horizontalCenter; y: 6; spacing: 4
-                    C.RailButton { icon: "notebook"; active: true; iconSize: 20 }
+                    C.RailButton { icon: "notebook"; active: shell.leftPage === "explorer"; iconSize: 20; onClicked: shell.leftPage = "explorer" }
                     C.RailButton { icon: "star"; iconSize: 20 }
+                    C.RailButton { icon: "search"; active: shell.leftPage === "search"; iconSize: 20; onClicked: shell.leftPage = "search" }
                     C.RailButton { icon: "tag"; iconSize: 20 }
                     C.RailButton { icon: "history"; iconSize: 20 }
                 }
@@ -63,7 +67,9 @@ Rectangle {
                 visible: Appearance.showLeft
                 width: 312; height: parent.height; color: Theme.sidebar
                 Rectangle { anchors.right: parent.right; width: 1; height: parent.height; color: Theme.border }
+                SearchPanel { anchors.fill: parent; visible: shell.leftPage === "search" }
                 Column {
+                    visible: shell.leftPage === "explorer"
                     anchors.fill: parent
                     Column {
                         width: parent.width; topPadding: 14; leftPadding: 16; rightPadding: 16; spacing: 12
@@ -82,6 +88,7 @@ Rectangle {
                                 Icons.Icon { anchors.verticalCenter: parent.verticalCenter; name: "search"; size: 15; color: Theme.faint }
                                 Text { anchors.verticalCenter: parent.verticalCenter; text: "搜索笔记…"; color: Theme.faint; font.pixelSize: 13; font.family: Theme.fontUi }
                             }
+                            MouseArea { anchors.fill: parent; onClicked: shell.leftPage = "search" }
                         }
                     }
                     Column {

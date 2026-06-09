@@ -9,7 +9,14 @@ Item {
 
     readonly property bool hasNotebook: (typeof Explorer !== "undefined") && Explorer.hasNotebook
 
+    // Dev/test hook: switch the active shell to the search page and run a query.
+    function showSearch(keyword) {
+        if (loader.item) loader.item.leftPage = "search";
+        Search.search(keyword, 0, 0x1 | 0x2, "");
+    }
+
     Loader {
+        id: loader
         anchors.fill: parent
         visible: root.hasNotebook
         source: Appearance.style === 0 ? "shell/ShellRefined.qml"

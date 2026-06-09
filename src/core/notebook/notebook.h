@@ -52,6 +52,9 @@ public:
   // Lazily load a folder node's children from its vx.json (no-op if loaded).
   void loadNodeChildren(const QSharedPointer<Node> &p_node);
 
+  // Recursively load and collect all markdown file nodes (for full-text indexing).
+  QVector<QSharedPointer<Node>> collectMarkdownNodes();
+
   // CRUD. Each writes disk (truth) then syncs the db index.
   QSharedPointer<Node> newNode(const QSharedPointer<Node> &p_parent, Node::Type p_type,
                                const QString &p_name);
@@ -80,6 +83,9 @@ private:
   // Read/write a folder node's vx.json (raw pointer so parent pointers work too).
   vx_node_config::NodeConfig readNodeConfig(const Node *p_folder) const;
   void writeNodeConfig(Node *p_folder);
+
+  void collectMarkdownNodes(const QSharedPointer<Node> &p_node,
+                            QVector<QSharedPointer<Node>> &p_out);
 
   // Rebuild the db index by walking the vx.json tree on disk.
   void rebuildDatabase();

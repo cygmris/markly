@@ -9,6 +9,7 @@ set(MARKLY_TESTS
     test_notebookexplorer
     test_bufferview
     test_editorconfig
+    test_search
 )
 
 foreach(test_name ${MARKLY_TESTS})

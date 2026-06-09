@@ -7,6 +7,7 @@
 #include <core/buffer/buffermgr.h>
 #include <core/configmgr.h>
 #include <core/exception.h>
+#include <core/marklyapp.h>
 #include <core/sessionconfig.h>
 
 using namespace markly;
@@ -125,10 +126,15 @@ void ViewArea::saveTab(double p_bufferId) {
   }
   auto *buffer = m_bufferMgr->get(static_cast<ID>(p_bufferId));
   if (buffer) {
+    bool saved = false;
     try {
       buffer->save();
+      saved = true;
     } catch (Exception &e) {
       qWarning() << "saveTab failed" << e.what();
+    }
+    if (saved) {
+      emit MarklyApp::getInst().noteSaved(buffer->getPath());
     }
     emit changed();
   }
