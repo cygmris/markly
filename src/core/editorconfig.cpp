@@ -28,6 +28,8 @@ void EditorConfig::init(const QJsonObject &p_app, const QJsonObject &p_user) {
   m_autoIndent = readBool(QStringLiteral("auto_indent"), true);
   m_continueList = readBool(QStringLiteral("continue_list"), true);
   m_autoPair = readBool(QStringLiteral("auto_pair"), true);
+  m_spellCheck = readBool(QStringLiteral("spell_check"), false);
+  m_viMode = readBool(QStringLiteral("vi_mode"), false);
 }
 
 QJsonObject EditorConfig::toJson() const {
@@ -40,6 +42,8 @@ QJsonObject EditorConfig::toJson() const {
   obj[QStringLiteral("auto_indent")] = m_autoIndent;
   obj[QStringLiteral("continue_list")] = m_continueList;
   obj[QStringLiteral("auto_pair")] = m_autoPair;
+  obj[QStringLiteral("spell_check")] = m_spellCheck;
+  obj[QStringLiteral("vi_mode")] = m_viMode;
   return obj;
 }
 
@@ -53,3 +57,5 @@ void EditorConfig::setHighlightCurrentLineEnabled(bool p_on) {
 void EditorConfig::setAutoIndentEnabled(bool p_on) { updateConfig(m_autoIndent, p_on, this); }
 void EditorConfig::setContinueListEnabled(bool p_on) { updateConfig(m_continueList, p_on, this); }
 void EditorConfig::setAutoPairEnabled(bool p_on) { updateConfig(m_autoPair, p_on, this); }
+void EditorConfig::setSpellCheckEnabled(bool p_on) { updateConfig(m_spellCheck, p_on, this); }
+void EditorConfig::setViModeEnabled(bool p_on) { updateConfig(m_viMode, p_on, this); }

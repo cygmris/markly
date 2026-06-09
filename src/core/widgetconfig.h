@@ -25,6 +25,24 @@ public:
   QString getLanguage() const;
   void setLanguage(const QString &p_language);
 
+  // Image host config { type, user, repo, token, branch } (#10b).
+  QJsonObject getImageHostConfig() const;
+  void setImageHostConfig(const QJsonObject &p_config);
+
+  // Minimize to system tray on window close (#20b, default false).
+  bool getMinimizeToTray() const;
+  void setMinimizeToTray(bool p_on);
+
+  // Auto-update-check toggle + last-check timestamp (ms) (#20c).
+  bool getAutoUpdateCheck() const;
+  void setAutoUpdateCheck(bool p_on);
+  qint64 getLastUpdateCheck() const;
+  void setLastUpdateCheck(qint64 p_ms);
+
+  // Global hotkey to summon the window (#17b, X11 only). Default "Ctrl+Alt+M".
+  QString getGlobalHotkey() const;
+  void setGlobalHotkey(const QString &p_seq);
+
 private:
   QJsonObject m_jobj;
 };

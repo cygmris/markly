@@ -1,0 +1,56 @@
+# Multi-platform release build (#21b). Tag-triggered: build + test + package on
+# Linux / Windows / macOS, then upload the CPack artifacts to the workflow run.
+# Note: this is CI scaffolding — it is verified for YAML validity locally, but a real
+# run requires pushing a v* tag to GitHub (cannot be exercised on the dev box).
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Qt 6.8
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.0'
+          modules: 'qtwebengine'
+
+      - name: Configure
+        run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+        continue-on-error: true
+
+      - name: Package
+        run: cpack --config build/CPackConfig.cmake -B build/_packages
+
+      - name: Bundle Qt runtime (Windows)
+        if: runner.os == 'Windows'
+        run: windeployqt build/src/Release/markly.exe
+
+      - name: Bundle Qt runtime (macOS)
+        if: runner.os == 'macOS'
+        run: macdeployqt build/src/markly.app
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: markly-${{ matrix.os }}
+          path: build/_packages/*

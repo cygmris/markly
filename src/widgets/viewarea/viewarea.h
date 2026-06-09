@@ -69,6 +69,8 @@ public:
   QString currentText() const;
   // Insert text at the active editor's cursor, then offset the cursor (snippets #14).
   Q_INVOKABLE void requestInsert(const QString &p_text, int p_cursorOffset);
+  // Ask the visible mindmap pane to serialize itself back to its buffer (#18c).
+  Q_INVOKABLE void requestSaveMindmap();
 
   // Outline (headings) of the active buffer; [{level, text, line}] (1-based line).
   QVariantList outline() const;
@@ -87,6 +89,8 @@ signals:
   void gotoLineNow(int p_line);
   // Insert text at the active editor's cursor, then move cursor by p_cursorOffset.
   void insertText(const QString &p_text, int p_cursorOffset);
+  // Request the active/visible mindmap pane save its tree back to the note (#18c).
+  void saveMindmapRequested();
 
 private:
   struct Split {

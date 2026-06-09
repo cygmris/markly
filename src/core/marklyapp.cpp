@@ -2,10 +2,13 @@
 
 #include <QCoreApplication>
 #include <QDateTime>
+#include <QDir>
+#include <QFileInfo>
 #include <QLocale>
 #include <QTranslator>
 
 #include "configmgr.h"
+#include "spell/spellchecker.h"
 #include "widgetconfig.h"
 
 #include "buffer/buffermgr.h"
@@ -86,6 +89,38 @@ NotebookMgr *MarklyApp::getNotebookMgr() const { return m_notebookMgr; }
 BufferMgr *MarklyApp::getBufferMgr() const { return m_bufferMgr; }
 
 TaskMgr *MarklyApp::getTaskMgr() const { return m_taskMgr; }
+
+SpellChecker *MarklyApp::getSpellChecker() {
+  if (m_spellTried) {
+    return m_spell;
+  }
+  m_spellTried = true;
+
+  // Dictionary directory resolution: MARKLY_DICT_DIR env > user <config>/dicts >
+  // app data/dicts. The first directory containing en_US.dic wins.
+  QStringList candidates;
+  const QByteArray envDir = qgetenv("MARKLY_DICT_DIR");
+  if (!envDir.isEmpty()) {
+    candidates << QString::fromLocal8Bit(envDir);
+  }
+  candidates << ConfigMgr::getInst().getUserDictsFolder();
+  candidates << ConfigMgr::getInst().getAppDictsFolder();
+
+  for (const QString &dir : candidates) {
+    if (dir.isEmpty()) {
+      continue;
+    }
+    if (QFileInfo::exists(dir + QStringLiteral("/en_US.dic"))) {
+      m_spell = new SpellChecker(dir, QStringLiteral("en_US"));
+      if (m_spell->ready()) {
+        return m_spell;
+      }
+      delete m_spell;
+      m_spell = nullptr;
+    }
+  }
+  return m_spell; // null -> highlighter degrades gracefully
+}
 
 void MarklyApp::setMainWindow(MainWindow *p_mainWindow) { m_mainWindow = p_mainWindow; }
 

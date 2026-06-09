@@ -6,9 +6,11 @@
 #include "framelessmainwindow/framelessmainwindow.h"
 
 class QQuickWidget;
+class QSystemTrayIcon;
 
 namespace markly {
 class ViewArea;
+class GlobalHotkey;
 
 // Frameless main window hosting the full QML shell (MarklyShell.qml): title bar /
 // activity rail / docks / status bar, with live A/B/C style + theme switching.
@@ -37,8 +39,12 @@ private:
 
   void setupContent();
 
+  void setupTray();
+
   QQuickWidget *m_quick = nullptr;
   ViewArea *m_views = nullptr;
+  QSystemTrayIcon *m_trayIcon = nullptr;
+  GlobalHotkey *m_hotkey = nullptr;
 };
 } // namespace markly
 

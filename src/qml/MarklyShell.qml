@@ -9,6 +9,9 @@ Item {
 
     readonly property bool hasNotebook: (typeof Explorer !== "undefined") && Explorer.hasNotebook
 
+    // Auto-update check on startup if enabled and due (#20c).
+    Component.onCompleted: if (typeof Update !== "undefined") Update.autoCheckIfDue()
+
     // Dev/test hook: switch the active shell to the search page and run a query.
     function showSearch(keyword) {
         if (loader.item) loader.item.leftPage = "search";

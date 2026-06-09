@@ -60,6 +60,10 @@ void ViewArea::requestInsert(const QString &p_text, int p_cursorOffset) {
   }
 }
 
+void ViewArea::requestSaveMindmap() {
+  emit saveMindmapRequested();
+}
+
 QVariantList ViewArea::outline() const {
   QVariantList items;
   if (m_activeSplit >= m_splits.size() || !m_bufferMgr) {
@@ -261,7 +265,7 @@ void ViewArea::setViewMode(const QString &p_mode) {
     return;
   }
   if (p_mode == QStringLiteral("edit") || p_mode == QStringLiteral("read") ||
-      p_mode == QStringLiteral("split")) {
+      p_mode == QStringLiteral("split") || p_mode == QStringLiteral("mindmap")) {
     m_viewMode = p_mode;
     ConfigMgr::getInst().getSessionConfig().setViewMode(m_viewMode);
     emit viewModeChanged();

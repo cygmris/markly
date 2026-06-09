@@ -1,0 +1,10 @@
+# diagram-rendering 验证证据（mermaid 渲染输出，#content innerHTML 摘录）
+
+源: preview.html mdRender("```mermaid graph TD; A-->B ``` + ```js ... ```")
+经 window.mermaidPending() 轮询归零后 dump。
+
+## mermaid 块 → SVG（替换了 pre/code）
+<div class="mermaid-graph"><svg aria-roledescription="flowchart-v2" role="graphics-document document" viewBox="-8 -8 64.796875 150.375" style="max-width: 64.796875px;" xmlns="http://www.w3.org/2000/svg" width="100%" id="mk-mermaid-0"
+
+## js 块仍由 Prism 高亮（未受影响）
+<pre class=" language-js"><code class=" language-js"><span class="

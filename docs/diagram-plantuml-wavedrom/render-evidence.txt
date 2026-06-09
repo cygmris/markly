@@ -1,0 +1,12 @@
+# diagram-plantuml-wavedrom 验证证据（#content innerHTML 摘录）
+
+源: mdRender(```wave {signal:[{name:"clk",wave:"p.."}]} ``` + ```puml @startuml A->B @enduml ``` + ```js ```)
+
+## WaveDrom (```wave) → 客户端 SVG
+<div class="wavedrom-graph" id="mk-wave-0"><svg id="svgcontent_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="30" width="180" viewBox="0 0 180 30" overflow="hidden" class="WaveDrom"
+
+## PlantUML (```puml) → <img>(公共服务器编码 URL)
+<div class="plantuml-graph"><img src="https://www.plantuml.com/plantuml/svg/SoWkIImgAStDuN9KqBLJSE9oICrB0N41
+
+## js 块仍 Prism，diagram-error 数=0
+<pre class=" language-js"><code class=" language-js"><sp

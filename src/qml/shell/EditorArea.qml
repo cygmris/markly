@@ -116,7 +116,7 @@ Rectangle {
             }
 
             MarkdownEditor {
-                visible: parent.viewerType === "" && parent.mode !== "read"
+                visible: parent.viewerType === "" && parent.mode !== "read" && parent.mode !== "mindmap"
                 x: 0
                 width: parent.mode === "split" ? parent.width / 2 : parent.width
                 height: parent.height
@@ -128,7 +128,7 @@ Rectangle {
                 x: parent.width / 2; width: 1; height: parent.height; color: Theme.border
             }
             PreviewPane {
-                visible: parent.viewerType === "" && parent.mode !== "edit"
+                visible: parent.viewerType === "" && parent.mode !== "edit" && parent.mode !== "mindmap"
                 x: parent.mode === "split" ? parent.width / 2 : 0
                 width: parent.mode === "split" ? parent.width / 2 : parent.width
                 height: parent.height
@@ -136,10 +136,20 @@ Rectangle {
                 baseDir: (typeof Views !== "undefined") ? Views.currentFileDir : ""
             }
             ViewerPane {
-                visible: parent.viewerType !== ""
+                visible: parent.viewerType !== "" && parent.mode !== "mindmap"
                 anchors.fill: parent
                 kind: parent.viewerType
                 path: pane.split.currentPath || ""
+            }
+            // Editable mindmap of the note's heading outline (#18b view / #18c edit).
+            // #18c: editable; Ctrl+S / the "保存思维导图到笔记" command (via
+            // Views.saveMindmapRequested) serialize the tree back to the buffer.
+            MindmapPane {
+                visible: parent.mode === "mindmap" && parent.viewerType === ""
+                anchors.fill: parent
+                text: pane.split.currentText
+                editable: true
+                bufferId: pane.split.currentBufferId
             }
         }
     }

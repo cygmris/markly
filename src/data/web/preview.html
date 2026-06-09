@@ -20,6 +20,18 @@
   <script src="markdownItTocDoneRight.umd.js"></script>
   <!-- Code highlighting -->
   <script src="prism.min.js"></script>
+  <!-- Diagrams (Mermaid #9d; Graphviz + Flowchart.js #9e) -->
+  <script src="mermaid.min.js"></script>
+  <script src="raphael.min.js"></script>
+  <script src="flowchart.min.js"></script>
+  <script src="viz.js"></script>
+  <script src="viz.lite.render.js"></script>
+  <!-- WaveDrom (#9f) -->
+  <script src="wavedrom.theme-default.js"></script>
+  <script src="wavedrom.min.js"></script>
+  <!-- PlantUML encoder (#9f) -->
+  <script src="plantuml.synchro2.js"></script>
+  <script src="plantuml.zopfli.raw.min.js"></script>
   <!-- Math (KaTeX + markdown-it-texmath, #9c) -->
   <script src="katex/katex.min.js"></script>
   <script src="markdown-it-texmath.js"></script>
@@ -42,6 +54,164 @@
     usePlugin(window.markdownItTocDoneRight);
 
     var content = document.getElementById('content');
+
+    // ---- Diagrams (Mermaid #9d; Graphviz + Flowchart.js #9e) ----
+    // Shared pending counter + id sequence across all diagram engines.
+    var mermaidTheme = 'default';
+    var __diagramPending = 0;
+    var __diagramSeq = 0;
+    var __viz = null;
+    function initMermaid() {
+      if (window.mermaid) {
+        try { mermaid.initialize({ startOnLoad: false, theme: mermaidTheme }); } catch (e) {}
+      }
+    }
+    initMermaid();
+    // Number of diagrams still rendering (0 = all done). Polled by the exporter (#15).
+    // Name kept for #15 ExportView compatibility; now counts all diagram engines.
+    window.mermaidPending = function () { return __diagramPending; };
+
+    function diagramError(pre, msg, orphanId) {
+      var div = document.createElement('div');
+      div.className = 'diagram-error';
+      div.textContent = msg;
+      if (pre.parentElement) pre.parentElement.replaceChild(div, pre);
+      if (orphanId) {
+        var orphan = document.getElementById(orphanId);
+        if (orphan && orphan.parentElement) orphan.parentElement.removeChild(orphan);
+      }
+    }
+
+    // Replace each ```mermaid code block with its rendered SVG. Async: each diagram
+    // appears when ready; a single failure shows an inline error and never breaks
+    // the rest of the document.
+    function renderMermaid() {
+      if (!window.mermaid) return;
+      var blocks = content.querySelectorAll('pre > code.language-mermaid');
+      for (var i = 0; i < blocks.length; ++i) {
+        (function (code) {
+          var pre = code.parentElement;
+          var src = code.textContent || "";
+          var id = 'mk-mermaid-' + (__diagramSeq++);
+          __diagramPending++;
+          mermaid.render(id, src).then(function (res) {
+            var div = document.createElement('div');
+            div.className = 'mermaid-graph';
+            div.innerHTML = res.svg;
+            if (pre.parentElement) pre.parentElement.replaceChild(div, pre);
+          }).catch(function (err) {
+            diagramError(pre, 'Mermaid error: ' + (err && err.message ? err.message : err), id);
+          }).finally(function () { __diagramPending--; });
+        })(blocks[i]);
+      }
+    }
+
+    // Render ```dot / ```graphviz blocks via viz.js (async).
+    function renderGraphviz() {
+      if (!window.Viz) return;
+      if (!__viz) { try { __viz = new Viz(); } catch (e) { return; } }
+      var blocks = content.querySelectorAll('pre > code.language-dot, pre > code.language-graphviz');
+      for (var i = 0; i < blocks.length; ++i) {
+        (function (code) {
+          var pre = code.parentElement;
+          var src = code.textContent || "";
+          __diagramPending++;
+          __viz.renderSVGElement(src).then(function (el) {
+            var div = document.createElement('div');
+            div.className = 'graphviz-graph';
+            div.appendChild(el);
+            if (pre.parentElement) pre.parentElement.replaceChild(div, pre);
+          }).catch(function (err) {
+            diagramError(pre, 'Graphviz error: ' + (err && err.message ? err.message : err));
+            // viz.js dies after one error; recreate for subsequent diagrams.
+            try { __viz = new Viz(); } catch (e) { __viz = null; }
+          }).finally(function () { __diagramPending--; });
+        })(blocks[i]);
+      }
+    }
+
+    // Render ```flow / ```flowchart blocks via flowchart.js (synchronous, needs Raphael).
+    function renderFlowchart() {
+      if (!window.flowchart) return;
+      var blocks = content.querySelectorAll('pre > code.language-flow, pre > code.language-flowchart');
+      for (var i = 0; i < blocks.length; ++i) {
+        var code = blocks[i];
+        var pre = code.parentElement;
+        var src = code.textContent || "";
+        var id = 'mk-flow-' + (__diagramSeq++);
+        __diagramPending++;
+        try {
+          var div = document.createElement('div');
+          div.className = 'flowchart-graph';
+          div.id = id;
+          if (pre.parentElement) pre.parentElement.replaceChild(div, pre);
+          flowchart.parse(src).drawSVG(div); // draws into the in-document container
+        } catch (err) {
+          var holder = document.getElementById(id) || pre;
+          diagramError(holder, 'Flowchart error: ' + (err && err.message ? err.message : err));
+        } finally { __diagramPending--; }
+      }
+    }
+
+    // Render ```wavedrom / ```wave blocks via WaveDrom (client-side, synchronous).
+    function renderWavedrom() {
+      if (!window.WaveDrom) return;
+      var blocks = content.querySelectorAll('pre > code.language-wavedrom, pre > code.language-wave');
+      for (var i = 0; i < blocks.length; ++i) {
+        var code = blocks[i];
+        var pre = code.parentElement;
+        var src = code.textContent || "";
+        var idx = __diagramSeq++;
+        var div = document.createElement('div');
+        div.className = 'wavedrom-graph';
+        div.id = 'mk-wave-' + idx;
+        if (pre.parentElement) pre.parentElement.replaceChild(div, pre);
+        try {
+          WaveDrom.RenderWaveForm(idx, eval('(' + src + ')'), 'mk-wave-');
+        } catch (err) {
+          diagramError(document.getElementById('mk-wave-' + idx) || pre,
+                       'WaveDrom error: ' + (err && err.message ? err.message : err));
+        }
+      }
+    }
+
+    // Render ```plantuml / ```puml blocks: encode source into a PlantUML server URL
+    // and emit an <img> (the public server renders the image online).
+    var plantumlServer = 'https://www.plantuml.com/plantuml';
+    function plantumlUrl(src) {
+      var s = unescape(encodeURIComponent(src));
+      var arr = [];
+      for (var i = 0; i < s.length; ++i) arr.push(s.charCodeAt(i));
+      var enc = encode64_(new Zopfli.RawDeflate(arr).compress());
+      return plantumlServer + '/svg/' + enc;
+    }
+    function renderPlantuml() {
+      if (!window.Zopfli || typeof encode64_ !== 'function') return;
+      var blocks = content.querySelectorAll('pre > code.language-plantuml, pre > code.language-puml');
+      for (var i = 0; i < blocks.length; ++i) {
+        var code = blocks[i];
+        var pre = code.parentElement;
+        var src = code.textContent || "";
+        try {
+          var div = document.createElement('div');
+          div.className = 'plantuml-graph';
+          var img = document.createElement('img');
+          img.src = plantumlUrl(src);
+          div.appendChild(img);
+          if (pre.parentElement) pre.parentElement.replaceChild(div, pre);
+        } catch (err) {
+          diagramError(pre, 'PlantUML error: ' + (err && err.message ? err.message : err));
+        }
+      }
+    }
+
+    function renderDiagrams() {
+      renderMermaid();
+      renderGraphviz();
+      renderFlowchart();
+      renderWavedrom();
+      renderPlantuml();
+    }
 
     // Base directory of the current note, for resolving relative image paths (#10).
     var baseDir = "";
@@ -75,6 +245,7 @@
         if (window.Prism) {
           try { Prism.highlightAllUnder(content); } catch (e) {}
         }
+        renderDiagrams();
       } catch (e) {
         var pre = document.createElement('pre');
         pre.textContent = text || "";
@@ -98,6 +269,16 @@
           tokTag: '--tok-tag'
         };
         for (var k in vars) { if (c[k]) r.setProperty(vars[k], c[k]); }
+        // Pick a mermaid theme from background luminance (#9d).
+        if (c.bg) {
+          var m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(c.bg.replace('#', ''));
+          if (m) {
+            var lum = (parseInt(m[1], 16) * 0.299 + parseInt(m[2], 16) * 0.587 +
+                       parseInt(m[3], 16) * 0.114);
+            var t = lum < 128 ? 'dark' : 'default';
+            if (t !== mermaidTheme) { mermaidTheme = t; initMermaid(); }
+          }
+        }
       } catch (e) {}
     }
     window.mdRender = mdRender;

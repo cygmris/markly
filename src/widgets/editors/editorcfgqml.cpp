@@ -17,6 +17,8 @@ bool EditorCfgQml::highlightCurrentLine() const { return cfg().isHighlightCurren
 bool EditorCfgQml::autoIndent() const { return cfg().isAutoIndentEnabled(); }
 bool EditorCfgQml::continueList() const { return cfg().isContinueListEnabled(); }
 bool EditorCfgQml::autoPair() const { return cfg().isAutoPairEnabled(); }
+bool EditorCfgQml::spellCheck() const { return cfg().isSpellCheckEnabled(); }
+bool EditorCfgQml::viMode() const { return cfg().isViModeEnabled(); }
 
 void EditorCfgQml::setFontSize(int p_v) {
   cfg().setFontSize(qBound(8, p_v, 32));
@@ -35,3 +37,5 @@ void EditorCfgQml::setHighlightCurrentLine(bool p_v) {
 void EditorCfgQml::setAutoIndent(bool p_v) { cfg().setAutoIndentEnabled(p_v); emit changed(); }
 void EditorCfgQml::setContinueList(bool p_v) { cfg().setContinueListEnabled(p_v); emit changed(); }
 void EditorCfgQml::setAutoPair(bool p_v) { cfg().setAutoPairEnabled(p_v); emit changed(); }
+void EditorCfgQml::setSpellCheck(bool p_v) { cfg().setSpellCheckEnabled(p_v); emit changed(); }
+void EditorCfgQml::setViMode(bool p_v) { cfg().setViModeEnabled(p_v); emit changed(); }

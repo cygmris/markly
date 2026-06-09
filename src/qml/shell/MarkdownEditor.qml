@@ -1,6 +1,7 @@
 // Markdown source editor: TextEdit + line-number gutter + current-line highlight +
 // C++ MarkdownHighlighter on its textDocument. Content syncs to the buffer via Views.
 import QtQuick
+import QtQuick.Controls
 import Markly.Editor
 import "components" as C
 
@@ -132,7 +133,69 @@ Flickable {
 
                 FontMetrics { id: fontMetrics; font: edit.font }
 
-                MarkdownHighlighter { document: edit.textDocument }
+                MarkdownHighlighter {
+                    id: mdHighlighter
+                    document: edit.textDocument
+                    spellCheck: (typeof EditorCfg !== "undefined") && EditorCfg.spellCheck
+                }
+
+                // Right-click spell suggestions on a misspelled word (#8d).
+                property int spellStart: 0
+                property int spellEnd: 0
+                property string spellWord: ""
+                property var spellSuggestions: []
+
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.RightButton
+                    onPressed: function(mouse) {
+                        if (typeof Spell === "undefined" || !Spell.enabled()) { mouse.accepted = false; return; }
+                        var pos = edit.positionAt(mouse.x, mouse.y);
+                        var t = edit.text;
+                        var isWord = function(ch) { return /[A-Za-z]/.test(ch); };
+                        var s = pos, e = pos;
+                        while (s > 0 && isWord(t.charAt(s - 1))) s--;
+                        while (e < t.length && isWord(t.charAt(e))) e++;
+                        var word = t.substring(s, e);
+                        if (word.length < 2 || !Spell.misspelled(word)) { mouse.accepted = false; return; }
+                        edit.spellStart = s; edit.spellEnd = e; edit.spellWord = word;
+                        edit.spellSuggestions = Spell.suggest(word);
+                        spellMenu.popup();
+                    }
+                }
+
+                Menu {
+                    id: spellMenu
+                    Repeater {
+                        model: edit.spellSuggestions
+                        delegate: MenuItem {
+                            text: modelData
+                            onTriggered: {
+                                edit.remove(edit.spellStart, edit.spellEnd);
+                                edit.insert(edit.spellStart, text);
+                            }
+                        }
+                    }
+                    MenuSeparator { visible: edit.spellSuggestions.length > 0 }
+                    MenuItem {
+                        text: qsTr("添加到忽略列表")
+                        onTriggered: Spell.ignore(edit.spellWord)
+                    }
+                }
+
+                Connections {
+                    target: (typeof Spell !== "undefined") ? Spell : null
+                    function onIgnored() { mdHighlighter.rehighlightNow(); }
+                }
+
+                // Image host (#10b): swap a local image path for its uploaded URL.
+                Connections {
+                    target: (typeof ImageHost !== "undefined") ? ImageHost : null
+                    function onUploaded(localPath, url) {
+                        if (edit.text.indexOf(localPath) !== -1)
+                            edit.text = edit.text.split(localPath).join(url);
+                    }
+                }
 
                 onTextChanged: {
                     // Buffer.setContent no-ops on identical text, so no loop guard needed.
@@ -146,6 +209,27 @@ Flickable {
                     var ctrl = (event.modifiers & Qt.ControlModifier);
                     var hasSel = edit.selectionEnd > edit.selectionStart;
                     var multiSel = hasSel && edit.text.substring(edit.selectionStart, edit.selectionEnd).indexOf("\n") !== -1;
+
+                    // Vi input (#8b): in Normal/Visual mode the engine consumes keys; in
+                    // Insert mode only Esc is routed through (other keys type normally).
+                    if (typeof Vi !== "undefined" && Vi.enabled() &&
+                        (Vi.mode !== 1 || event.key === Qt.Key_Escape)) {
+                        var r = Vi.handleKey(edit.text, edit.cursorPosition,
+                                             edit.selectionStart, edit.selectionEnd,
+                                             event.text, event.key, event.modifiers);
+                        if (r.handled) {
+                            var es = r.edits;
+                            // Apply edits in descending start order so offsets stay valid.
+                            es.sort(function(a, b) { return b.start - a.start; });
+                            for (var i = 0; i < es.length; ++i) {
+                                edit.remove(es[i].start, es[i].end);
+                                if (es[i].text.length > 0) edit.insert(es[i].start, es[i].text);
+                            }
+                            if (r.anchor >= 0) edit.select(r.anchor, r.cursor);
+                            else { edit.cursorPosition = r.cursor; edit.deselect(); }
+                            event.accepted = true; return;
+                        }
+                    }
 
                     // Save.
                     if (event.key === Qt.Key_S && ctrl) {

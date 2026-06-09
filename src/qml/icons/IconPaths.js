@@ -59,5 +59,17 @@ function get(name) {
 }
 
 function joined(name) {
-    return get(name).join(" ");
+    // Lucide ships each subpath as its own <path>, so a leading relative 'm dx dy' is
+    // measured from the origin (== absolute dx,dy). When we concatenate subpaths into one
+    // path string, that 'm' would instead be relative to the previous subpath's end and
+    // displace the glyph. Fix per non-first subpath: make the leading move absolute (M),
+    // and if implicit coordinate pairs follow, keep them relative via an explicit 'l'.
+    return get(name).map(function (p, i) {
+        if (i === 0 || p.charAt(0) !== "m") return p;
+        var m = p.match(/^m\s*(-?[\d.]+)[ ,]+(-?[\d.]+)(.*)$/);
+        if (!m) return p;
+        var head = "M" + m[1] + " " + m[2];
+        var rest = m[3];
+        return /^\s*[-\d.]/.test(rest) ? head + " l" + rest.replace(/^\s+/, "") : head + rest;
+    }).join(" ");
 }

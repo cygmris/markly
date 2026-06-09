@@ -1,0 +1,13 @@
+# mindmap-viewer 验证证据（#map innerHTML 摘录）
+
+源: renderMindmap("# Root
+## A
+## B
+### A1")
+MindElixir 渲染（root Root → 子 A/B；A1 嵌套在 B 下，层级=标题级别）：
+
+...
+<tpc data-nodeid="memk-mm-0" draggable="false">Root</tpc>
+<tpc data-nodeid="memk-mm-1" draggable="false">A</tpc>
+<tpc data-nodeid="memk-mm-2" draggable="false">B</tpc>
+<tpc data-nodeid="memk-mm-3" draggable="false">A1</tpc>

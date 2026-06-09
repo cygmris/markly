@@ -1,0 +1,21 @@
+# Maintainer: Markly <markly@example.com>
+# Arch Linux package for Markly (#21b). Builds from the repo via CMake/Ninja.
+# pkgver is kept in sync with PROJECT_VERSION in the top-level CMakeLists.txt by hand.
+pkgname=markly
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Markly — Qt 6 Markdown note app (vnote-inspired)"
+arch=('x86_64')
+url="https://example.com/markly"
+license=('MIT')
+depends=('qt6-base' 'qt6-declarative' 'qt6-webengine' 'hunspell')
+makedepends=('cmake' 'ninja')
+
+build() {
+  cmake -B build -S "$startdir/.." -G Ninja -DCMAKE_BUILD_TYPE=Release
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

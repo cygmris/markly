@@ -6,6 +6,7 @@
 #include <QTextDocument>
 
 #include <core/marklyapp.h>
+#include <core/spell/spellchecker.h>
 #include <core/thememgr.h>
 
 using namespace markly;
@@ -14,8 +15,8 @@ namespace markly {
 // Internal QSyntaxHighlighter implementing the markdown rules.
 class MdHighlighter : public QSyntaxHighlighter {
 public:
-  MdHighlighter(QTextDocument *p_doc, const MdColors *p_colors)
-      : QSyntaxHighlighter(p_doc), m_colors(p_colors) {}
+  MdHighlighter(QTextDocument *p_doc, const MdColors *p_colors, const bool *p_spellCheck)
+      : QSyntaxHighlighter(p_doc), m_colors(p_colors), m_spellCheck(p_spellCheck) {}
 
 protected:
   void highlightBlock(const QString &p_text) override {
@@ -75,9 +76,57 @@ protected:
     applyInline(p_text, QStringLiteral("==[^=\\n]+=="), m_colors->mark, QFont::Normal, false);
     applyInline(p_text, QStringLiteral("`[^`\\n]+`"), m_colors->codeInline, QFont::Normal, false);
     applyInline(p_text, QStringLiteral("\\[[^\\]\\n]+\\]\\([^)\\n]+\\)"), m_colors->link, QFont::Normal, false);
+
+    spellCheckPass(p_text);
   }
 
 private:
+  // Red wavy underline on misspelled English words (only when enabled and a
+  // dictionary is loaded). Words inside inline code spans are skipped; fenced
+  // code blocks already returned above. Overlays existing syntax formats.
+  void spellCheckPass(const QString &p_text) {
+    if (!m_spellCheck || !*m_spellCheck) {
+      return;
+    }
+    SpellChecker *sc = MarklyApp::getInst().getSpellChecker();
+    if (!sc || !sc->ready()) {
+      return;
+    }
+
+    // Mark inline-code spans (`...`) so their content is not checked.
+    QList<QPair<int, int>> codeSpans;
+    static const QRegularExpression codeRe(QStringLiteral("`[^`\\n]+`"));
+    auto cit = codeRe.globalMatch(p_text);
+    while (cit.hasNext()) {
+      auto m = cit.next();
+      codeSpans.append({m.capturedStart(), m.capturedEnd()});
+    }
+    auto inCode = [&codeSpans](int pos) {
+      for (const auto &s : codeSpans) {
+        if (pos >= s.first && pos < s.second) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    static const QRegularExpression wordRe(QStringLiteral("[A-Za-z]{2,}"));
+    auto it = wordRe.globalMatch(p_text);
+    while (it.hasNext()) {
+      auto m = it.next();
+      if (inCode(m.capturedStart())) {
+        continue;
+      }
+      if (!sc->check(m.captured())) {
+        // Merge onto the syntax format already applied so colors are preserved.
+        QTextCharFormat fmt = format(m.capturedStart());
+        fmt.setUnderlineStyle(QTextCharFormat::SpellCheckUnderline);
+        fmt.setUnderlineColor(Qt::red);
+        setFormat(m.capturedStart(), m.capturedLength(), fmt);
+      }
+    }
+  }
+
   void applyInline(const QString &p_text, const QString &p_pattern, const QColor &p_color,
                    QFont::Weight p_weight, bool p_italic) {
     QRegularExpression re(p_pattern);
@@ -97,6 +146,7 @@ private:
   }
 
   const MdColors *m_colors;
+  const bool *m_spellCheck;
 };
 } // namespace markly
 
@@ -132,7 +182,24 @@ void MarkdownHighlighter::setDocument(QQuickTextDocument *p_doc) {
   delete m_highlighter;
   m_highlighter = nullptr;
   if (p_doc && p_doc->textDocument()) {
-    m_highlighter = new MdHighlighter(p_doc->textDocument(), &m_colors);
+    m_highlighter = new MdHighlighter(p_doc->textDocument(), &m_colors, &m_spellCheck);
   }
   emit documentChanged();
+}
+
+void MarkdownHighlighter::rehighlightNow() {
+  if (m_highlighter) {
+    m_highlighter->rehighlight();
+  }
+}
+
+void MarkdownHighlighter::setSpellCheck(bool p_on) {
+  if (m_spellCheck == p_on) {
+    return;
+  }
+  m_spellCheck = p_on;
+  if (m_highlighter) {
+    m_highlighter->rehighlight();
+  }
+  emit spellCheckChanged();
 }

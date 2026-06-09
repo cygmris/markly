@@ -39,6 +39,10 @@ Item {
           get: function(){ return EditorCfg.continueList }, set: function(v){ EditorCfg.continueList = v } },
         { cat: "editor", label: qsTr("括号自动配对"), type: "toggle",
           get: function(){ return EditorCfg.autoPair }, set: function(v){ EditorCfg.autoPair = v } },
+        { cat: "editor", label: qsTr("拼写检查"), type: "toggle",
+          get: function(){ return EditorCfg.spellCheck }, set: function(v){ EditorCfg.spellCheck = v } },
+        { cat: "editor", label: qsTr("Vi 模式"), type: "toggle",
+          get: function(){ return EditorCfg.viMode }, set: function(v){ EditorCfg.viMode = v } },
         { cat: "appearance", label: qsTr("界面风格"), type: "seg", options: [{v:0,t:"精炼"},{v:1,t:"沉浸"},{v:2,t:"工作台"}],
           get: function(){ return Appearance.style }, set: function(v){ Appearance.style = v } },
         { cat: "appearance", label: qsTr("主题"), type: "seg", options: [{v:0,t:"浅色"},{v:1,t:"深色"},{v:2,t:"跟随系统"}],
@@ -51,12 +55,41 @@ Item {
           get: function(){ return Appearance.showLeft }, set: function(v){ Appearance.showLeft = v } },
         { cat: "appearance", label: qsTr("显示右栏"), type: "toggle",
           get: function(){ return Appearance.showRight }, set: function(v){ Appearance.showRight = v } },
+        { cat: "appearance", label: qsTr("最小化到托盘"), type: "toggle",
+          get: function(){ return (typeof TrayCfg !== "undefined") && TrayCfg.minimizeToTray },
+          set: function(v){ if (typeof TrayCfg !== "undefined") TrayCfg.minimizeToTray = v } },
+        { cat: "appearance", label: qsTr("自动检查更新"), type: "toggle",
+          get: function(){ return (typeof TrayCfg !== "undefined") && TrayCfg.autoUpdateCheck },
+          set: function(v){ if (typeof TrayCfg !== "undefined") TrayCfg.autoUpdateCheck = v } },
+        { cat: "appearance", label: qsTr("全局热键"), type: "text",
+          get: function(){ return (typeof TrayCfg !== "undefined") ? TrayCfg.globalHotkey : "" },
+          set: function(v){ if (typeof TrayCfg !== "undefined") TrayCfg.globalHotkey = v } },
+        { cat: "imagehost", label: qsTr("图床类型"), type: "seg", options: [{v:"none",t:"无"},{v:"github",t:"GitHub"},{v:"gitee",t:"Gitee"},{v:"repo",t:"Git 仓库"}],
+          get: function(){ return (typeof ImageHostCfg !== "undefined" && ImageHostCfg.type.length > 0) ? ImageHostCfg.type : "none" },
+          set: function(v){ if (typeof ImageHostCfg !== "undefined") ImageHostCfg.type = (v === "none" ? "" : v) } },
+        { cat: "imagehost", label: qsTr("用户名"), type: "text",
+          get: function(){ return (typeof ImageHostCfg !== "undefined") ? ImageHostCfg.user : "" }, set: function(v){ if (typeof ImageHostCfg !== "undefined") ImageHostCfg.user = v } },
+        { cat: "imagehost", label: qsTr("仓库"), type: "text",
+          get: function(){ return (typeof ImageHostCfg !== "undefined") ? ImageHostCfg.repo : "" }, set: function(v){ if (typeof ImageHostCfg !== "undefined") ImageHostCfg.repo = v } },
+        { cat: "imagehost", label: qsTr("令牌"), type: "text", secret: true,
+          get: function(){ return (typeof ImageHostCfg !== "undefined") ? ImageHostCfg.token : "" }, set: function(v){ if (typeof ImageHostCfg !== "undefined") ImageHostCfg.token = v } },
+        { cat: "imagehost", label: qsTr("分支"), type: "text",
+          get: function(){ return (typeof ImageHostCfg !== "undefined") ? ImageHostCfg.branch : "" }, set: function(v){ if (typeof ImageHostCfg !== "undefined") ImageHostCfg.branch = v } },
+        { cat: "imagehost", label: qsTr("本地仓库"), type: "text",
+          get: function(){ return (typeof ImageHostCfg !== "undefined") ? ImageHostCfg.localRepo : "" }, set: function(v){ if (typeof ImageHostCfg !== "undefined") ImageHostCfg.localRepo = v } },
+        { cat: "imagehost", label: qsTr("Raw 前缀"), type: "text",
+          get: function(){ return (typeof ImageHostCfg !== "undefined") ? ImageHostCfg.rawBase : "" }, set: function(v){ if (typeof ImageHostCfg !== "undefined") ImageHostCfg.rawBase = v } },
+        { cat: "imagehost", label: qsTr("子目录"), type: "text",
+          get: function(){ return (typeof ImageHostCfg !== "undefined") ? ImageHostCfg.subDir : "" }, set: function(v){ if (typeof ImageHostCfg !== "undefined") ImageHostCfg.subDir = v } },
+        { cat: "imagehost", label: qsTr("克隆地址"), type: "text",
+          get: function(){ return (typeof ImageHostCfg !== "undefined") ? ImageHostCfg.cloneUrl : "" }, set: function(v){ if (typeof ImageHostCfg !== "undefined") ImageHostCfg.cloneUrl = v } },
         { cat: "about", label: "Markly", type: "about", text: "Qt 6.8 · QML 外壳 · QWebEngine 预览 · SQLite FTS5 · v0.1" }
     ]
     // Category key -> display label (retranslated via lang).
     readonly property var categories: [
         { key: "editor", label: qsTr("编辑器") },
         { key: "appearance", label: qsTr("外观") },
+        { key: "imagehost", label: qsTr("图床") },
         { key: "about", label: qsTr("关于") }
     ]
 
@@ -163,7 +196,8 @@ Item {
                                            : modelData.type === "stepper" ? stepperC
                                            : modelData.type === "seg" ? segC
                                            : modelData.type === "langseg" ? langsegC
-                                           : modelData.type === "swatch" ? swatchC : aboutC
+                                           : modelData.type === "swatch" ? swatchC
+                                           : modelData.type === "text" ? textC : aboutC
                             property var item: modelData
                         }
                     }
@@ -258,5 +292,23 @@ Item {
     Component {
         id: aboutC
         Text { width: 460; text: item.text; color: Theme.dim; font.pixelSize: 12; font.family: Theme.fontUi; wrapMode: Text.Wrap }
+    }
+    // Text input (#10b image host config).
+    Component {
+        id: textC
+        Rectangle {
+            width: 220; height: 28; radius: 8; color: Theme.card
+            border.color: tf.activeFocus ? Theme.accent : Theme.border; border.width: 1
+            TextField {
+                id: tf
+                anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8
+                verticalAlignment: TextInput.AlignVCenter
+                text: item.get()
+                echoMode: (item.secret === true) ? TextInput.Password : TextInput.Normal
+                color: Theme.text; font.pixelSize: 12; font.family: Theme.fontUi
+                background: Item {}
+                onEditingFinished: item.set(text)
+            }
+        }
     }
 }

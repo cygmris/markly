@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Markly
+Comment=A pleasant note-taking platform
+Exec=markly %F
+Icon=markly
+Terminal=false
+Categories=Office;TextEditor;Utility;
+MimeType=text/markdown;

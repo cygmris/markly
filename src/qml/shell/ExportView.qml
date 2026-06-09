@@ -44,23 +44,47 @@ Item {
         pushTheme();
         var resolved = resolveContent(op.content, op.baseDir);
         web.runJavaScript("mdRender(" + JSON.stringify(resolved) + ")", function() {
-            if (op.fmt === "pdf") {
-                root._pdfCb = op.cb;
-                web.printToPdf(op.path);
-            } else { // html — make self-contained: inline CSS, drop now-unneeded scripts
-                web.runJavaScript("document.documentElement.outerHTML", function(html) {
-                    var css = Export.readResource(":/data/web/preview.css");
-                    html = html.replace(/<link[^>]*preview\.css[^>]*>/i,
-                                        "<style>\n" + css + "\n</style>");
-                    html = html.replace(/<script[\s\S]*?<\/script>/gi, "");
-                    var ok = Export.writeText(op.path, "<!DOCTYPE html>\n" + html);
-                    if (op.cb) op.cb(ok);
-                });
+            // Wait for async Mermaid diagrams (#9d) to finish before reading output.
+            _waitGraphs(0, function() { _emit(op); });
+        });
+    }
+
+    // Poll mermaidPending() until 0 (or ~3.2s timeout) so exported output captures SVGs.
+    function _waitGraphs(tries, done) {
+        web.runJavaScript("(window.mermaidPending ? window.mermaidPending() : 0)", function(n) {
+            if (n > 0 && tries < 40) {
+                root._graphRetry = function() { _waitGraphs(tries + 1, done); };
+                graphTimer.restart();
+            } else {
+                done();
             }
         });
     }
 
+    function _emit(op) {
+        if (op.fmt === "pdf") {
+            root._pdfCb = op.cb;
+            web.printToPdf(op.path);
+        } else { // html — make self-contained: inline CSS, drop now-unneeded scripts
+            web.runJavaScript("document.documentElement.outerHTML", function(html) {
+                var css = Export.readResource(":/data/web/preview.css");
+                html = html.replace(/<link[^>]*preview\.css[^>]*>/i,
+                                    "<style>\n" + css + "\n</style>");
+                html = html.replace(/<script[\s\S]*?<\/script>/gi, "");
+                var ok = Export.writeText(op.path, "<!DOCTYPE html>\n" + html);
+                if (op.cb) op.cb(ok);
+            });
+        }
+    }
+
     property var _pdfCb: null
+    property var _graphRetry: null
+
+    Timer {
+        id: graphTimer
+        interval: 80; repeat: false
+        onTriggered: { if (root._graphRetry) { var f = root._graphRetry; root._graphRetry = null; f(); } }
+    }
 
     function exportTo(fmt, content, baseDir, path, cb) {
         var op = { fmt: fmt, content: content, baseDir: baseDir, path: path, cb: cb };

@@ -42,6 +42,10 @@ set(MARKLY_CORE_SOURCES
     core/snippet/snippetmgr.h
     core/task/taskmgr.cpp
     core/task/taskmgr.h
+    core/spell/spellchecker.cpp
+    core/spell/spellchecker.h
+    widgets/spell/spellbridge.cpp
+    widgets/spell/spellbridge.h
     widgets/task/taskbridge.cpp
     widgets/task/taskbridge.h
     widgets/locale/localebridge.cpp
@@ -52,6 +56,14 @@ set(MARKLY_CORE_SOURCES
     widgets/snippet/snippetbridge.h
     widgets/export/exporthelper.cpp
     widgets/export/exporthelper.h
+    core/export/pandocexporter.cpp
+    core/export/pandocexporter.h
+    widgets/export/pandocbridge.cpp
+    widgets/export/pandocbridge.h
+    core/export/notemerge.cpp
+    core/export/notemerge.h
+    widgets/export/mergebridge.cpp
+    widgets/export/mergebridge.h
     core/buffer/buffer.cpp
     core/buffer/buffer.h
     core/buffer/buffermgr.cpp
@@ -71,6 +83,26 @@ set(MARKLY_CORE_SOURCES
     widgets/tags/tagbridge.h
     widgets/images/imagehelper.cpp
     widgets/images/imagehelper.h
+    core/imagehost/githubimagehost.cpp
+    core/imagehost/githubimagehost.h
+    core/imagehost/giteeimagehost.cpp
+    core/imagehost/giteeimagehost.h
+    core/imagehost/repoimagehost.cpp
+    core/imagehost/repoimagehost.h
+    core/update/updatechecker.cpp
+    core/update/updatechecker.h
+    core/desktop/fileassoc.cpp
+    core/desktop/fileassoc.h
+    core/hotkey/hotkeyparser.cpp
+    core/hotkey/hotkeyparser.h
+    widgets/hotkey/globalhotkey.cpp
+    widgets/hotkey/globalhotkey.h
+    widgets/update/updatebridge.cpp
+    widgets/update/updatebridge.h
+    widgets/update/traycfg.cpp
+    widgets/update/traycfg.h
+    widgets/images/imagehostbridge.cpp
+    widgets/images/imagehostbridge.h
     widgets/editors/markdownhighlighter.cpp
     widgets/editors/markdownhighlighter.h
     widgets/editors/editorcfgqml.cpp
@@ -79,6 +111,10 @@ set(MARKLY_CORE_SOURCES
     widgets/editors/editinputqml.h
     core/editor/editinputhelper.cpp
     core/editor/editinputhelper.h
+    core/editor/viengine.cpp
+    core/editor/viengine.h
+    widgets/editors/vibridge.cpp
+    widgets/editors/vibridge.h
     core/notebook/nodevisual.h
     core/notebook/node.cpp
     core/notebook/node.h
@@ -110,6 +146,13 @@ qt_add_library(markly_core STATIC ${MARKLY_CORE_SOURCES})
 
 target_include_directories(markly_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
+# Hunspell spell-checking (#8c).
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(HUNSPELL REQUIRED hunspell)
+
+# X11 global hotkey (#17b): optional; GlobalHotkey no-ops without it.
+pkg_check_modules(XCB xcb xcb-keysyms)
+
 target_link_libraries(markly_core PUBLIC
     Qt6::Core
     Qt6::Gui
@@ -118,7 +161,14 @@ target_link_libraries(markly_core PUBLIC
     Qt6::Sql
     Qt6::Qml
     Qt6::Quick
+    ${HUNSPELL_LIBRARIES}
 )
+target_include_directories(markly_core PRIVATE ${HUNSPELL_INCLUDE_DIRS})
+
+if(XCB_FOUND)
+    target_link_libraries(markly_core PUBLIC ${XCB_LIBRARIES})
+    target_include_directories(markly_core PRIVATE ${XCB_INCLUDE_DIRS})
+endif()
 
 # Default config and other packaged resources.
 # No BASE: the alias defaults to the path relative to this dir, i.e.
@@ -170,6 +220,17 @@ qt_add_resources(markly "markly_web"
         "data/web/markdownItAnchor.umd.js"
         "data/web/markdownItTocDoneRight.umd.js"
         "data/web/prism.min.js"
+        "data/web/mermaid.min.js"
+        "data/web/raphael.min.js"
+        "data/web/flowchart.min.js"
+        "data/web/viz.js"
+        "data/web/viz.lite.render.js"
+        "data/web/wavedrom.theme-default.js"
+        "data/web/wavedrom.min.js"
+        "data/web/plantuml.synchro2.js"
+        "data/web/plantuml.zopfli.raw.min.js"
+        "data/web/mindmap.html"
+        "data/web/mindmap.mindelixir.js"
         "data/web/katex/katex.min.js"
         "data/web/katex/katex.min.css"
         "data/web/markdown-it-texmath.js"
@@ -196,6 +257,13 @@ qt_add_resources(markly "markly_web"
 )
 
 # QML files (loaded by QQuickWidget via qrc:/qml/...).
+# Tray icon (#20b): alias packaging/markly.png to :/markly.png.
+set_source_files_properties("${CMAKE_SOURCE_DIR}/packaging/markly.png"
+    PROPERTIES QT_RESOURCE_ALIAS "markly.png")
+qt_add_resources(markly "markly_icon"
+    PREFIX "/"
+    FILES "${CMAKE_SOURCE_DIR}/packaging/markly.png")
+
 qt_add_resources(markly "markly_qml"
     PREFIX "/"
     FILES
@@ -207,6 +275,7 @@ qt_add_resources(markly "markly_qml"
         "qml/shell/MarkdownEditor.qml"
         "qml/shell/PreviewPane.qml"
         "qml/shell/ViewerPane.qml"
+        "qml/shell/MindmapPane.qml"
         "qml/shell/SearchPanel.qml"
         "qml/shell/TagsPanel.qml"
         "qml/shell/QuickAccessPanel.qml"
@@ -239,3 +308,9 @@ install(TARGETS markly
     BUNDLE DESTINATION .
     RUNTIME DESTINATION bin
 )
+
+# Desktop integration (#21).
+install(FILES "${CMAKE_SOURCE_DIR}/packaging/markly.desktop"
+    DESTINATION share/applications)
+install(FILES "${CMAKE_SOURCE_DIR}/packaging/markly.png"
+    DESTINATION share/icons/hicolor/128x128/apps)

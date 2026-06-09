@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; }
+    #map { width: 100%; height: 100vh; }
+    #fallback { padding: 16px; font-family: sans-serif; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script src="mindmap.mindelixir.js"></script>
+  <script>
+    // Parse Markdown ATX headings (skipping fenced code blocks) into {level, text}.
+    function parseHeadings(md) {
+      var out = [];
+      var lines = (md || "").split("\n");
+      var inFence = false;
+      for (var i = 0; i < lines.length; ++i) {
+        var line = lines[i];
+        if (/^\s*```/.test(line)) { inFence = !inFence; continue; }
+        if (inFence) continue;
+        var m = /^(#{1,6})\s+(.*\S)\s*$/.exec(line);
+        if (m) out.push({ level: m[1].length, text: m[2] });
+      }
+      return out;
+    }
+
+    // Build a MindElixir nodeData tree from the heading list (stack by level).
+    function buildTree(headings, rootTitle) {
+      var seq = 0;
+      function node(topic) { return { id: 'mk-mm-' + (seq++), topic: topic, children: [] }; }
+      var root = node(rootTitle);
+      var stack = [{ level: 0, node: root }];
+      for (var i = 0; i < headings.length; ++i) {
+        var h = headings[i];
+        while (stack.length > 1 && stack[stack.length - 1].level >= h.level) stack.pop();
+        var n = node(h.text);
+        stack[stack.length - 1].node.children.push(n);
+        stack.push({ level: h.level, node: n });
+      }
+      return root;
+    }
+
+    var mind = null;
+    var lastData = null;  // fallback data tree (for offscreen / no-getData engines)
+    window.renderMindmap = function (md, editable) {
+      var rw = !!editable;
+      var headings = parseHeadings(md);
+      var rootTitle = (headings.length > 0 && headings[0].level === 1) ? headings[0].text : '笔记';
+      // If the first heading is the H1 root, don't duplicate it as a child.
+      var rest = (headings.length > 0 && headings[0].level === 1) ? headings.slice(1) : headings;
+      var data = { nodeData: buildTree(rest, rootTitle) };
+      lastData = data;
+      var el = document.getElementById('map');
+      if (!window.MindElixir) {
+        el.innerHTML = '<div id="fallback">' + rootTitle + '</div>';
+        return;
+      }
+      try {
+        el.innerHTML = '';
+        mind = new MindElixir({
+          el: el,
+          direction: MindElixir.SIDE,
+          editable: rw,
+          draggable: rw,
+          contextMenu: rw,
+          toolBar: false,
+          nodeMenu: rw
+        });
+        mind.init(data);
+      } catch (e) {
+        el.innerHTML = '<div id="fallback">' + rootTitle + '\n(mindmap render error: ' +
+                       (e && e.message ? e.message : e) + ')</div>';
+      }
+    };
+
+    // Serialize a MindElixir nodeData tree back to Markdown ATX headings:
+    // root = '# topic' (depth 0 → 1 hash), each deeper level adds one '#'.
+    function treeToMarkdown(node, depth, out) {
+      if (!node) return;
+      out.push('#'.repeat(depth + 1) + ' ' + (node.topic || ''));
+      var kids = node.children || [];
+      for (var i = 0; i < kids.length; ++i) treeToMarkdown(kids[i], depth + 1, out);
+    }
+
+    // Read the current mindmap tree and return its Markdown heading outline.
+    window.mindmapMarkdown = function () {
+      var data = (mind && mind.getData) ? mind.getData() : lastData;
+      if (!data || !data.nodeData) return '';
+      var out = [];
+      treeToMarkdown(data.nodeData, 0, out);
+      return out.join('\n\n');
+    };
+  </script>
+</body>
+</html>

@@ -139,3 +139,17 @@ body {
 .token.property, .token.attr-name { color: var(--tok-func, #4a8ac0); }
 .token.deleted { color: #c0524a; }
 .token.inserted { color: #5a9a6a; }
+
+/* Mermaid diagrams (#9d) */
+.mermaid-graph { text-align: center; margin: 1em 0; }
+.mermaid-graph svg { max-width: 100%; height: auto; }
+.mermaid-error { color: #c0392b; font-family: var(--font-mono); white-space: pre-wrap; margin: 1em 0; }
+
+/* Extra diagrams: Graphviz + Flowchart.js (#9e) */
+.graphviz-graph, .flowchart-graph { text-align: center; margin: 1em 0; }
+.graphviz-graph svg, .flowchart-graph svg { max-width: 100%; height: auto; }
+.diagram-error { color: #c0392b; font-family: var(--font-mono); white-space: pre-wrap; margin: 1em 0; }
+
+/* WaveDrom + PlantUML (#9f) */
+.wavedrom-graph, .plantuml-graph { text-align: center; margin: 1em 0; }
+.wavedrom-graph svg, .plantuml-graph img { max-width: 100%; height: auto; }

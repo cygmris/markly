@@ -3,9 +3,12 @@
 #include <QApplication>
 #include <QCloseEvent>
 #include <QDebug>
+#include <QIcon>
 #include <QImage>
+#include <QMenu>
 #include <QQmlContext>
 #include <QQmlEngine>
+#include <QSystemTrayIcon>
 #include <QTimer>
 
 #include "editors/editinputqml.h"
@@ -17,8 +20,16 @@
 #include "explorer/dialoghelper.h"
 #include "explorer/notebookexplorer.h"
 #include "export/exporthelper.h"
+#include "export/pandocbridge.h"
+#include "export/mergebridge.h"
 #include "images/imagehelper.h"
+#include "images/imagehostbridge.h"
 #include "locale/localebridge.h"
+#include "editors/vibridge.h"
+#include "hotkey/globalhotkey.h"
+#include "spell/spellbridge.h"
+#include "update/updatebridge.h"
+#include "update/traycfg.h"
 #include "quick/quickbridge.h"
 #include "search/searchbridge.h"
 #include "snippet/snippetbridge.h"
@@ -26,6 +37,7 @@
 #include "tags/tagbridge.h"
 #include "viewarea/viewarea.h"
 #include <core/configmgr.h>
+#include <core/widgetconfig.h>
 #include <core/marklyapp.h>
 #include <core/sessionconfig.h>
 #include <core/theme/appearance.h>
@@ -37,9 +49,35 @@ MainWindow::MainWindow(QWidget *p_parent) : FramelessMainWindow(p_parent) {
   setWindowTitle(QStringLiteral("Markly"));
 
   setupContent();
+  setupTray();
+
+  // Global hotkey to summon the window (#17b; X11 only, no-op on Wayland).
+  m_hotkey = new GlobalHotkey(this);
+  m_hotkey->registerHotkey(ConfigMgr::getInst().getWidgetConfig().getGlobalHotkey());
+  connect(m_hotkey, &GlobalHotkey::activated, this, &MainWindow::showMainWindow);
 
   resize(1100, 720);
   loadStateAndGeometry();
+}
+
+void MainWindow::setupTray() {
+  // No system tray (headless / offscreen / unsupported DE): skip gracefully (#20b).
+  if (!QSystemTrayIcon::isSystemTrayAvailable()) {
+    return;
+  }
+  m_trayIcon = new QSystemTrayIcon(QIcon(QStringLiteral(":/markly.png")), this);
+  m_trayIcon->setToolTip(QStringLiteral("Markly"));
+  auto *menu = new QMenu(this);
+  menu->addAction(tr("显示 Markly"), this, &MainWindow::showMainWindow);
+  menu->addAction(tr("退出"), qApp, &QCoreApplication::quit);
+  m_trayIcon->setContextMenu(menu);
+  connect(m_trayIcon, &QSystemTrayIcon::activated, this,
+          [this](QSystemTrayIcon::ActivationReason reason) {
+            if (reason == QSystemTrayIcon::Trigger || reason == QSystemTrayIcon::DoubleClick) {
+              showMainWindow();
+            }
+          });
+  m_trayIcon->show();
 }
 
 void MainWindow::setupContent() {
@@ -70,6 +108,11 @@ void MainWindow::setupContent() {
   // Local image paste/drop bridge (#10).
   m_quick->rootContext()->setContextProperty(QStringLiteral("Images"),
                                              new ImageHelper(this));
+  // Image host upload bridges (#10b).
+  m_quick->rootContext()->setContextProperty(QStringLiteral("ImageHost"),
+                                             new ImageHostBridge(this));
+  m_quick->rootContext()->setContextProperty(QStringLiteral("ImageHostCfg"),
+                                             new ImageHostCfgQml(this));
   // Quick access / history / flash bridge (#13).
   m_quick->rootContext()->setContextProperty(
       QStringLiteral("Quick"), new QuickBridge(MarklyApp::getInst().getHistoryMgr(), this));
@@ -78,6 +121,10 @@ void MainWindow::setupContent() {
       QStringLiteral("Snippets"), new SnippetBridge(MarklyApp::getInst().getSnippetMgr(), this));
   // Export bridge (#15).
   m_quick->rootContext()->setContextProperty(QStringLiteral("Export"), new ExportHelper(this));
+  // Pandoc custom-format export bridge (#15b).
+  m_quick->rootContext()->setContextProperty(QStringLiteral("Pandoc"), new PandocBridge(this));
+  // Merged folder export bridge (#15c).
+  m_quick->rootContext()->setContextProperty(QStringLiteral("Merge"), new MergeBridge(this));
   // Task bridge (#16).
   m_quick->rootContext()->setContextProperty(
       QStringLiteral("Tasks"), new TaskBridge(MarklyApp::getInst().getTaskMgr(),
@@ -88,6 +135,17 @@ void MainWindow::setupContent() {
                                              new EditorCfgQml(this));
   m_quick->rootContext()->setContextProperty(QStringLiteral("EditInput"),
                                              new EditInputQml(this));
+  // Spell-check right-click bridge (#8d).
+  m_quick->rootContext()->setContextProperty(QStringLiteral("Spell"),
+                                             new SpellBridge(this));
+  // Vi input bridge (#8b).
+  m_quick->rootContext()->setContextProperty(QStringLiteral("Vi"),
+                                             new ViBridge(this));
+  // Update check + tray config bridges (#20b).
+  m_quick->rootContext()->setContextProperty(QStringLiteral("Update"),
+                                             new UpdateBridge(this));
+  m_quick->rootContext()->setContextProperty(QStringLiteral("TrayCfg"),
+                                             new TrayCfgQml(this));
   // Language switch bridge (#20).
   m_quick->rootContext()->setContextProperty(QStringLiteral("Locale"),
                                              new LocaleBridge(m_quick->engine(), this));
@@ -221,6 +279,13 @@ void MainWindow::openFiles(const QStringList &p_files) {
 }
 
 void MainWindow::closeEvent(QCloseEvent *p_event) {
+  // Minimize to tray instead of quitting, when enabled and a tray is available (#20b).
+  if (m_trayIcon && m_trayIcon->isVisible() &&
+      ConfigMgr::getInst().getWidgetConfig().getMinimizeToTray()) {
+    hide();
+    p_event->ignore();
+    return;
+  }
   saveStateAndGeometry();
   QMainWindow::closeEvent(p_event);
 }

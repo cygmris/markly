@@ -35,3 +35,53 @@ void WidgetConfig::setLanguage(const QString &p_language) {
   ++m_revision;
   writeToSettings();
 }
+
+QJsonObject WidgetConfig::getImageHostConfig() const {
+  return m_jobj.value(QStringLiteral("image_host")).toObject();
+}
+
+void WidgetConfig::setImageHostConfig(const QJsonObject &p_config) {
+  m_jobj[QStringLiteral("image_host")] = p_config;
+  ++m_revision;
+  writeToSettings();
+}
+
+bool WidgetConfig::getMinimizeToTray() const {
+  return m_jobj.value(QStringLiteral("minimize_to_tray")).toBool(false);
+}
+
+void WidgetConfig::setMinimizeToTray(bool p_on) {
+  m_jobj[QStringLiteral("minimize_to_tray")] = p_on;
+  ++m_revision;
+  writeToSettings();
+}
+
+bool WidgetConfig::getAutoUpdateCheck() const {
+  return m_jobj.value(QStringLiteral("auto_update_check")).toBool(false);
+}
+
+void WidgetConfig::setAutoUpdateCheck(bool p_on) {
+  m_jobj[QStringLiteral("auto_update_check")] = p_on;
+  ++m_revision;
+  writeToSettings();
+}
+
+qint64 WidgetConfig::getLastUpdateCheck() const {
+  return static_cast<qint64>(m_jobj.value(QStringLiteral("last_update_check")).toDouble(0));
+}
+
+void WidgetConfig::setLastUpdateCheck(qint64 p_ms) {
+  m_jobj[QStringLiteral("last_update_check")] = static_cast<double>(p_ms);
+  ++m_revision;
+  writeToSettings();
+}
+
+QString WidgetConfig::getGlobalHotkey() const {
+  return m_jobj.value(QStringLiteral("global_hotkey")).toString(QStringLiteral("Ctrl+Alt+M"));
+}
+
+void WidgetConfig::setGlobalHotkey(const QString &p_seq) {
+  m_jobj[QStringLiteral("global_hotkey")] = p_seq;
+  ++m_revision;
+  writeToSettings();
+}

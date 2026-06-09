@@ -17,6 +17,8 @@ class EditorCfgQml : public QObject {
   Q_PROPERTY(bool autoIndent READ autoIndent WRITE setAutoIndent NOTIFY changed)
   Q_PROPERTY(bool continueList READ continueList WRITE setContinueList NOTIFY changed)
   Q_PROPERTY(bool autoPair READ autoPair WRITE setAutoPair NOTIFY changed)
+  Q_PROPERTY(bool spellCheck READ spellCheck WRITE setSpellCheck NOTIFY changed)
+  Q_PROPERTY(bool viMode READ viMode WRITE setViMode NOTIFY changed)
 public:
   explicit EditorCfgQml(QObject *p_parent = nullptr);
 
@@ -28,6 +30,8 @@ public:
   bool autoIndent() const;
   bool continueList() const;
   bool autoPair() const;
+  bool spellCheck() const;
+  bool viMode() const;
 
   void setFontSize(int p_v);
   void setTabWidth(int p_v);
@@ -37,6 +41,8 @@ public:
   void setAutoIndent(bool p_v);
   void setContinueList(bool p_v);
   void setAutoPair(bool p_v);
+  void setSpellCheck(bool p_v);
+  void setViMode(bool p_v);
 
 signals:
   void changed();

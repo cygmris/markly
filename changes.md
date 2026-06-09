@@ -2,6 +2,146 @@
 
 ## Unreleased
 
+### imagehost-clone (spec #10e) — 2026-06-09
+* Git 仓库图床首次自动 clone：配置 clone_url 但本地非 git 仓库时，首次上传前 git clone。图床族收口。
+* RepoImageHost 加 `cloneArgs`（纯）/`isGitRepo`（文件系统）/`ensureCloned`（已是仓库快路径零网络，否则真实 git clone 60s 超时）；ImageHostBridge repo upload 前 ensureCloned；ImageHostCfg.cloneUrl + SettingsDialog「克隆地址」字段。
+* 验证：test_imagehost 加 cloneArgs + **真实 git** isGitRepo（init 前 false/后 true）+ ensureCloned 快路径（已是仓库 true、非仓库空 url false），ctest 26/26；qmllint 无语法错误；offscreen 启动无错。真实 clone 走网络（离线不测，文档记录）。
+
+### vi-macros-search (spec #8h) — 2026-06-09
+* Vi 宏 q/@（纯逻辑 ViEngine，GUILESS 可测，无 QML 改动）：`q<reg>` 录制按键序列（边录边执行）+ `q` 停止；`@<reg>` 回放。
+* 控制键（q/@/寄存器名）在 handleKey 顶部拦截不录；回放在本地文本副本上推进（多步编辑），最终以整篇编辑 `{0,origLen,finalText}` 返回；m_replaying 防重入；reset 保留 m_macros。
+* 覆盖 Normal 结构性命令宏（含计数）；Insert 内键入暂不录（同 `.` 边界）；搜索 `/?n N`、可视块 `Ctrl-V` 标注需编辑器 UI 集成（不派生 spec）。
+* 验证：test_viengine 加宏用例（qaxxq+@a、多命令 0xj、空寄存器），ctest 26/26（test_viengine 16 组）；MarkdownEditor 未改（qmllint 干净）；offscreen 启动无错。
+
+### export-presets (spec #15d) — 2026-06-09
+* 导出预设/选项：Pandoc 导出加 standalone（独立文档）/ toc（目录页）/ css（自定义样式）选项。导出族收口。
+* PandocExporter 加 PandocOptions{standalone,toc,cssPath} + 选项版 buildArgs（追加 --standalone/--toc/--css）/exportTo；无选项版委托默认 opts 兼容 #15b/#15c。PandocBridge.exportNoteOpts；UnitedEntry 命令「导出 HTML（含目录）」。
+* 验证：test_pandoc 加选项 buildArgs + **真实 pandoc --toc**（输出含 `id="TOC"`），ctest 26/26；qmllint 无语法错误；offscreen 启动无错。
+* wkhtmltopdf 已从 Arch 仓库移除→不支持（内建 PDF 走 QWebEngine printToPdf #15）；LaTeX PDF 需 texlive（可选），文档记录。
+
+### global-hotkey (spec #17b) — 2026-06-09
+* 全局热键：配置热键（默认 Ctrl+Alt+M）把主窗口呼到前台。热键解析纯函数可测；OS 级注册用 X11/XCB（xcb 平台守卫）。
+* HotkeyParser（core/hotkey，QKeySequence 解析 → {valid,modifiers,key}）；GlobalHotkey（QAbstractNativeEventFilter + XCB grab，platformName!="xcb" 安全降级）；MainWindow activated→showMainWindow；WidgetConfig.global_hotkey + TrayCfg.globalHotkey + SettingsDialog 字段。
+* markly_core 链接 xcb/xcb-keysyms（可选，无则 GlobalHotkey no-op）；Num/Caps lock 变体一并 grab。
+* **诚实记录**：Wayland 禁止便携全局热键，本机 Wayland 会话 X11 grab 编译通过但运行不触发；跨平台呼出回退由单实例 requestShow 实现（已有）。X11 会话可手动验证。
+* 验证：test_hotkey（Ctrl+Alt+M / Meta+Shift+P / 非法），ctest 26/26；qmllint 无语法错误；offscreen 启动 GlobalHotkey 安全 no-op 无崩溃。
+
+### desktop-integration (spec #20c) — 2026-06-09
+* 桌面集成收口：自动检查更新（按周期）+ 文件关联（.md→Markly）+ 「聚焦：编辑器」导航命令。
+* UpdateChecker.shouldCheck（周期判定纯函数：从未/`last<0`/间隔）；WidgetConfig.auto_update_check + last_update_check；UpdateBridge.autoCheckIfDue（到期才检查并更新时间戳，MarklyShell 启动调用）。
+* FileAssoc（core/desktop）：registerCommands（xdg-mime default markly.desktop text/markdown，纯）+ registerNow（最佳努力）；TrayCfg.autoUpdateCheck + SettingsDialog「自动检查更新」开关。
+* 验证：test_update 加 shouldCheck（0/8天/1天/-1）+ FileAssoc.registerCommands，ctest 25/25；qmllint 无语法错误；offscreen 启动无错。
+
+### imagehost-repo (spec #10d) — 2026-06-09
+* 通用 Git 仓库图床：把图片提交到本地 Git 仓库克隆（add+commit+push），返回 raw URL。至此图床三类全覆盖（GitHub/Gitee/Git 仓库）。
+* RepoImageHost（core/imagehost）：纯函数 `rawUrl`（rawBase 去尾斜杠 + /branch/path）+ `commitImage`（真实 git 写+add+commit，自带 user identity 免全局配置）+ `push`（网络最佳努力）。
+* ImageHostBridge `type=="repo"` 分派（commitImage→push→uploaded(rawUrl)）；ImageHostCfg 加 localRepo/rawBase/subDir；SettingsDialog 图床类型加「Git 仓库」+ 字段。
+* 验证：test_imagehost 加 rawUrl + **真实 git** init/commitImage（git log/ls-files 验证）+ 非仓库失败，ctest 25/25；qmllint 无语法错误；offscreen 启动无错。
+
+### export-merge (spec #15c) — 2026-06-09
+* 全合一/合并导出：把一个文件夹下多个 .md 合并成单文档再导出（复用 #15b 真实 pandoc，或直写 md）。
+* NoteMerge（core/export）：`merge`（每篇可选 `# 标题` + 内容，`\n\n---\n\n` 连接）/`mergeDir`（遍历 *.md 按名序读取）/`exportMergedDir`（md 直写或 pandoc 转换），纯逻辑可测。
+* MergeBridge（QML `Merge`：exportDir）；UnitedEntry 命令「合并导出 Markdown/HTML/Word」（html/docx 仅 Pandoc.available()），合并当前文件夹。
+* 验证：test_merge（merge/mergeDir 按名序/空目录 + **真实 pandoc 合并→html** 含两篇内容），ctest 25/25；qmllint 无语法错误；offscreen 启动无错。
+
+### export-advanced (spec #15b) — 2026-06-09
+* Pandoc 自定义格式导出：用系统 pandoc 把当前笔记导出为 docx/epub/latex 等；复用 #16 QProcess 模式。
+* PandocExporter（core/export）：静态 `buildArgs`/`isAvailable`（纯函数可测）+ `exportTo`（写临时 md → QProcess 跑 pandoc → 校验输出非空，30s 超时，临时文件自动清理）。
+* PandocBridge（QML `Pandoc`：available/exportNote）；UnitedEntry 仅 available 时列出「导出 Word/EPUB/LaTeX (Pandoc)」命令；翻译（.qm 57 条）。
+* 验证：test_pandoc **真实执行 pandoc** markdown→html（输出含 `<h1`/Title）+ buildArgs + 失败路径，ctest 24/24；qmllint 无语法错误；offscreen 启动无错。依赖系统 pandoc（pandoc-cli），未装能力守卫降级。
+
+### vi-repeat-search (spec #8g) — 2026-06-09
+* Vi `.` 重复上次修改（纯逻辑 ViEngine，GUILESS 可测，无 QML 改动）：修改录制（m_curKeys 累积构成命令的按键，歇下且产生编辑且停 Normal 时提交 m_lastChange）+ 回放（`.` 用同一原始光标逐键重入 handleKey 累积 edits，m_replaying 防重入）。
+* 覆盖停在 Normal 的修改 x/dd/dw/D/r/~/`>>`/`<<`/p（含计数与参数键）；进入 Insert 的修改留 #8h。
+* 验证：test_viengine 加 `.` 用例（x/dd/~/rX+移动/2x/无录制），ctest 23/23（test_viengine 15 组）；MarkdownEditor 未改（qmllint 干净）；offscreen 启动无错。
+
+### mindmap-viewer (spec #18b) — 2026-06-09
+* 思维导图视图：把当前笔记标题大纲渲染成只读 MindElixir 思维导图，作为新 viewMode "mindmap"（edit/read/split/mindmap）。
+* 打包 MindElixir.js（UMD，约 80KB）+ mindmap.html（parseHeadings→buildTree→`new MindElixir({editable:false}).init`）进 markly_web QRC；MindmapPane.qml（WebEngineView，随 Views.currentText 重渲染）。
+* EditorArea mode==="mindmap" 显示 MindmapPane（隐藏编辑器/预览/查看器）；ViewArea.setViewMode 放行 mindmap；UnitedEntry 命令「查看思维导图」/「编辑模式」。
+* 验证：ctest 23/23 无回归 + 端到端 DOM 证据（# Root/## A/## B/### A1 → MindElixir root Root + 子 A/B + A1 嵌套 B，层级=标题级别；docs/mindmap-viewer/render-evidence.txt）。
+
+### vi-search-repeat (spec #8f) — 2026-06-09
+* Vi WORD/替换/配对（纯逻辑 ViEngine，GUILESS 可测，无 QML 改动）：`W`/`B`/`E`（WORD 动作，仅空白分隔，支持计数）、`s`/`S`（substitute 字符/整行进 Insert）、`%`（括号配对跳转，计嵌套）。
+* 新增静态辅助 WORDForward/WORDBackward/WORDEnd/matchBracket。
+* 验证：test_viengine 扩展 3 组（WORD/substitute/matchBracket），ctest 23/23（test_viengine 14 组）；MarkdownEditor 未改（qmllint 干净）；offscreen 启动无错。
+
+### tray-update (spec #20b) — 2026-06-09
+* 系统托盘（QSystemTrayIcon，`isSystemTrayAvailable()` 守卫离屏降级）+ 菜单（显示/退出）+ 可选最小化到托盘；GitHub Releases 更新检查。
+* UpdateChecker（core/update）：静态 `parseLatestVersion`（tag_name 去前导 v）/`isNewer`（QVersionNumber 数值比较）可单测 + 异步 check。UpdateBridge（QML `Update`：check/checked，owner/repo 占位需改）。
+* WidgetConfig.minimize_to_tray（默认 false）+ TrayCfg（QML `TrayCfg`）；MainWindow.setupTray + closeEvent 隐藏到托盘；托盘图标复用 #21 markly.png（QRC alias :/markly.png）。
+* UnitedEntry 命令「检查更新」+ 结果通知；SettingsDialog「最小化到托盘」开关；翻译（检查更新/最小化到托盘等，.qm 50 条）。
+* 验证：test_update（parse/compare 数值），ctest 23/23（含 2 smoke，托盘守卫不破坏 smoke_startup）；qmllint 无语法错误；offscreen 启动无错。
+
+### imagehost-extra (spec #10c) — 2026-06-09
+* Gitee 图床：复用 #10b 框架，新增 GiteeImageHost（Gitee Contents API，POST + access_token 在体 + api/v5），ImageHostBridge 按 type 分派 github/gitee。
+* GiteeImageHost 静态 `uploadUrl`/`uploadBody`（access_token+base64+可选 branch）可单测；响应解析复用 `GithubImageHost::parseDownloadUrl`（同字段）。
+* configured() 含 gitee；SettingsDialog 图床类型加 Gitee 选项（none/github/gitee）；上传命令/链接替换沿用 #10b。
+* 验证：test_imagehost 加 Gitee uploadUrl/uploadBody（含 access_token、branch 有无），ctest 22/22；qmllint 无语法错误；offscreen 启动无错。
+
+### vi-advanced (spec #8e) — 2026-06-09
+* Vi 进阶命令（全部加进纯逻辑 ViEngine，GUILESS 可测，无 QML 改动）：`e`（词尾）、`f/F/t/T`（行内查找）+ `;`/`,`（重复/反向）、`r`（替换字符）、`~`（大小写翻转）、`>>`/`<<`（行缩进），均支持计数。
+* 待参机制：`f/F/t/T/r` 置 m_pendingChar，下一键作参数（在计数累加前消费，故 `f5`/`r5` 的 5 是字符）；`;`/`,` 用 m_lastFindCmd/Target 重复；`>>`/`<<` 复用操作符挂起 + 按行 edits。
+* 验证：test_viengine 扩展 5 组（e/find+;,/r/~/indent），ctest 22/22；MarkdownEditor 未改（qmllint 干净）；offscreen 启动无错。
+
+### diagram-plantuml-wavedrom (spec #9f) — 2026-06-09
+* 补全预览图表最后两类：WaveDrom（` ```wavedrom `/` ```wave `，客户端 SVG）+ PlantUML（` ```plantuml `/` ```puml `，编码→公共服务器 `<img>`），离线打包 4 个 JS 进 markly_web QRC。
+* preview.html `renderWavedrom()`（`WaveDrom.RenderWaveForm`，eval 源）+ `renderPlantuml()`（`plantumlUrl`：Zopfli deflate + `encode64_` → `https://www.plantuml.com/plantuml/svg/<encoded>`）并入 `renderDiagrams()`。
+* 至此预览图表 5 类全覆盖（Mermaid/Graphviz/Flowchart/WaveDrom/PlantUML），与 vnote 对齐；单块失败/缺库防御降级。
+* 验证：ctest 22/22 无回归 + 端到端 HTML 证据（wave→WaveDrom SVG、puml→plantuml.com 编码 img、js→Prism、0 错误；docs/diagram-plantuml-wavedrom/render-evidence.txt）。
+
+### packaging-tests (spec #21) — 2026-06-09
+* CPack 打包（TGZ）：顶层 CMake CPack 配置，`cpack -G TGZ` 产出 `Markly-1.0.0-Linux.tar.gz`（含 bin/markly + 桌面集成，11.5MB）。
+* 桌面集成：`packaging/markly.desktop` + 128×128 图标，install 到 `share/applications` / `share/icons/hicolor/128x128/apps`。
+* 集成 smoke 测试：`smoke_version`（`markly --version` 退出码 0 + 输出含 Markly）、`smoke_startup`（MARKLY_SHOT 离屏全 QML 外壳初始化抓帧，断言截图产物——绕过 WebEngine offscreen 销毁段错误）。
+* 验证：ctest 22/22（20 单元 + 2 smoke）；`cpack -G TGZ` 产物含 bin/markly + desktop + icon；`cmake --install --prefix` 装出三件套（验证后清理）。
+* 部署流程文档 docs/packaging-tests/README.md（构建/测试/打包/安装命令 + 依赖 + 多平台后续）。
+
+### imagehost-upload (spec #10b) — 2026-06-09
+* GitHub 图床上传：把笔记本地图片上传到 GitHub 仓库（Contents API），用公开 URL 替换 Markdown 本地链接。
+* GithubImageHost（core/imagehost）：静态纯函数 `uploadUrl`/`uploadBody`(base64+可选 branch)/`authHeader`/`parseDownloadUrl`（可单测）+ 异步 `upload`（QNetworkAccessManager PUT，emit done）。
+* WidgetConfig.image_host `{type,user,repo,token,branch}` 读写；ImageHostBridge（`ImageHost`：configured/upload/uploaded·failed 信号）+ ImageHostCfg（`ImageHostCfg`：type/user/repo/token/branch 属性）。
+* SettingsDialog 新增 `text` 输入类型 + 「图床」分类（令牌 echoMode 密码）；UnitedEntry 命令「上传图片到图床」（扫当前笔记本地图片逐个上传）；MarkdownEditor `onUploaded` 把本地路径替换为远程 URL。
+* 验证：test_imagehost（uploadUrl/uploadBody/authHeader/parseDownloadUrl/config 往返），ctest 20/20；qmllint 无语法错误；offscreen 启动无 QML 错误。token 明文存 markly.json（同 vnote，文档注明）。
+
+### vi-mode (spec #8b) — 2026-06-09
+* Vi 输入模式：Normal/Insert/Visual 三模式 + 核心动作/操作符/计数/无名寄存器；编辑器设置可开关（默认关）。
+* 纯逻辑状态机 ViEngine（core/editor，仅 QString/QChar，GUILESS 可测）：`handleKey` → `ViResult{handled,mode,cursor,anchor,edits[]}`，编辑器按 edits start 降序应用。
+* 覆盖：`i a I A o O v Esc`；`h l j k 0 $ w b gg G x`（计数 N）；`dd yy cc dw d$ D C Y`；`p P`（行式/字符式）；Visual `hljk0$wb`+`d/x/y/c`。
+* ViBridge（QML `Vi` 桥：`enabled`/`mode`/`handleKey`/`reset`）；EditorConfig.vi_mode + EditorCfg.viMode；MarkdownEditor Keys.onPressed 前置拦截；SettingsDialog「Vi 模式」开关；翻译 "Vi mode"（.qm 35 条）。
+* 验证：test_viengine 6 组（动作/计数/dd·2dd·dw·D/yy+p/模式/Visual 删），ctest 19/19；qmllint 无语法错误；offscreen 启动无 QML 错误。
+
+### spell-suggest-menu (spec #8d) — 2026-06-09
+* 拼写右键建议菜单：编辑器对拼错单词右键 → Hunspell 建议列表（上限 8）点选替换 + 「添加到忽略列表」。
+* 会话忽略列表放进共享 SpellChecker（`addIgnore`/`isIgnored`，大小写不敏感，`check()` 对忽略词返回 true）→ 波浪下划线高亮器与建议菜单都自动尊重，无需各维护。
+* SpellBridge（QML `Spell` 桥：`enabled`/`misspelled`/`suggest`/`ignore`）薄委托共享 SpellChecker；MarkdownHighlighter `rehighlightNow()`；MarkdownEditor 右键 MouseArea + Menu + `onIgnored` 去红。
+* 翻译「添加到忽略列表」→ "Add to ignore list"（.ts/.qm 34 条）。
+* 验证：test_spell 加忽略用例（check→addIgnore→check / 大小写不敏感），ctest 18/18；offscreen 启动无 QML 错误，MarkdownEditor.qml qmllint 无语法错误。
+
+### diagram-extra (spec #9e) — 2026-06-09
+* 补充客户端图表：Graphviz（viz.js，` ```dot `/` ```graphviz `）+ Flowchart.js（` ```flow `/` ```flowchart `），离线打包进 markly_web QRC。
+* preview.html `renderGraphviz()`（viz.js 异步 `renderSVGElement`，错误后重建 Viz）+ `renderFlowchart()`（Raphael `flowchart.parse().drawSVG`，同步）+ 统一 `renderDiagrams()`。
+* #9d `__mermaidPending` 泛化为 `__diagramPending`，三引擎共用；`window.mermaidPending()`（名兼容）现计入所有图表 → ExportView #15 无需改动即等待全部完成。
+* 防御：库缺失各自降级；单块失败仅显示 `diagram-error`，不影响其它块/文本/引擎；非图表块仍 Prism。
+* 验证：ctest 18/18 无回归 + 端到端渲染 HTML 证据（dot→Graphviz SVG、flow→Raphael SVG、js→Prism、0 错误；docs/diagram-extra/render-evidence.txt）。
+
+### diagram-rendering (spec #9d) — 2026-06-09
+* Mermaid 图表渲染：` ```mermaid ` 围栏代码块在 QWebEngine 预览中渲染为内联 SVG（流程图/时序图等），离线打包（mermaid.min.js 进 markly_web QRC）。
+* preview.html `renderMermaid()`：遍历 `pre>code.language-mermaid`，`mermaid.render` 异步替换为 `div.mermaid-graph`（svg）/`div.mermaid-error`；`__mermaidPending` 计数 + `window.mermaidPending()` 暴露。
+* 非 mermaid 块（js 等）仍 Prism 高亮不受影响；`window.mermaid` 缺失防御降级；单块失败不破坏其它。
+* 主题：`mdSetTheme` 依背景亮度设 mermaid `dark`/`default`。
+* 导出（ExportView #15）：`mdRender` 后 80ms Timer 轮询 `mermaidPending()` 归零（~3.2s 超时）再读 outerHTML/printToPdf，使导出含已渲染 SVG。
+* 验证：ctest 18/18 无回归 + 端到端渲染 HTML 证据（mermaid→`<svg flowchart-v2>`，js→Prism；docs/diagram-rendering/render-evidence.txt）。
+
+### spell-check (spec #8c) — 2026-06-09
+* 拼写检查（Hunspell）：编辑器对拼错英文单词加红色波浪下划线（`SpellCheckUnderline`），设置「编辑器」分类可开关（默认关）。
+* `SpellChecker`（`core/spell`，libhunspell C API：`check`/`suggest`/`ready`）：词典加载失败安全降级（`check` 一律 true）；编码经 Qt6 `QStringConverter`（不依赖 Core5Compat）。
+* `MarklyApp.getSpellChecker()` 懒加载共享实例，词典目录解析 `MARKLY_DICT_DIR` > `<config>/dicts` > 内置 `data/dicts`。
+* `MarkdownHighlighter` 拼写 pass：正则 `[A-Za-z]{2,}` 取词，跳过代码块/行内码，叠加在语法格式之上（保留前景色）；`EditorCfg.spellCheck` 反应式绑定，切换即 rehighlight。
+* `EditorConfig.spell_check`（默认 false）+ `EditorCfgQml.spellCheck` 可写；SettingsDialog 加「拼写检查」toggle（en "Spell check"，.ts/.qm 33 条）。
+* 词典 `src/data/dicts/en_US.{aff,dic}` 随 app 分发；CMake `pkg_check_modules(HUNSPELL hunspell)` 链接。
+* 验证：`tests/test_spell.cpp`（hello/helllo/suggest/无词典降级，ctest 18/18）+ 波浪下划线渲染截图（docs/spell-check/images）。
+
 ### extra-viewers (spec #18) — 2026-06-09
 * 额外查看器：打开 .pdf/.html 节点时编辑区显示 ViewerPane(QWebEngine)只读查看器而非 Markdown 编辑器。
 * ViewArea.splits 加 currentPath；ViewerPane.qml(WebEngineView pdfViewerEnabled+localContentCanAccessFileUrls,file:// 加载)；EditorArea 按扩展名 viewerType 切换。
@@ -173,3 +313,25 @@
 * `ThemeMgr`/`MainWindow` 占位（分别由 spec #2、#3 替换）。
 * 单元测试：configmgr / commandlineoptions / singleinstanceguard（ctest 3/3 通过）。
 * 应用可构建、可启动、可干净退出；首次运行生成 `~/.config/Markly/Markly/{markly.json,session.json,markly.log}`。
+
+### mindmap-edit (spec #18c) — 2026-06-09
+* `mindmap.html`：`renderMindmap(md, editable)` 加 editable 参数（MindElixir 增删/拖拽/菜单全开，默认只读保 #18b 兼容）；`treeToMarkdown` + `window.mindmapMarkdown()` 把导图树序列化回 Markdown 标题（根 `#`，深度 d→`d+1` 个 `#`），offscreen 回退 `lastData`。
+* `MindmapPane.qml`：`editable`/`bufferId` 属性 + `saveToNote()`（runJavaScript `mindmapMarkdown()` → `Views.updateText`，visible 守卫）+ Ctrl+S `Shortcut` + 监听 `Views.saveMindmapRequested`。
+* `EditorArea.qml`：mindmap 模式 MindmapPane 设 `editable: true` + 绑 `bufferId`。
+* `UnitedEntry.qml`：命令「保存思维导图到笔记」→ `Views.requestSaveMindmap()`。
+* `ViewArea`（viewarea.h/cpp）：`requestSaveMindmap()` 发 `saveMindmapRequested` 信号（镜像 `requestInsert`/`insertText`），命令跨 Repeater/多 shell 广播、可见 pane 响应。
+* i18n：新增「保存思维导图到笔记 / Save mind map to note」（lrelease 72 条）。
+* 验证：build + ctest 26/26；throwaway QWebEngineWidgets harness 加载真实 mindmap.html，`renderMindmap("# Root\n## A\n## B\n### A1", true)` → `mindmapMarkdown()` 往返含各级标题（ROUNDTRIP PASS）。
+* 思维导图族（#18b 只读 + #18c 编辑往返）收口，不派生后续。
+
+### packaging-multiplatform (spec #21b) — 2026-06-09
+* `CMakeLists.txt`：CPack 平台条件生成器 `if(WIN32)NSIS;ZIP / elseif(APPLE)DragNDrop;TGZ / else()TGZ;STGZ`，Linux 下 `find_program(dpkg-deb/rpmbuild)` 守卫追加 DEB/RPM；DEB（maintainer/section/depends）、RPM（license/group）、NSIS（package/display/uninstall/modify-path）元数据。
+* `packaging/PKGBUILD`（新）：Arch 包，build()/package() 走 cmake，depends=qt6-base/declarative/webengine+hunspell，pkgver 同步 PROJECT_VERSION（1.0.0）。
+* `.github/workflows/release.yml`（新）：tag 触发，matrix(ubuntu/windows/macos) 装 Qt 6.8 → cmake → ctest → cpack → upload-artifact，Windows/macOS 各条件加 windeployqt/macdeployqt。
+* 本机真实验证：build + ctest 26/26；`cpack -G STGZ`→`Markly-1.0.0-Linux.sh`（可执行自解压）；`cpack -G TGZ`→`.tar.gz`（不回归 #21）；`makepkg --printsrcinfo` 含 pkgname=markly；`yaml.safe_load(release.yml)` 合法 3-os 矩阵。
+* 诚实记录：DEB/RPM/NSIS/dmg/deployqt 仅产配置、需对应平台验证（docs 两表）；AppImage（需 linuxdeploy 联网）与高保真图标列为后续，不派生 spec。
+* 打包族（#21 + #21b）收口。**至此 56 个 spec 全部 DONE，vnote-3201 全功能覆盖完成，自然收敛。**
+
+### fix: toolbar icon rendering (#icon-joined) — 2026-06-09
+* `src/qml/icons/IconPaths.js` `joined()`：修复多子路径图标错位。Lucide 每个子路径是独立 `<path>`，其首个相对 `m dx dy` 以原点为基准（=绝对 dx,dy）；拼成单条路径后该 `m` 变成相对上一子路径终点而被甩飞（code 右半 `>` 变成乱团、search 手柄错位）。修复：非首子路径的首个 `m` 改绝对 `M`，其后隐式坐标对补显式 `l` 保持相对，几何不变。影响 code/search/snippet 等。
+* 验证：独立 QML harness 渲染 code=`< >`、sigma=`Σ`、link=🔗、search=🔍、snippet=`</>` 均正常；build + ctest 26/26。

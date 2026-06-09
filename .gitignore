@@ -4,3 +4,7 @@ build/
 compile_commands.json
 .qmlls.ini
 .spec-workflow/approvals/
+
+# Runtime data created by running the app locally (not source).
+markly_notes/
+*.autosave

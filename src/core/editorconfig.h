@@ -38,6 +38,12 @@ public:
   bool isAutoPairEnabled() const { return m_autoPair; }
   void setAutoPairEnabled(bool p_on);
 
+  bool isSpellCheckEnabled() const { return m_spellCheck; }
+  void setSpellCheckEnabled(bool p_on);
+
+  bool isViModeEnabled() const { return m_viMode; }
+  void setViModeEnabled(bool p_on);
+
 private:
   QJsonObject m_jobj;
 
@@ -49,6 +55,8 @@ private:
   bool m_autoIndent = true;
   bool m_continueList = true;
   bool m_autoPair = true;
+  bool m_spellCheck = false; // off by default; requires a dictionary
+  bool m_viMode = false;     // off by default (#8b)
 };
 } // namespace markly
 

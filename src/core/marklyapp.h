@@ -16,6 +16,7 @@ class BufferMgr;
 class HistoryMgr;
 class SnippetMgr;
 class TaskMgr;
+class SpellChecker;
 
 // Central singleton coordinator (counterpart of VNote's VNoteX).
 // Owns the managers and serves as the global signal hub for the app.
@@ -49,6 +50,9 @@ public:
 
   // Placeholder until the owning spec lands.
   TaskMgr *getTaskMgr() const;
+
+  // Shared English spell-checker (lazily loaded; null if no dictionary found) (#8c).
+  SpellChecker *getSpellChecker();
 
   void setMainWindow(MainWindow *p_mainWindow);
   MainWindow *getMainWindow() const;
@@ -124,6 +128,10 @@ private:
   SnippetMgr *m_snippetMgr = nullptr;
   TaskMgr *m_taskMgr = nullptr;
   QTranslator *m_translator = nullptr;
+
+  // Lazily created shared spell-checker (#8c). m_spellTried guards repeat loads.
+  SpellChecker *m_spell = nullptr;
+  bool m_spellTried = false;
 
   // QObject managed.
   BufferMgr *m_bufferMgr = nullptr;
