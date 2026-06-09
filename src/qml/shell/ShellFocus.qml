@@ -8,6 +8,9 @@ Rectangle {
     id: shell
     color: Theme.window
 
+    SettingsDialog { id: settingsDialog; z: 100 }
+    function openSettings() { settingsDialog.show() }
+
     // Left dock page: "explorer" (notes list) or "search".
     property string leftPage: "explorer"
 
@@ -60,7 +63,7 @@ Rectangle {
                     C.RailButton { icon: "snippet"; active: shell.leftPage === "snippet"; iconSize: 20; onClicked: shell.leftPage = "snippet" }
                     C.RailButton { icon: "history"; active: shell.leftPage === "quick"; iconSize: 20; onClicked: shell.leftPage = "quick" }
                 }
-                C.RailButton { icon: "settings"; iconSize: 20; anchors.horizontalCenter: parent.horizontalCenter; anchors.bottom: parent.bottom; anchors.bottomMargin: 10 }
+                C.RailButton { icon: "settings"; iconSize: 20; anchors.horizontalCenter: parent.horizontalCenter; anchors.bottom: parent.bottom; anchors.bottomMargin: 10; onClicked: settingsDialog.show() }
             }
 
             // Notes list

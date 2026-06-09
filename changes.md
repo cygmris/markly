@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### settings-dialog (spec #19) — 2026-06-09
+* 可搜索设置对话框：分类(编辑器/外观/关于)+搜索过滤+即时生效。三外壳 gear 入口打开。
+* EditorCfgQml 可写(WRITE setter→EditorConfig setter+changed,fontSize/tabWidth clamp)：编辑器选项设置里可改即时刷新。
+* SettingsDialog.qml(覆盖层 modal)：JS 设置项模型(get/set 闭包绑 EditorCfg/Appearance)+内联 Toggle/Stepper/SegSelect/Swatches 控件;搜索跨分类按标签过滤。
+* 外观分类绑 Appearance(#2 已可写)；作为统一容器,后续 #8b/#8c/#10b/#17/#20 各自追加设置项。
+* ctest 15/15(test_editorconfig 扩展 autoIndent/continueList/autoPair 往返)；截图验证设置对话框编辑器分类。
+
 ### export-system (spec #15) — 2026-06-09
 * 导出当前笔记为 Markdown/HTML/PDF：编辑器工具栏「导出」菜单→保存对话框→生成文件。复用 #9 预览渲染+#10 图片 data URI。
 * ExportHelper(context property Export)writeText/readResource;DialogHelper.saveFile;ViewArea.currentText。

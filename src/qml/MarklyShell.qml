@@ -32,6 +32,11 @@ Item {
         if (loader.item) loader.item.leftPage = "snippet";
     }
 
+    // Dev/test hook: open the settings dialog.
+    function showSettings() {
+        if (loader.item && loader.item.openSettings) loader.item.openSettings();
+    }
+
     // Dev/test hook: export the current note to path (#15 offline validation).
     ExportView { id: shotExport }
     function exportNoteTo(fmt, path) {

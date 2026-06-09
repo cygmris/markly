@@ -34,6 +34,21 @@ private slots:
     QCOMPARE(json.value("tab_width").toInt(), 2);
     QCOMPARE(json.value("line_number").toBool(), false);
   }
+
+  void testInputSettings() {
+    auto &cfg = ConfigMgr::getInst().getEditorConfig();
+    cfg.setAutoIndentEnabled(false);
+    cfg.setContinueListEnabled(false);
+    cfg.setAutoPairEnabled(false);
+    QCOMPARE(cfg.isAutoIndentEnabled(), false);
+    QCOMPARE(cfg.isContinueListEnabled(), false);
+    QCOMPARE(cfg.isAutoPairEnabled(), false);
+
+    const auto json = cfg.toJson();
+    QCOMPARE(json.value("auto_indent").toBool(), false);
+    QCOMPARE(json.value("continue_list").toBool(), false);
+    QCOMPARE(json.value("auto_pair").toBool(), false);
+  }
 };
 
 QTEST_GUILESS_MAIN(TestEditorConfig)

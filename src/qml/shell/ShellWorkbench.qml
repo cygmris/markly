@@ -13,6 +13,9 @@ Rectangle {
     // Left dock page: "explorer" (ink nav) or "search".
     property string leftPage: "explorer"
 
+    SettingsDialog { id: settingsDialog; z: 100 }
+    function openSettings() { settingsDialog.show() }
+
     Column {
         anchors.fill: parent
 
@@ -30,7 +33,12 @@ Rectangle {
                 C.Omnibar { anchors.fill: parent }
                 MouseArea { anchors.fill: parent; onClicked: shell.leftPage = "search" }
             }
-            C.WinControls { anchors.right: parent.right; anchors.rightMargin: 8; anchors.verticalCenter: parent.verticalCenter }
+            Icons.Icon {
+                anchors.right: winCtl.left; anchors.rightMargin: 12; anchors.verticalCenter: parent.verticalCenter
+                name: "settings"; size: 16; color: Theme.railDim
+                MouseArea { anchors.fill: parent; anchors.margins: -4; onClicked: settingsDialog.show() }
+            }
+            C.WinControls { id: winCtl; anchors.right: parent.right; anchors.rightMargin: 8; anchors.verticalCenter: parent.verticalCenter }
         }
 
         // ---- Body ----

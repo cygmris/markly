@@ -19,6 +19,8 @@ Rectangle {
 
     NodeContextMenu { id: nodeMenu }
     NotebookSelector { id: nbSelector }
+    SettingsDialog { id: settingsDialog; z: 100 }
+    function openSettings() { settingsDialog.show() }
 
     function newRootNote() {
         var name = Dialogs.promptText("新建笔记", "笔记名称（含 .md）", "新笔记.md");
@@ -117,7 +119,7 @@ Rectangle {
                     C.RailButton { icon: "snippet"; active: shell.leftPage === "snippet"; onClicked: shell.leftPage = "snippet" }
                     C.RailButton { icon: "history"; active: shell.leftPage === "quick"; onClicked: shell.leftPage = "quick" }
                 }
-                C.RailButton { icon: "settings"; anchors.horizontalCenter: parent.horizontalCenter; anchors.bottom: parent.bottom; anchors.bottomMargin: 8 }
+                C.RailButton { icon: "settings"; anchors.horizontalCenter: parent.horizontalCenter; anchors.bottom: parent.bottom; anchors.bottomMargin: 8; onClicked: settingsDialog.show() }
             }
 
             // Sidebar (notebook tree)
