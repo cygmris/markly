@@ -235,6 +235,38 @@ QSharedPointer<Node> Notebook::newNode(const QSharedPointer<Node> &p_parent, Nod
   return child;
 }
 
+QSharedPointer<Node> Notebook::importNode(const QSharedPointer<Node> &p_parent, Node::Type p_type,
+                                          const QString &p_name) {
+  ensureLoaded(p_parent);
+
+  const auto childRel = joinRel(p_parent->fetchRelativePath(), p_name);
+  if (!m_backend->exists(childRel)) {
+    return nullptr;
+  }
+
+  const auto now = QDateTime::currentDateTimeUtc();
+  const auto sig = Node::generateSignature();
+  const ID id = m_db->insertNode(p_name, sig, p_parent->getId());
+
+  auto child = QSharedPointer<Node>::create(p_type, p_name, this, p_parent.data());
+  child->setId(id);
+  child->setSignature(sig);
+  child->setCreatedTimeUtc(now);
+  child->setModifiedTimeUtc(now);
+  child->setLoaded(p_type == Node::Type::File);
+
+  // A folder being imported needs its own vx.json (its disk contents stay external
+  // until individually imported).
+  if (p_type == Node::Type::Folder &&
+      !m_backend->existsFile(joinRel(childRel, c_nodeConfigName))) {
+    writeNodeConfig(child.data());
+  }
+
+  p_parent->addChild(child);
+  writeNodeConfig(p_parent.data());
+  return child;
+}
+
 void Notebook::renameNode(const QSharedPointer<Node> &p_node, const QString &p_newName) {
   if (p_node->isRoot()) {
     return;

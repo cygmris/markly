@@ -25,7 +25,7 @@ Rectangle {
                 Row {
                     anchors.verticalCenter: parent.verticalCenter; spacing: 6
                     Icons.Icon { anchors.verticalCenter: parent.verticalCenter; name: "book"; size: 14; color: Theme.accent }
-                    Text { anchors.verticalCenter: parent.verticalCenter; text: "我的笔记本"; color: Theme.text; font.pixelSize: 13; font.weight: Font.DemiBold; font.family: Theme.fontUi }
+                    Text { anchors.verticalCenter: parent.verticalCenter; text: (typeof Explorer !== "undefined" && Explorer.currentNotebookName.length > 0) ? Explorer.currentNotebookName : "笔记本"; color: Theme.text; font.pixelSize: 13; font.weight: Font.DemiBold; font.family: Theme.fontUi }
                     Icons.Icon { anchors.verticalCenter: parent.verticalCenter; name: "chevD"; size: 13; color: Theme.faint }
                 }
             }
@@ -69,7 +69,7 @@ Rectangle {
                         width: parent.width; topPadding: 14; leftPadding: 16; rightPadding: 16; spacing: 12
                         Item {
                             width: parent.width - 32; height: 26
-                            Text { anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter; text: "二叉树"; color: Theme.text; font.pixelSize: 22; font.weight: Font.DemiBold; font.family: Theme.fontSerif }
+                            Text { anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter; text: (typeof Explorer !== "undefined" && Explorer.currentNotebookName.length > 0) ? Explorer.currentNotebookName : "笔记本"; color: Theme.text; font.pixelSize: 22; font.weight: Font.DemiBold; font.family: Theme.fontSerif }
                             Row {
                                 anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter; spacing: 2
                                 Repeater { model: ["sort", "plus"]; delegate: Icons.Icon { required property string modelData; name: modelData; size: 16; color: Theme.dim } }
@@ -87,11 +87,20 @@ Rectangle {
                     Column {
                         width: parent.width - 16; x: 8; topPadding: 4
                         Repeater {
-                            model: Demo.NOTES
+                            model: (typeof Explorer !== "undefined")
+                                   ? Explorer.visibleNodes.filter(function(n) { return n.type === "file" && !n.isExternal; })
+                                   : []
                             delegate: C.NoteCard {
                                 required property var modelData
-                                title: modelData.title; snippet: modelData.snippet; meta: modelData.meta
-                                active: modelData.active === true; fav: modelData.fav === true
+                                title: modelData.name
+                                snippet: ""
+                                meta: ""
+                                active: modelData.selected === true
+                                fav: false
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: Explorer.selectNode(modelData.nodeId)
+                                }
                             }
                         }
                     }

@@ -10,6 +10,9 @@ Item {
     property var open: undefined   // undefined = leaf (no chevron)
     property bool selected: false
     property bool muted: false
+    property string customNameColor: ""   // per-node override
+    signal clicked()
+    signal rightClicked(real px, real py)
 
     width: parent ? parent.width : 200
     height: 28
@@ -46,11 +49,24 @@ Item {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: root.label
-            color: root.selected ? Theme.text : (root.muted ? Theme.faint : Theme.dim)
+            color: root.customNameColor !== "" ? root.customNameColor
+                 : (root.selected ? Theme.text : (root.muted ? Theme.faint : Theme.dim))
             font.pixelSize: 13
             font.weight: root.selected ? Font.DemiBold : Font.Medium
             font.family: Theme.fontUi
         }
     }
-    MouseArea { id: hover; anchors.fill: parent; hoverEnabled: true }
+    MouseArea {
+        id: hover
+        anchors.fill: parent
+        hoverEnabled: true
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onClicked: function(mouse) {
+            if (mouse.button === Qt.RightButton) {
+                root.rightClicked(mouse.x, mouse.y);
+            } else {
+                root.clicked();
+            }
+        }
+    }
 }

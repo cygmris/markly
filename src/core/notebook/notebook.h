@@ -55,6 +55,10 @@ public:
   // CRUD. Each writes disk (truth) then syncs the db index.
   QSharedPointer<Node> newNode(const QSharedPointer<Node> &p_parent, Node::Type p_type,
                                const QString &p_name);
+  // Register an existing on-disk file/folder (external) as a managed node.
+  // Does not overwrite its content. Returns null if it does not exist.
+  QSharedPointer<Node> importNode(const QSharedPointer<Node> &p_parent, Node::Type p_type,
+                                  const QString &p_name);
   void renameNode(const QSharedPointer<Node> &p_node, const QString &p_newName);
   void removeNode(const QSharedPointer<Node> &p_node); // permanent
   void moveNodeToRecycleBin(const QSharedPointer<Node> &p_node);

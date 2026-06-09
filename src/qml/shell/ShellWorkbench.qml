@@ -54,16 +54,17 @@ Rectangle {
                     Rectangle { width: parent.width; height: 1; color: Theme.border; opacity: 0.6 }
                     Text { text: "笔记本"; color: Theme.railDim; font.pixelSize: 11; font.bold: true; font.family: Theme.fontUi; leftPadding: 8; topPadding: 6 }
                     Repeater {
-                        model: Demo.NOTEBOOKS
+                        model: (typeof Explorer !== "undefined") ? Explorer.notebooks : []
                         delegate: Rectangle {
                             required property var modelData
                             width: parent.width; height: 30; radius: 8
-                            color: modelData.active ? Theme.hover : "transparent"
+                            color: modelData.current ? Theme.hover : "transparent"
                             Row {
                                 anchors.fill: parent; anchors.leftMargin: 10; spacing: 10
-                                Rectangle { anchors.verticalCenter: parent.verticalCenter; width: 9; height: 9; radius: 3; color: shell.tok(modelData.colorRole) }
-                                Text { anchors.verticalCenter: parent.verticalCenter; text: modelData.label; color: modelData.active ? Theme.railActive : Theme.railText; font.pixelSize: 13; font.family: Theme.fontUi }
+                                Rectangle { anchors.verticalCenter: parent.verticalCenter; width: 9; height: 9; radius: 3; color: Theme.accent }
+                                Text { anchors.verticalCenter: parent.verticalCenter; text: modelData.name; color: modelData.current ? Theme.railActive : Theme.railText; font.pixelSize: 13; font.family: Theme.fontUi }
                             }
+                            MouseArea { anchors.fill: parent; onClicked: Explorer.switchNotebook(modelData.id) }
                         }
                     }
                     Text { text: "标签"; color: Theme.railDim; font.pixelSize: 11; font.bold: true; font.family: Theme.fontUi; leftPadding: 8; topPadding: 10 }

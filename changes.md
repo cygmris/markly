@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### node-explorer-ui (spec #5) — 2026-06-09
+* 笔记本数据层接到三套外壳：真实笔记本树替换占位（A 树/B 笔记列表/C 笔记本导航）。
+* NotebookExplorer 桥接（QObject context property，visibleNodes 展平树 + Q_INVOKABLE 交互）+ DialogHelper（原生对话框）。
+* 节点 CRUD（右键菜单：新建笔记/文件夹、重命名、删除回收站/永久、颜色、外部导入）经 #4 Notebook 门面三处一致。
+* 笔记本选择/新建/打开/切换；空状态 EmptyState；外部文件显示 + Notebook.importNode 导入。
+* 确立「占位→真实 model」桥接范式（core→QObject→QML），后续 UI spec 复用。
+* test_notebookexplorer（树展平/CRUD/颜色/外部/导入）；ctest 6/6；三套外壳真实树截图验证。
+
 ### notebook-core (spec #4) — 2026-06-09
 * 笔记本数据层（纯 core）：磁盘格式 vx_notebook.json + 每目录 vx.json + SQLite 三表(node/tag/tag_node)，严格兼容 VNote v3.x。
 * INotebookBackend/LocalNotebookBackend、NotebookConfig、vx_node_config 序列化、Node/NodeVisual、NotebookDatabaseAccess、NotebookTagMgr、DummyVersionController、Notebook(CRUD 门面)、NotebookMgr。

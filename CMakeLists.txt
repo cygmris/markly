@@ -19,7 +19,7 @@ endif()
 # Generate compile_commands.json for tooling.
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Gui Widgets Network Sql Qml Quick QuickWidgets)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core Gui Widgets Network Sql Qml Quick QuickWidgets QuickControls2)
 
 qt_standard_project_setup()
 

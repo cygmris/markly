@@ -14,6 +14,17 @@ Rectangle {
         return c !== undefined ? c : Theme.text;
     }
 
+    NodeContextMenu { id: nodeMenu }
+    NotebookSelector { id: nbSelector }
+
+    function newRootNote() {
+        var name = Dialogs.promptText("新建笔记", "笔记名称（含 .md）", "新笔记.md");
+        if (name.length > 0) {
+            var err = Explorer.newNote(0, name);
+            if (err.length > 0) Dialogs.notify("操作失败", err);
+        }
+    }
+
     Column {
         anchors.fill: parent
 
@@ -43,12 +54,13 @@ Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
                     height: 24; radius: 7; color: Theme.hover
                     width: nbRow.implicitWidth + 18
+                    MouseArea { anchors.fill: parent; onClicked: nbSelector.popup() }
                     Row {
                         id: nbRow
                         anchors.centerIn: parent
                         spacing: 6
                         Icons.Icon { anchors.verticalCenter: parent.verticalCenter; name: "book"; size: 14; color: Theme.accent }
-                        Text { anchors.verticalCenter: parent.verticalCenter; text: "我的笔记本"; color: Theme.text; font.pixelSize: 13; font.weight: Font.DemiBold; font.family: Theme.fontUi }
+                        Text { anchors.verticalCenter: parent.verticalCenter; text: (typeof Explorer !== "undefined" && Explorer.currentNotebookName.length > 0) ? Explorer.currentNotebookName : "笔记本"; color: Theme.text; font.pixelSize: 13; font.weight: Font.DemiBold; font.family: Theme.fontUi }
                         Icons.Icon { anchors.verticalCenter: parent.verticalCenter; name: "chevD"; size: 13; color: Theme.faint }
                     }
                 }
@@ -112,18 +124,40 @@ Rectangle {
                         Text { anchors.left: parent.left; anchors.leftMargin: 14; anchors.verticalCenter: parent.verticalCenter; text: "笔记本"; color: Theme.faint; font.pixelSize: 11; font.bold: true; font.family: Theme.fontUi }
                         Row {
                             anchors.right: parent.right; anchors.rightMargin: 8; anchors.verticalCenter: parent.verticalCenter; spacing: 1
-                            Repeater { model: ["plus", "sort", "more"]; delegate: Icons.Icon { required property string modelData; name: modelData; size: 15; color: Theme.dim } }
+                            Icons.Icon {
+                                name: "plus"; size: 15; color: Theme.dim
+                                MouseArea { anchors.fill: parent; anchors.margins: -4; onClicked: shell.newRootNote() }
+                            }
+                            Icons.Icon { name: "sort"; size: 15; color: Theme.dim }
+                            Icons.Icon { name: "more"; size: 15; color: Theme.dim }
                         }
                     }
                     Column {
                         width: parent.width - 16
                         x: 8
                         Repeater {
-                            model: Demo.TREE
+                            model: (typeof Explorer !== "undefined") ? Explorer.visibleNodes : []
                             delegate: C.TreeRow {
                                 required property var modelData
-                                depth: modelData.depth; icon: modelData.icon; label: modelData.label
-                                open: modelData.open; selected: modelData.selected === true; muted: modelData.muted === true
+                                depth: modelData.depth
+                                icon: modelData.type === "folder" ? "folder" : "md"
+                                label: modelData.name
+                                open: modelData.type === "folder" ? modelData.expanded : undefined
+                                selected: modelData.selected === true
+                                muted: modelData.isExternal === true
+                                customNameColor: modelData.nameColor
+                                onClicked: {
+                                    if (modelData.type === "folder") Explorer.toggleExpand(modelData.nodeId);
+                                    else Explorer.selectNode(modelData.nodeId);
+                                }
+                                onRightClicked: function(px, py) {
+                                    nodeMenu.targetId = modelData.nodeId;
+                                    nodeMenu.targetParentId = modelData.parentId;
+                                    nodeMenu.targetType = modelData.type;
+                                    nodeMenu.targetName = modelData.name;
+                                    nodeMenu.targetIsExternal = modelData.isExternal === true;
+                                    nodeMenu.popup();
+                                }
                             }
                         }
                     }

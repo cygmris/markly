@@ -9,6 +9,8 @@
 #include <QQuickWidget>
 #include <QUrl>
 
+#include "explorer/dialoghelper.h"
+#include "explorer/notebookexplorer.h"
 #include <core/configmgr.h>
 #include <core/marklyapp.h>
 #include <core/sessionconfig.h>
@@ -36,6 +38,11 @@ void MainWindow::setupContent() {
                                              themeMgr.getAppearance());
   // Window controls for the self-drawn title bar.
   m_quick->rootContext()->setContextProperty(QStringLiteral("Win"), this);
+  // Notebook explorer bridge + native dialogs.
+  auto *explorer = new NotebookExplorer(MarklyApp::getInst().getNotebookMgr(), this);
+  auto *dialogs = new DialogHelper(this, this);
+  m_quick->rootContext()->setContextProperty(QStringLiteral("Explorer"), explorer);
+  m_quick->rootContext()->setContextProperty(QStringLiteral("Dialogs"), dialogs);
   m_quick->setSource(QUrl(QStringLiteral("qrc:/qml/MarklyShell.qml")));
   if (m_quick->status() == QQuickWidget::Error) {
     qCritical() << "failed to load MarklyShell.qml:" << m_quick->errors();

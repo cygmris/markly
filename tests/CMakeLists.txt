@@ -6,6 +6,7 @@ set(MARKLY_TESTS
     test_singleinstanceguard
     test_thememodel
     test_notebookcore
+    test_notebookexplorer
 )
 
 foreach(test_name ${MARKLY_TESTS})

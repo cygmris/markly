@@ -2,15 +2,24 @@
 // floating "外观" button + AppearancePanel drawer (reused from spec #2).
 import QtQuick
 import "theme" as ThemeUI
+import "shell"
 
 Item {
     id: root
 
+    readonly property bool hasNotebook: (typeof Explorer !== "undefined") && Explorer.hasNotebook
+
     Loader {
         anchors.fill: parent
+        visible: root.hasNotebook
         source: Appearance.style === 0 ? "shell/ShellRefined.qml"
               : Appearance.style === 1 ? "shell/ShellFocus.qml"
                                        : "shell/ShellWorkbench.qml"
+    }
+
+    EmptyState {
+        anchors.fill: parent
+        visible: !root.hasNotebook
     }
 
     // Dim overlay + sliding appearance panel.
