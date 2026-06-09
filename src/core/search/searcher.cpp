@@ -81,8 +81,28 @@ QVector<SearchResultItem> Searcher::searchNotebook(Notebook *p_notebook,
     }
   };
 
+  const QString kw = p_option.m_keyword;
+
+  // First 1-based line of `node` that contains any keyword token (case-insensitive),
+  // or -1. Used so search results can jump to the hit.
+  const auto firstHitLine = [&](const QSharedPointer<Node> &n) -> int {
+    const auto tokens = kw.split(QRegularExpression(QStringLiteral("\\s+")), Qt::SkipEmptyParts);
+    if (tokens.isEmpty()) {
+      return -1;
+    }
+    const auto lines = readNodeContent(n).split(QLatin1Char('\n'));
+    for (int i = 0; i < lines.size(); ++i) {
+      for (const auto &tok : tokens) {
+        if (lines.at(i).contains(tok, Qt::CaseInsensitive)) {
+          return i + 1;
+        }
+      }
+    }
+    return -1;
+  };
+
   QSet<ID> seen;
-  const auto addResult = [&](const QSharedPointer<Node> &n, const QString &snippet) {
+  const auto addResult = [&](const QSharedPointer<Node> &n, const QString &snippet, int line) {
     if (!n || seen.contains(n->getId()) || !inScope(n)) {
       return;
     }
@@ -93,16 +113,16 @@ QVector<SearchResultItem> Searcher::searchNotebook(Notebook *p_notebook,
     item.m_name = n->getName();
     item.m_path = n->fetchAbsolutePath();
     item.m_snippet = snippet;
+    item.m_line = line;
     results.append(item);
   };
-
-  const QString kw = p_option.m_keyword;
 
   // Content: FTS5 MATCH.
   if (p_option.m_objects.testFlag(ObjContent)) {
     const auto hits = db->ftsQueryContent(SearchOption::toFtsExpr(kw));
     for (const auto &hit : hits) {
-      addResult(byId.value(hit.first), hit.second);
+      auto node = byId.value(hit.first);
+      addResult(node, hit.second, node ? firstHitLine(node) : -1);
     }
   }
 
@@ -119,7 +139,7 @@ QVector<SearchResultItem> Searcher::searchNotebook(Notebook *p_notebook,
         match = true;
       }
       if (match) {
-        addResult(n, n->fetchRelativePath());
+        addResult(n, n->fetchRelativePath(), -1);
       }
     }
   }
@@ -129,7 +149,7 @@ QVector<SearchResultItem> Searcher::searchNotebook(Notebook *p_notebook,
     for (const auto &n : nodes) {
       for (const auto &tag : n->getTags()) {
         if (tag.contains(kw, Qt::CaseInsensitive)) {
-          addResult(n, QStringLiteral("#") + tag);
+          addResult(n, QStringLiteral("#") + tag, -1);
           break;
         }
       }

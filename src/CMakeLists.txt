@@ -55,6 +55,10 @@ set(MARKLY_CORE_SOURCES
     widgets/editors/markdownhighlighter.h
     widgets/editors/editorcfgqml.cpp
     widgets/editors/editorcfgqml.h
+    widgets/editors/editinputqml.cpp
+    widgets/editors/editinputqml.h
+    core/editor/editinputhelper.cpp
+    core/editor/editinputhelper.h
     core/notebook/nodevisual.h
     core/notebook/node.cpp
     core/notebook/node.h
@@ -145,6 +149,7 @@ qt_add_resources(markly "markly_qml"
         "qml/shell/MarkdownEditor.qml"
         "qml/shell/PreviewPane.qml"
         "qml/shell/SearchPanel.qml"
+        "qml/shell/components/FindReplaceBar.qml"
         "qml/theme/ThemePreview.qml"
         "qml/theme/AppearancePanel.qml"
         "qml/icons/Icon.qml"

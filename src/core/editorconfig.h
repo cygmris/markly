@@ -29,6 +29,15 @@ public:
   bool isHighlightCurrentLineEnabled() const { return m_highlightCurrentLine; }
   void setHighlightCurrentLineEnabled(bool p_on);
 
+  bool isAutoIndentEnabled() const { return m_autoIndent; }
+  void setAutoIndentEnabled(bool p_on);
+
+  bool isContinueListEnabled() const { return m_continueList; }
+  void setContinueListEnabled(bool p_on);
+
+  bool isAutoPairEnabled() const { return m_autoPair; }
+  void setAutoPairEnabled(bool p_on);
+
 private:
   QJsonObject m_jobj;
 
@@ -37,6 +46,9 @@ private:
   bool m_expandTab = true;
   bool m_lineNumber = true;
   bool m_highlightCurrentLine = true;
+  bool m_autoIndent = true;
+  bool m_continueList = true;
+  bool m_autoPair = true;
 };
 } // namespace markly
 

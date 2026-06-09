@@ -14,3 +14,6 @@ int EditorCfgQml::tabWidth() const { return cfg().getTabWidth(); }
 bool EditorCfgQml::expandTab() const { return cfg().isExpandTab(); }
 bool EditorCfgQml::lineNumber() const { return cfg().isLineNumberEnabled(); }
 bool EditorCfgQml::highlightCurrentLine() const { return cfg().isHighlightCurrentLineEnabled(); }
+bool EditorCfgQml::autoIndent() const { return cfg().isAutoIndentEnabled(); }
+bool EditorCfgQml::continueList() const { return cfg().isContinueListEnabled(); }
+bool EditorCfgQml::autoPair() const { return cfg().isAutoPairEnabled(); }

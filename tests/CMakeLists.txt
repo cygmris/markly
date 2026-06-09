@@ -10,6 +10,7 @@ set(MARKLY_TESTS
     test_bufferview
     test_editorconfig
     test_search
+    test_editorinput
 )
 
 foreach(test_name ${MARKLY_TESTS})

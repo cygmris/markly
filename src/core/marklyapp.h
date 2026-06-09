@@ -83,6 +83,9 @@ signals:
   // Used by the search index to incrementally re-index the note's content.
   void noteSaved(const QString &p_filePath);
 
+  // Request that the next opened editor jump to this 1-based line (e.g. a search hit).
+  void gotoLineRequested(int p_line);
+
   void exportRequested();
 
   void pinToQuickAccessRequested(const QStringList &p_files);

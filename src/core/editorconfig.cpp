@@ -25,6 +25,9 @@ void EditorConfig::init(const QJsonObject &p_app, const QJsonObject &p_user) {
   m_expandTab = readBool(QStringLiteral("expand_tab"), true);
   m_lineNumber = readBool(QStringLiteral("line_number"), true);
   m_highlightCurrentLine = readBool(QStringLiteral("highlight_current_line"), true);
+  m_autoIndent = readBool(QStringLiteral("auto_indent"), true);
+  m_continueList = readBool(QStringLiteral("continue_list"), true);
+  m_autoPair = readBool(QStringLiteral("auto_pair"), true);
 }
 
 QJsonObject EditorConfig::toJson() const {
@@ -34,6 +37,9 @@ QJsonObject EditorConfig::toJson() const {
   obj[QStringLiteral("expand_tab")] = m_expandTab;
   obj[QStringLiteral("line_number")] = m_lineNumber;
   obj[QStringLiteral("highlight_current_line")] = m_highlightCurrentLine;
+  obj[QStringLiteral("auto_indent")] = m_autoIndent;
+  obj[QStringLiteral("continue_list")] = m_continueList;
+  obj[QStringLiteral("auto_pair")] = m_autoPair;
   return obj;
 }
 
@@ -44,3 +50,6 @@ void EditorConfig::setLineNumberEnabled(bool p_on) { updateConfig(m_lineNumber, 
 void EditorConfig::setHighlightCurrentLineEnabled(bool p_on) {
   updateConfig(m_highlightCurrentLine, p_on, this);
 }
+void EditorConfig::setAutoIndentEnabled(bool p_on) { updateConfig(m_autoIndent, p_on, this); }
+void EditorConfig::setContinueListEnabled(bool p_on) { updateConfig(m_continueList, p_on, this); }
+void EditorConfig::setAutoPairEnabled(bool p_on) { updateConfig(m_autoPair, p_on, this); }

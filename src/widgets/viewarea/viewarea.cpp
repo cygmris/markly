@@ -19,6 +19,14 @@ ViewArea::ViewArea(BufferMgr *p_bufferMgr, QObject *p_parent)
   if (saved == QStringLiteral("read") || saved == QStringLiteral("split")) {
     m_viewMode = saved;
   }
+  connect(&MarklyApp::getInst(), &MarklyApp::gotoLineRequested, this,
+          [this](int p_line) { m_pendingGotoLine = p_line; });
+}
+
+int ViewArea::takePendingGotoLine() {
+  const int line = m_pendingGotoLine;
+  m_pendingGotoLine = -1;
+  return line;
 }
 
 bool ViewArea::hasOpenFile() const {

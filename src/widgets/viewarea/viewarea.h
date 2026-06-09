@@ -53,6 +53,10 @@ public:
   Q_INVOKABLE void setViewMode(const QString &p_mode);
   Q_INVOKABLE void cycleViewMode();
 
+  // Pending jump-to-line (1-based), consumed by the editor when a buffer loads.
+  // -1 means no pending jump. Set via MarklyApp::gotoLineRequested (e.g. search hit).
+  Q_INVOKABLE int takePendingGotoLine();
+
   // Restore opened tabs from the session config.
   void restoreSession();
 
@@ -80,6 +84,7 @@ private:
   int m_statsCharCount = 0;
 
   QString m_viewMode = QStringLiteral("edit");
+  int m_pendingGotoLine = -1;
 };
 } // namespace markly
 

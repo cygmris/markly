@@ -8,6 +8,7 @@
 #include <QQmlEngine>
 #include <QTimer>
 
+#include "editors/editinputqml.h"
 #include "editors/editorcfgqml.h"
 #include "editors/markdownhighlighter.h"
 #include <QQuickWidget>
@@ -60,6 +61,8 @@ void MainWindow::setupContent() {
   qmlRegisterType<MarkdownHighlighter>("Markly.Editor", 1, 0, "MarkdownHighlighter");
   m_quick->rootContext()->setContextProperty(QStringLiteral("EditorCfg"),
                                              new EditorCfgQml(this));
+  m_quick->rootContext()->setContextProperty(QStringLiteral("EditInput"),
+                                             new EditInputQml(this));
   m_quick->setSource(QUrl(QStringLiteral("qrc:/qml/MarklyShell.qml")));
   if (m_quick->status() == QQuickWidget::Error) {
     qCritical() << "failed to load MarklyShell.qml:" << m_quick->errors();

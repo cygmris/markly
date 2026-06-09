@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### markdown-editor-input (spec #8) — 2026-06-09
+* 编辑器输入辅助：自动缩进、列表续行(无序/有序/任务项,空标记清除)、括号/引号配对(含包裹选区/跳过/成对退格)、多行缩进反缩进、查找替换栏、跳转到行。
+* 纯文本算法抽到可单测 EditInputHelper(core/editor/)；EditInputQml(context property EditInput) 暴露 QML；EditorConfig 加 auto_indent/continue_list/auto_pair。
+* FindReplaceBar.qml(查找/替换/上下一个循环/Aa 大小写/全部替换/Esc)固定编辑器顶部；MarkdownEditor Ctrl+F/H/Esc + gotoLine。
+* 接住 #12：Searcher 内容命中填 m_line(首个命中行)；SearchBridge.openResult→MarklyApp.gotoLineRequested→ViewArea pending→编辑器 onBufferIdChanged 后 takePendingGotoLine→gotoLine。
+* ctest 10/10(新增 test_editorinput)；截图验证编辑器渲染清单/有序/代码/引用。
+* 再规划：拆出 #8b vi-mode、#8c spell-check-hunspell(独立大子系统)；格式工具栏命令/已激活 buffer 跳转→polish。
+
 ### search-fts (spec #12) — 2026-06-09
 * 全文搜索（技术栈关键点 SQLite FTS5 落地）：每笔记本 DB 建 `node_fts` FTS5 虚拟表索引 名称/路径/正文。
 * 与源差异：源 FileSearchEngine 遍历文件无索引；本应用按技术栈用 FTS5 索引 + 单一同步 Searcher（精简 token/异步引擎）。

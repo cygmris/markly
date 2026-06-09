@@ -56,7 +56,12 @@ void SearchBridge::openResult(int p_index) {
   if (p_index < 0 || p_index >= m_items.size()) {
     return;
   }
-  emit MarklyApp::getInst().openFileRequested(m_items.at(p_index).m_path);
+  const auto &item = m_items.at(p_index);
+  // Set the pending jump first so the editor picks it up when the buffer loads.
+  if (item.m_line >= 1) {
+    emit MarklyApp::getInst().gotoLineRequested(item.m_line);
+  }
+  emit MarklyApp::getInst().openFileRequested(item.m_path);
 }
 
 void SearchBridge::clear() {
