@@ -3,7 +3,9 @@
 #include <QApplication>
 #include <QCloseEvent>
 #include <QDebug>
+#include <QImage>
 #include <QQmlContext>
+#include <QTimer>
 #include <QQuickWidget>
 #include <QUrl>
 
@@ -15,7 +17,7 @@
 
 using namespace markly;
 
-MainWindow::MainWindow(QWidget *p_parent) : QMainWindow(p_parent) {
+MainWindow::MainWindow(QWidget *p_parent) : FramelessMainWindow(p_parent) {
   setWindowTitle(QStringLiteral("Markly"));
 
   setupContent();
@@ -32,9 +34,11 @@ void MainWindow::setupContent() {
   m_quick->rootContext()->setContextProperty(QStringLiteral("Theme"), &themeMgr);
   m_quick->rootContext()->setContextProperty(QStringLiteral("Appearance"),
                                              themeMgr.getAppearance());
-  m_quick->setSource(QUrl(QStringLiteral("qrc:/qml/theme/ThemePreview.qml")));
+  // Window controls for the self-drawn title bar.
+  m_quick->rootContext()->setContextProperty(QStringLiteral("Win"), this);
+  m_quick->setSource(QUrl(QStringLiteral("qrc:/qml/MarklyShell.qml")));
   if (m_quick->status() == QQuickWidget::Error) {
-    qCritical() << "failed to load ThemePreview.qml:" << m_quick->errors();
+    qCritical() << "failed to load MarklyShell.qml:" << m_quick->errors();
   }
   setCentralWidget(m_quick);
 
@@ -42,6 +46,20 @@ void MainWindow::setupContent() {
   connect(&themeMgr, &ThemeMgr::themeChanged, this, []() {
     qApp->setStyleSheet(MarklyApp::getInst().getThemeMgr().fetchQtStyleSheet());
   });
+
+  // Dev screenshot hook: MARKLY_SHOT=/path.png grabs the shell then quits.
+  const auto shotPath = qEnvironmentVariable("MARKLY_SHOT");
+  if (!shotPath.isEmpty()) {
+    QTimer::singleShot(1200, this, [this, shotPath]() {
+      const QImage img = m_quick->grabFramebuffer();
+      if (img.save(shotPath)) {
+        qInfo() << "saved screenshot" << shotPath << img.size();
+      } else {
+        qWarning() << "failed to save screenshot" << shotPath;
+      }
+      qApp->quit();
+    });
+  }
 }
 
 void MainWindow::loadStateAndGeometry() {

@@ -70,6 +70,8 @@ qt_add_executable(markly
     application/application.h
     widgets/mainwindow.cpp
     widgets/mainwindow.h
+    widgets/framelessmainwindow/framelessmainwindow.cpp
+    widgets/framelessmainwindow/framelessmainwindow.h
 )
 
 target_link_libraries(markly PRIVATE
@@ -83,8 +85,25 @@ target_link_libraries(markly PRIVATE
 qt_add_resources(markly "markly_qml"
     PREFIX "/"
     FILES
+        "qml/MarklyShell.qml"
         "qml/theme/ThemePreview.qml"
         "qml/theme/AppearancePanel.qml"
+        "qml/icons/Icon.qml"
+        "qml/icons/IconPaths.js"
+        "qml/shell/DemoData.js"
+        "qml/shell/ShellRefined.qml"
+        "qml/shell/ShellFocus.qml"
+        "qml/shell/ShellWorkbench.qml"
+        "qml/shell/components/WinControls.qml"
+        "qml/shell/components/RailButton.qml"
+        "qml/shell/components/StatusBar.qml"
+        "qml/shell/components/Chip.qml"
+        "qml/shell/components/EditorTab.qml"
+        "qml/shell/components/EditorToolbar.qml"
+        "qml/shell/components/TreeRow.qml"
+        "qml/shell/components/OutlineRow.qml"
+        "qml/shell/components/NoteCard.qml"
+        "qml/shell/components/Omnibar.qml"
 )
 
 install(TARGETS markly

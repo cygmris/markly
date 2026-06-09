@@ -1,0 +1,267 @@
+// Style A — Refined Classic (3-pane IDE). Ports refined.jsx RefinedClassic.
+import QtQuick
+import "../icons" as Icons
+import "components" as C
+import "DemoData.js" as Demo
+
+Rectangle {
+    id: shell
+    color: Theme.window
+
+    function roleColor(role) {
+        if (!role || role === "text") return Theme.text;
+        var c = Theme[role];
+        return c !== undefined ? c : Theme.text;
+    }
+
+    Column {
+        anchors.fill: parent
+
+        // ---- Title bar ----
+        Item {
+            width: parent.width
+            height: 38
+            Rectangle { anchors.fill: parent; color: Theme.window }
+            Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: Theme.border }
+            // Drag region behind the controls.
+            MouseArea {
+                anchors.fill: parent
+                onPressed: Win.startMove()
+                onDoubleClicked: Win.toggleMaximize()
+            }
+            Row {
+                anchors.left: parent.left
+                anchors.leftMargin: 12
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 10
+                Rectangle {
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 18; height: 18; radius: 5; color: Theme.accent
+                    Text { anchors.centerIn: parent; text: "V"; color: Theme.accentText; font.pixelSize: 12; font.bold: true; font.family: Theme.fontUi }
+                }
+                Rectangle {
+                    anchors.verticalCenter: parent.verticalCenter
+                    height: 24; radius: 7; color: Theme.hover
+                    width: nbRow.implicitWidth + 18
+                    Row {
+                        id: nbRow
+                        anchors.centerIn: parent
+                        spacing: 6
+                        Icons.Icon { anchors.verticalCenter: parent.verticalCenter; name: "book"; size: 14; color: Theme.accent }
+                        Text { anchors.verticalCenter: parent.verticalCenter; text: "我的笔记本"; color: Theme.text; font.pixelSize: 13; font.weight: Font.DemiBold; font.family: Theme.fontUi }
+                        Icons.Icon { anchors.verticalCenter: parent.verticalCenter; name: "chevD"; size: 13; color: Theme.faint }
+                    }
+                }
+                Repeater {
+                    model: [ { ic: "plus", t: "新建" }, { ic: "import", t: "导入" }, { ic: "flash", t: "快速记录" } ]
+                    delegate: Row {
+                        required property var modelData
+                        spacing: 5
+                        Icons.Icon { anchors.verticalCenter: parent.verticalCenter; name: modelData.ic; size: 14; color: Theme.dim }
+                        Text { anchors.verticalCenter: parent.verticalCenter; text: modelData.t; color: Theme.dim; font.pixelSize: 13; font.family: Theme.fontUi }
+                    }
+                }
+            }
+            Row {
+                anchors.right: parent.right
+                anchors.rightMargin: 6
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 2
+                Icons.Icon { anchors.verticalCenter: parent.verticalCenter; name: Theme.isDark ? "sun" : "moon"; size: 15; color: Theme.dim }
+                Icons.Icon { anchors.verticalCenter: parent.verticalCenter; name: "settings"; size: 15; color: Theme.dim }
+                Item { width: 6; height: 1 }
+                C.WinControls { anchors.verticalCenter: parent.verticalCenter }
+            }
+        }
+
+        // ---- Body ----
+        Row {
+            width: parent.width
+            height: parent.height - 38 - 26
+
+            // Rail
+            Rectangle {
+                width: 56
+                height: parent.height
+                color: Theme.rail
+                Rectangle { anchors.right: parent.right; width: 1; height: parent.height; color: Theme.border }
+                Column {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    y: 8
+                    spacing: 4
+                    C.RailButton { icon: "notebook"; active: true }
+                    C.RailButton { icon: "tag" }
+                    C.RailButton { icon: "search" }
+                    C.RailButton { icon: "snippet" }
+                    C.RailButton { icon: "history" }
+                }
+                C.RailButton { icon: "settings"; anchors.horizontalCenter: parent.horizontalCenter; anchors.bottom: parent.bottom; anchors.bottomMargin: 8 }
+            }
+
+            // Sidebar (notebook tree)
+            Rectangle {
+                visible: Appearance.showLeft
+                width: 256
+                height: parent.height
+                color: Theme.sidebar
+                Rectangle { anchors.right: parent.right; width: 1; height: parent.height; color: Theme.border }
+                Column {
+                    anchors.fill: parent
+                    Item {
+                        width: parent.width; height: 42
+                        Text { anchors.left: parent.left; anchors.leftMargin: 14; anchors.verticalCenter: parent.verticalCenter; text: "笔记本"; color: Theme.faint; font.pixelSize: 11; font.bold: true; font.family: Theme.fontUi }
+                        Row {
+                            anchors.right: parent.right; anchors.rightMargin: 8; anchors.verticalCenter: parent.verticalCenter; spacing: 1
+                            Repeater { model: ["plus", "sort", "more"]; delegate: Icons.Icon { required property string modelData; name: modelData; size: 15; color: Theme.dim } }
+                        }
+                    }
+                    Column {
+                        width: parent.width - 16
+                        x: 8
+                        Repeater {
+                            model: Demo.TREE
+                            delegate: C.TreeRow {
+                                required property var modelData
+                                depth: modelData.depth; icon: modelData.icon; label: modelData.label
+                                open: modelData.open; selected: modelData.selected === true; muted: modelData.muted === true
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Editor column
+            Rectangle {
+                width: parent.width - 56 - (Appearance.showLeft ? 256 : 0) - (Appearance.showRight ? 236 : 0)
+                height: parent.height
+                color: Theme.canvas
+                clip: true
+                Column {
+                    anchors.fill: parent
+                    // Tabs
+                    Rectangle {
+                        width: parent.width; height: 38; color: Theme.bar
+                        Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: Theme.border }
+                        Row {
+                            Repeater {
+                                model: Demo.TABS
+                                delegate: C.EditorTab {
+                                    required property var modelData
+                                    label: modelData.label; active: modelData.active === true; dirty: modelData.dirty === true
+                                }
+                            }
+                        }
+                    }
+                    // Toolbar
+                    C.EditorToolbar { width: parent.width }
+                    // Editor source
+                    Flickable {
+                        width: parent.width
+                        height: parent.height - 38 - 42
+                        contentHeight: srcCol.implicitHeight * Theme.contentZoom
+                        clip: true
+                        Column {
+                            id: srcCol
+                            width: parent.width / Theme.contentZoom
+                            scale: Theme.contentZoom
+                            transformOrigin: Item.TopLeft
+                            y: 14
+                            Repeater {
+                                model: Demo.EDITOR_LINES
+                                delegate: Row {
+                                    required property var modelData
+                                    required property int index
+                                    width: srcCol.width
+                                    height: 26
+                                    Text {
+                                        width: 46
+                                        horizontalAlignment: Text.AlignRight
+                                        rightPadding: 14
+                                        text: (index + 1)
+                                        color: Theme.gutter
+                                        font.pixelSize: 13
+                                        font.family: Theme.fontMono
+                                        verticalAlignment: Text.AlignVCenter
+                                        height: 26
+                                    }
+                                    Row {
+                                        height: 26
+                                        Repeater {
+                                            model: modelData
+                                            delegate: Text {
+                                                required property var modelData
+                                                height: 26
+                                                verticalAlignment: Text.AlignVCenter
+                                                text: modelData.t
+                                                color: shell.roleColor(modelData.role)
+                                                font.pixelSize: modelData.h1 ? 19 : (modelData.h2 ? 16 : 14)
+                                                font.bold: modelData.bold === true || modelData.h1 === true || modelData.h2 === true
+                                                font.italic: modelData.italic === true
+                                                font.family: (modelData.role === "codeInline" || modelData.role === "codeInk") ? Theme.fontMono : Theme.fontUi
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Outline
+            Rectangle {
+                visible: Appearance.showRight
+                width: 236
+                height: parent.height
+                color: Theme.sidebar
+                Rectangle { anchors.left: parent.left; width: 1; height: parent.height; color: Theme.border }
+                Column {
+                    anchors.fill: parent
+                    Item {
+                        width: parent.width; height: 42
+                        Text { anchors.left: parent.left; anchors.leftMargin: 14; anchors.verticalCenter: parent.verticalCenter; text: "大纲"; color: Theme.faint; font.pixelSize: 11; font.bold: true; font.family: Theme.fontUi }
+                        Icons.Icon { anchors.right: parent.right; anchors.rightMargin: 12; anchors.verticalCenter: parent.verticalCenter; name: "sort"; size: 15; color: Theme.dim }
+                    }
+                    Column {
+                        width: parent.width - 16
+                        x: 8
+                        Repeater {
+                            model: Demo.OUTLINE
+                            delegate: C.OutlineRow {
+                                required property var modelData
+                                label: modelData.label; level: modelData.level; active: modelData.active === true
+                            }
+                        }
+                    }
+                    Item { width: parent.width; height: 12 }
+                    Flow {
+                        width: parent.width - 24
+                        x: 12
+                        spacing: 6
+                        Repeater {
+                            model: Demo.TAGS
+                            delegate: Rectangle {
+                                required property string modelData
+                                height: 22; radius: 11; width: tg.implicitWidth + 18
+                                color: Theme.accentSoft
+                                Text { id: tg; anchors.centerIn: parent; text: modelData; color: Theme.accent; font.pixelSize: 12; font.bold: true; font.family: Theme.fontUi }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // ---- Status bar ----
+        C.StatusBar {
+            width: parent.width
+            Text { anchors.verticalCenter: parent.verticalCenter; text: "● 已保存"; color: Theme.accent; font.pixelSize: 12; font.weight: Font.DemiBold; font.family: Theme.fontMono }
+            Text { anchors.verticalCenter: parent.verticalCenter; text: "行 18, 列 32"; color: Theme.dim; font.pixelSize: 12; font.family: Theme.fontMono }
+            Text { anchors.verticalCenter: parent.verticalCenter; text: "23 行 · 412 字"; color: Theme.dim; font.pixelSize: 12; font.family: Theme.fontMono }
+            Item { width: 1; height: 1 }
+            Text { anchors.verticalCenter: parent.verticalCenter; text: "UTF-8"; color: Theme.dim; font.pixelSize: 12; font.family: Theme.fontMono }
+            Text { anchors.verticalCenter: parent.verticalCenter; text: "Markdown"; color: Theme.dim; font.pixelSize: 12; font.family: Theme.fontMono }
+            Text { anchors.verticalCenter: parent.verticalCenter; text: "NORMAL"; color: Theme.emphasis; font.pixelSize: 12; font.family: Theme.fontMono }
+        }
+    }
+}

@@ -1,18 +1,16 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
 #include <QStringList>
+
+#include "framelessmainwindow/framelessmainwindow.h"
 
 class QQuickWidget;
 
 namespace markly {
-// Placeholder main window. Currently hosts the theme-preview QML harness
-// (theme-appearance spec) via a QQuickWidget to prove live theming + the
-// QML<->QWidget bridge.
-// NOTE: spec #3 (app-shell-ui) replaces the content with the frameless self-drawn
-// window hosting the full QML shell (title bar / activity rail / docks / status bar).
-class MainWindow : public QMainWindow {
+// Frameless main window hosting the full QML shell (MarklyShell.qml): title bar /
+// activity rail / docks / status bar, with live A/B/C style + theme switching.
+class MainWindow : public FramelessMainWindow {
   Q_OBJECT
 public:
   explicit MainWindow(QWidget *p_parent = nullptr);
