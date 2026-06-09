@@ -102,12 +102,31 @@ Rectangle {
             }
         }
 
-        // Markdown source editor (syntax highlight + line numbers).
-        MarkdownEditor {
+        // Editor / preview / split by Views.viewMode.
+        Item {
             width: pane.width
             height: pane.height - 38
-            bufferId: pane.split.currentBufferId
-            content: pane.split.currentText
+            readonly property string mode: (typeof Views !== "undefined") ? Views.viewMode : "edit"
+
+            MarkdownEditor {
+                visible: parent.mode !== "read"
+                x: 0
+                width: parent.mode === "split" ? parent.width / 2 : parent.width
+                height: parent.height
+                bufferId: pane.split.currentBufferId
+                content: pane.split.currentText
+            }
+            Rectangle {
+                visible: parent.mode === "split"
+                x: parent.width / 2; width: 1; height: parent.height; color: Theme.border
+            }
+            PreviewPane {
+                visible: parent.mode !== "edit"
+                x: parent.mode === "split" ? parent.width / 2 : 0
+                width: parent.mode === "split" ? parent.width / 2 : parent.width
+                height: parent.height
+                content: pane.split.currentText
+            }
         }
     }
 }

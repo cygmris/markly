@@ -24,6 +24,7 @@ class ViewArea : public QObject {
   Q_PROPERTY(int statsColumn READ statsColumn NOTIFY statsChanged)
   Q_PROPERTY(int statsLineCount READ statsLineCount NOTIFY statsChanged)
   Q_PROPERTY(int statsCharCount READ statsCharCount NOTIFY statsChanged)
+  Q_PROPERTY(QString viewMode READ viewMode NOTIFY viewModeChanged)
 public:
   explicit ViewArea(BufferMgr *p_bufferMgr, QObject *p_parent = nullptr);
 
@@ -48,12 +49,17 @@ public:
   int statsCharCount() const { return m_statsCharCount; }
   Q_INVOKABLE void setStats(int p_line, int p_column, int p_lineCount, int p_charCount);
 
+  QString viewMode() const { return m_viewMode; }
+  Q_INVOKABLE void setViewMode(const QString &p_mode);
+  Q_INVOKABLE void cycleViewMode();
+
   // Restore opened tabs from the session config.
   void restoreSession();
 
 signals:
   void changed();
   void statsChanged();
+  void viewModeChanged();
 
 private:
   struct Split {
@@ -72,6 +78,8 @@ private:
   int m_statsColumn = 0;
   int m_statsLineCount = 0;
   int m_statsCharCount = 0;
+
+  QString m_viewMode = QStringLiteral("edit");
 };
 } // namespace markly
 

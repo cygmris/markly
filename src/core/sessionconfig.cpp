@@ -24,6 +24,7 @@ void SessionConfig::init() {
   m_currentNotebookRootPath = readString(obj, QStringLiteral("current_notebook_root_path"));
   m_openedFiles = readStringList(obj, QStringLiteral("opened_files"));
   m_currentFile = readString(obj, QStringLiteral("current_file"));
+  m_viewMode = readString(obj, QStringLiteral("view_mode"));
 }
 
 QJsonObject SessionConfig::toJson() const {
@@ -36,6 +37,7 @@ QJsonObject SessionConfig::toJson() const {
   obj[QStringLiteral("current_notebook_root_path")] = m_currentNotebookRootPath;
   writeStringList(obj, QStringLiteral("opened_files"), m_openedFiles);
   obj[QStringLiteral("current_file")] = m_currentFile;
+  obj[QStringLiteral("view_mode")] = m_viewMode;
   return obj;
 }
 
@@ -83,4 +85,10 @@ QString SessionConfig::getCurrentFile() const { return m_currentFile; }
 
 void SessionConfig::setCurrentFile(const QString &p_file) {
   updateConfig(m_currentFile, p_file, this);
+}
+
+QString SessionConfig::getViewMode() const { return m_viewMode; }
+
+void SessionConfig::setViewMode(const QString &p_mode) {
+  updateConfig(m_viewMode, p_mode, this);
 }

@@ -116,6 +116,16 @@ target_link_libraries(markly PRIVATE
     Qt6::Quick
     Qt6::QuickWidgets
     Qt6::QuickControls2
+    Qt6::WebEngineQuick
+)
+
+# Markdown preview web assets.
+qt_add_resources(markly "markly_web"
+    PREFIX "/"
+    FILES
+        "data/web/preview.html"
+        "data/web/preview.css"
+        "data/web/markdown-it.min.js"
 )
 
 # QML files (loaded by QQuickWidget via qrc:/qml/...).
@@ -128,6 +138,7 @@ qt_add_resources(markly "markly_qml"
         "qml/shell/EmptyState.qml"
         "qml/shell/EditorArea.qml"
         "qml/shell/MarkdownEditor.qml"
+        "qml/shell/PreviewPane.qml"
         "qml/theme/ThemePreview.qml"
         "qml/theme/AppearancePanel.qml"
         "qml/icons/Icon.qml"

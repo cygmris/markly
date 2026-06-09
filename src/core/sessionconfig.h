@@ -47,6 +47,9 @@ public:
   QString getCurrentFile() const;
   void setCurrentFile(const QString &p_file);
 
+  QString getViewMode() const;
+  void setViewMode(const QString &p_mode);
+
 private:
   QByteArray m_mainWindowGeometry;
 
@@ -61,6 +64,8 @@ private:
   QStringList m_openedFiles;
 
   QString m_currentFile;
+
+  QString m_viewMode;
 };
 } // namespace markly
 

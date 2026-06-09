@@ -1,0 +1,95 @@
+:root {
+  --bg: #ffffff;
+  --text: #1d2528;
+  --dim: #5a6670;
+  --heading: #0e8c6f;
+  --code-bg: #f5f6f7;
+  --code-ink: #1d2528;
+  --inline-code: #9a52c4;
+  --link: #2f72c4;
+  --quote: #5a6670;
+  --border: rgba(15,25,35,.14);
+  --accent: #0e8c6f;
+  --font-ui: "Hanken Grotesk", "Noto Sans SC", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-serif: "Newsreader", "Noto Serif SC", Georgia, serif;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.7;
+}
+#content {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 32px 36px 80px;
+}
+
+#content h1, #content h2, #content h3, #content h4, #content h5, #content h6 {
+  color: var(--heading);
+  line-height: 1.3;
+  margin: 1.4em 0 0.6em;
+  font-weight: 700;
+}
+#content h1 { font-size: 2em; }
+#content h2 { font-size: 1.5em; }
+#content h3 { font-size: 1.25em; }
+
+#content p { margin: 0 0 1em; }
+
+#content a { color: var(--link); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--link) 40%, transparent); }
+
+#content code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--code-bg);
+  color: var(--inline-code);
+  padding: 1px 6px;
+  border-radius: 5px;
+}
+#content pre {
+  background: var(--code-bg);
+  color: var(--code-ink);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  overflow-x: auto;
+}
+#content pre code {
+  background: none;
+  color: var(--code-ink);
+  padding: 0;
+  font-size: 0.875em;
+}
+
+#content blockquote {
+  margin: 0 0 1em;
+  padding: 2px 0 2px 18px;
+  border-left: 3px solid var(--accent);
+  color: var(--quote);
+  font-style: italic;
+}
+
+#content ul, #content ol { margin: 0 0 1em; padding-left: 1.6em; }
+#content li { margin: 0.2em 0; }
+
+#content hr { border: none; border-top: 1px solid var(--border); margin: 2em 0; }
+
+#content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0 0 1em;
+}
+#content th, #content td {
+  border: 1px solid var(--border);
+  padding: 7px 12px;
+  text-align: left;
+}
+#content th { background: var(--code-bg); font-weight: 700; }
+
+#content img { max-width: 100%; border-radius: 8px; }

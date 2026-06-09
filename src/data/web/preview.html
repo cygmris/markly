@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="preview.css">
+</head>
+<body>
+  <div id="content"></div>
+  <script src="markdown-it.min.js"></script>
+  <script>
+    var md = window.markdownit({ html: false, linkify: true, typographer: true, breaks: false });
+    var content = document.getElementById('content');
+
+    // Render markdown text to the content area.
+    function mdRender(text) {
+      try {
+        content.innerHTML = md.render(text || "");
+      } catch (e) {
+        var pre = document.createElement('pre');
+        pre.textContent = text || "";
+        content.innerHTML = '';
+        content.appendChild(pre);
+      }
+    }
+
+    // Update theme CSS variables + fonts. @json: object string.
+    function mdSetTheme(json) {
+      try {
+        var c = (typeof json === 'string') ? JSON.parse(json) : json;
+        var r = document.documentElement.style;
+        if (c.bg) r.setProperty('--bg', c.bg);
+        if (c.text) r.setProperty('--text', c.text);
+        if (c.dim) r.setProperty('--dim', c.dim);
+        if (c.heading) r.setProperty('--heading', c.heading);
+        if (c.codeBg) r.setProperty('--code-bg', c.codeBg);
+        if (c.codeInk) r.setProperty('--code-ink', c.codeInk);
+        if (c.inlineCode) r.setProperty('--inline-code', c.inlineCode);
+        if (c.link) r.setProperty('--link', c.link);
+        if (c.quote) r.setProperty('--quote', c.quote);
+        if (c.border) r.setProperty('--border', c.border);
+        if (c.accent) r.setProperty('--accent', c.accent);
+        if (c.fontUi) r.setProperty('--font-ui', c.fontUi);
+        if (c.fontMono) r.setProperty('--font-mono', c.fontMono);
+        if (c.fontSerif) r.setProperty('--font-serif', c.fontSerif);
+      } catch (e) {}
+    }
+    window.mdRender = mdRender;
+    window.mdSetTheme = mdSetTheme;
+  </script>
+</body>
+</html>

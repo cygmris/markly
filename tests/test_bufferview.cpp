@@ -96,6 +96,20 @@ private slots:
     // bufA still referenced? only split 0 had it; now removed.
     QVERIFY(!va.isTabDirty(bufA)); // closed/no buffer -> false
   }
+
+  void testViewModeCycle() {
+    BufferMgr bm;
+    ViewArea va(&bm);
+    QCOMPARE(va.viewMode(), QStringLiteral("edit"));
+    va.cycleViewMode();
+    QCOMPARE(va.viewMode(), QStringLiteral("split"));
+    va.cycleViewMode();
+    QCOMPARE(va.viewMode(), QStringLiteral("read"));
+    va.cycleViewMode();
+    QCOMPARE(va.viewMode(), QStringLiteral("edit"));
+    va.setViewMode(QStringLiteral("read"));
+    QCOMPARE(va.viewMode(), QStringLiteral("read"));
+  }
 };
 
 QTEST_GUILESS_MAIN(TestBufferView)

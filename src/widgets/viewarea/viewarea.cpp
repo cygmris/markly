@@ -14,6 +14,10 @@ using namespace markly;
 ViewArea::ViewArea(BufferMgr *p_bufferMgr, QObject *p_parent)
     : QObject(p_parent), m_bufferMgr(p_bufferMgr) {
   m_splits.append(Split{});
+  const auto saved = ConfigMgr::getInst().getSessionConfig().getViewMode();
+  if (saved == QStringLiteral("read") || saved == QStringLiteral("split")) {
+    m_viewMode = saved;
+  }
 }
 
 bool ViewArea::hasOpenFile() const {
@@ -157,6 +161,29 @@ void ViewArea::setStats(int p_line, int p_column, int p_lineCount, int p_charCou
   m_statsLineCount = p_lineCount;
   m_statsCharCount = p_charCount;
   emit statsChanged();
+}
+
+void ViewArea::setViewMode(const QString &p_mode) {
+  if (p_mode == m_viewMode) {
+    return;
+  }
+  if (p_mode == QStringLiteral("edit") || p_mode == QStringLiteral("read") ||
+      p_mode == QStringLiteral("split")) {
+    m_viewMode = p_mode;
+    ConfigMgr::getInst().getSessionConfig().setViewMode(m_viewMode);
+    emit viewModeChanged();
+  }
+}
+
+void ViewArea::cycleViewMode() {
+  // edit -> split -> read -> edit
+  if (m_viewMode == QStringLiteral("edit")) {
+    setViewMode(QStringLiteral("split"));
+  } else if (m_viewMode == QStringLiteral("split")) {
+    setViewMode(QStringLiteral("read"));
+  } else {
+    setViewMode(QStringLiteral("edit"));
+  }
 }
 
 void ViewArea::setActiveSplit(int p_index) {

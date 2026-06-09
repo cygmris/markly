@@ -1,6 +1,7 @@
 #include <QDateTime>
 #include <QIcon>
 #include <QSysInfo>
+#include <QtWebEngineQuick>
 
 #include <application/application.h>
 #include <application/commandlineoptions.h>
@@ -15,6 +16,9 @@
 using namespace markly;
 
 int main(int argc, char *argv[]) {
+  // Must be called before constructing the application (for QML WebEngineView).
+  QtWebEngineQuick::initialize();
+
   QApplication::setHighDpiScaleFactorRoundingPolicy(
       Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 

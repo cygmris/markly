@@ -13,6 +13,7 @@ Rectangle {
     component ToolBtn: Item {
         property string icon
         property bool active: false
+        property var act: undefined
         width: 30; height: 28
         Rectangle {
             anchors.fill: parent; radius: 6
@@ -22,7 +23,7 @@ Rectangle {
             anchors.centerIn: parent; name: parent.icon; size: 17
             color: parent.active ? Theme.accent : Theme.dim
         }
-        MouseArea { id: h; anchors.fill: parent; hoverEnabled: true }
+        MouseArea { id: h; anchors.fill: parent; hoverEnabled: true; onClicked: if (parent.act) parent.act() }
     }
     component Sep: Rectangle { width: 1; height: 18; color: Theme.border; anchors.verticalCenter: parent.verticalCenter }
 
@@ -31,8 +32,12 @@ Rectangle {
         anchors.leftMargin: 10
         anchors.verticalCenter: parent.verticalCenter
         spacing: 1
-        ToolBtn { icon: "save" }
-        ToolBtn { icon: "eye"; active: true }
+        ToolBtn { icon: "save"; act: function() { if (typeof Views !== "undefined") Views.saveTab(Views.splits.length > 0 ? Views.splits[0].currentBufferId : 0) } }
+        ToolBtn {
+            icon: "eye"
+            active: (typeof Views !== "undefined") && Views.viewMode !== "edit"
+            act: function() { if (typeof Views !== "undefined") Views.cycleViewMode() }
+        }
         ToolBtn { icon: "image" }
         Item { width: 8; height: 1 }
         Sep {}

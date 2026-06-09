@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### markdown-preview (spec #9) — 2026-06-09
+* Markdown 渲染预览：QtWebEngine 的 QML WebEngineView 加载内置 preview.html(markdown-it)，编辑/阅读/分栏三模式。
+* 架构决策验证：QML WebEngineView 在 QQuickWidget(Qt6.8 RHI) 渲染成功，无需 QWidget 回退；main 在 QApplication 前 QtWebEngineQuick::initialize()。
+* 复用源 markdown-it.min.js；preview.css 用 CSS 变量驱动主题(随 Theme 着色)；防抖渲染。
+* ViewArea viewMode(持久化 SessionConfig) + EditorArea 按模式组合 MarkdownEditor+PreviewPane + 工具栏 eye 切换。
+* ctest 8/8(含 viewMode cycle)；split 模式截图验证(左源码高亮+右渲染富文本)。
+* 再规划：拆出新 spec #9b preview-extras(MathJax/Mermaid/Prism/TOC/outline)。
+
 ### markdown-editor-core (spec #7) — 2026-06-09
 * 真正的 Markdown 源码编辑器：语法高亮 + 行号 + 当前行高亮 + Tab/缩进 + Ctrl+S + 真实行列/字数统计。
 * 架构决策(spike 验证)：不嵌 QWidget(Wayland 不稳)，改用 QML TextEdit + C++ QSyntaxHighlighter 挂 QQuickTextDocument。
