@@ -97,6 +97,29 @@ private slots:
     QVERIFY(!va.isTabDirty(bufA)); // closed/no buffer -> false
   }
 
+  void testOutlineParsing() {
+    QTemporaryDir dir;
+    const auto p = writeTemp(dir, "doc.md",
+                             "# Title\n\nintro\n\n## Section A\n\n```\n# not a heading\n```\n\n"
+                             "## Section B\n\n### Sub\n");
+    BufferMgr mgr;
+    ViewArea va(&mgr);
+    va.openFile(p);
+    const auto outline = va.outline();
+    QCOMPARE(outline.size(), 4); // Title, Section A, Section B, Sub (fence # excluded)
+    QCOMPARE(outline.at(0).toMap().value("text").toString(), QStringLiteral("Title"));
+    QCOMPARE(outline.at(0).toMap().value("level").toInt(), 1);
+    QCOMPARE(outline.at(0).toMap().value("line").toInt(), 1);
+    QCOMPARE(outline.at(1).toMap().value("text").toString(), QStringLiteral("Section A"));
+    QCOMPARE(outline.at(3).toMap().value("text").toString(), QStringLiteral("Sub"));
+    QCOMPARE(outline.at(3).toMap().value("level").toInt(), 3);
+
+    // Update text -> outline reflects it.
+    const double bid = va.splits().at(0).toMap().value("currentBufferId").toDouble();
+    va.updateText(bid, QStringLiteral("# Only One\n"));
+    QCOMPARE(va.outline().size(), 1);
+  }
+
   void testViewModeCycle() {
     BufferMgr bm;
     ViewArea va(&bm);

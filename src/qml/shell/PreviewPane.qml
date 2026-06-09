@@ -25,7 +25,11 @@ Item {
             heading: hex(Theme.heading), codeBg: hex(Theme.codeBg), codeInk: hex(Theme.codeInk),
             inlineCode: hex(Theme.codeInline), link: hex(Theme.link), quote: hex(Theme.dim),
             border: hex(Theme.border), accent: hex(Theme.accent),
-            fontUi: Theme.fontUi, fontMono: Theme.fontMono, fontSerif: Theme.fontSerif
+            fontUi: Theme.fontUi, fontMono: Theme.fontMono, fontSerif: Theme.fontSerif,
+            // Prism code-token colors, mapped from theme accent roles (#9b).
+            tokKeyword: hex(Theme.pink), tokString: hex(Theme.sage), tokComment: hex(Theme.dim),
+            tokNumber: hex(Theme.amber), tokFunc: hex(Theme.link), tokOperator: hex(Theme.text),
+            tokTag: hex(Theme.accent)
         };
         web.runJavaScript("mdSetTheme(" + JSON.stringify(t) + ")");
     }

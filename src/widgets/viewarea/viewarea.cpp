@@ -1,6 +1,7 @@
 #include "viewarea.h"
 
 #include <QFileInfo>
+#include <QRegularExpression>
 #include <QVariantMap>
 
 #include <core/buffer/buffer.h>
@@ -21,6 +22,49 @@ ViewArea::ViewArea(BufferMgr *p_bufferMgr, QObject *p_parent)
   }
   connect(&MarklyApp::getInst(), &MarklyApp::gotoLineRequested, this,
           [this](int p_line) { m_pendingGotoLine = p_line; });
+  // The outline depends on the active buffer text, which changes whenever the view
+  // does; recompute lazily but notify on every change.
+  connect(this, &ViewArea::changed, this, &ViewArea::outlineChanged);
+}
+
+QVariantList ViewArea::outline() const {
+  QVariantList items;
+  if (m_activeSplit >= m_splits.size() || !m_bufferMgr) {
+    return items;
+  }
+  auto *buffer = m_bufferMgr->get(m_splits[m_activeSplit].m_active);
+  if (!buffer) {
+    return items;
+  }
+  const auto lines = buffer->getContent().split(QLatin1Char('\n'));
+  static const QRegularExpression headingRe(QStringLiteral("^(#{1,6})\\s+(.*)$"));
+  bool inFence = false;
+  for (int i = 0; i < lines.size(); ++i) {
+    const auto &line = lines.at(i);
+    const auto trimmed = line.trimmed();
+    if (trimmed.startsWith(QStringLiteral("```")) || trimmed.startsWith(QStringLiteral("~~~"))) {
+      inFence = !inFence;
+      continue;
+    }
+    if (inFence) {
+      continue;
+    }
+    const auto m = headingRe.match(line);
+    if (m.hasMatch()) {
+      QVariantMap item;
+      item[QStringLiteral("level")] = m.captured(1).size();
+      item[QStringLiteral("text")] = m.captured(2).trimmed();
+      item[QStringLiteral("line")] = i + 1; // 1-based
+      items.append(item);
+    }
+  }
+  return items;
+}
+
+void ViewArea::gotoOutlineLine(int p_line) {
+  if (p_line >= 1) {
+    emit gotoLineNow(p_line);
+  }
 }
 
 int ViewArea::takePendingGotoLine() {

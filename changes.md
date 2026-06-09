@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### preview-extras (spec #9b) — 2026-06-09
+* 预览渲染增强：markdown-it 插件(footnote/sub/sup/mark/emoji/task-lists/anchor/toc,防御式 use)+ Prism 代码块语法高亮(token 配色随主题 CSS 变量)。复用源 web 资源。
+* 真实大纲：ViewArea 解析当前 buffer 标题(跳过围栏代码块内 #)→ Q_PROPERTY outline；三外壳大纲面板接真实数据(替换 DemoData)，点击经 gotoLineNow 即时跳转(补 #8 已激活 buffer 跳转缺口)。
+* PreviewPane pushTheme 增注 Prism token 颜色(Theme 角色→hex)。
+* ctest 11/11(test_bufferview 加 outline 用例)；截图验证任务清单复选框+Prism 高亮+真实大纲。
+* 再规划：重型引擎拆出 #9c diagram-math-extras(MathJax/Mermaid/Flowchart/PlantUML/Graphviz/WaveDrom)；章节号/user.css/滚动同步→polish。
+
 ### tags-system (spec #11) — 2026-06-09
 * 标签系统 UI：左 dock 标签页(标签 Chip+笔记数+点击筛选+选中标签的笔记列表)，复用 #4 数据层(tag/tag_node/NotebookTagMgr/updateNodeTags)+#12 queryNodesByTag。
 * TagBridge(context property Tags) tags/selectedTag/taggedNodes + selectTag/openTaggedNode/refresh；监听 currentNotebookChanged + MarklyApp.tagsChanged 刷新。

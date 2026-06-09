@@ -137,6 +137,15 @@ qt_add_resources(markly "markly_web"
         "data/web/preview.html"
         "data/web/preview.css"
         "data/web/markdown-it.min.js"
+        "data/web/markdown-it-footnote.min.js"
+        "data/web/markdown-it-sub.min.js"
+        "data/web/markdown-it-sup.min.js"
+        "data/web/markdown-it-mark.min.js"
+        "data/web/markdown-it-emoji.min.js"
+        "data/web/markdown-it-task-lists.js"
+        "data/web/markdownItAnchor.umd.js"
+        "data/web/markdownItTocDoneRight.umd.js"
+        "data/web/prism.min.js"
 )
 
 # QML files (loaded by QQuickWidget via qrc:/qml/...).

@@ -204,10 +204,11 @@ Rectangle {
                         width: parent.width - 16
                         x: 8
                         Repeater {
-                            model: Demo.OUTLINE
+                            model: (typeof Views !== "undefined") ? Views.outline : []
                             delegate: C.OutlineRow {
                                 required property var modelData
-                                label: modelData.label; level: modelData.level; active: modelData.active === true
+                                label: modelData.text; level: Math.max(0, modelData.level - 1)
+                                onClicked: Views.gotoOutlineLine(modelData.line)
                             }
                         }
                     }

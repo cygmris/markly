@@ -8,14 +8,40 @@
 <body>
   <div id="content"></div>
   <script src="markdown-it.min.js"></script>
+  <!-- markdown-it plugins (#9b) -->
+  <script src="markdown-it-footnote.min.js"></script>
+  <script src="markdown-it-sub.min.js"></script>
+  <script src="markdown-it-sup.min.js"></script>
+  <script src="markdown-it-mark.min.js"></script>
+  <script src="markdown-it-emoji.min.js"></script>
+  <script src="markdown-it-task-lists.js"></script>
+  <script src="markdownItAnchor.umd.js"></script>
+  <script src="markdownItTocDoneRight.umd.js"></script>
+  <!-- Code highlighting -->
+  <script src="prism.min.js"></script>
   <script>
     var md = window.markdownit({ html: false, linkify: true, typographer: true, breaks: false });
+
+    // Defensive plugin wiring: a missing plugin must not break rendering.
+    function usePlugin(p, opts) { try { if (p) md.use(p, opts); } catch (e) {} }
+    usePlugin(window.markdownitFootnote);
+    usePlugin(window.markdownitSub);
+    usePlugin(window.markdownitSup);
+    usePlugin(window.markdownitMark);
+    usePlugin(window.markdownitEmoji);
+    usePlugin(window.markdownitTaskLists, { label: true });
+    usePlugin(window.markdownItAnchor);
+    usePlugin(window.markdownItTocDoneRight);
+
     var content = document.getElementById('content');
 
     // Render markdown text to the content area.
     function mdRender(text) {
       try {
         content.innerHTML = md.render(text || "");
+        if (window.Prism) {
+          try { Prism.highlightAllUnder(content); } catch (e) {}
+        }
       } catch (e) {
         var pre = document.createElement('pre');
         pre.textContent = text || "";
@@ -29,20 +55,16 @@
       try {
         var c = (typeof json === 'string') ? JSON.parse(json) : json;
         var r = document.documentElement.style;
-        if (c.bg) r.setProperty('--bg', c.bg);
-        if (c.text) r.setProperty('--text', c.text);
-        if (c.dim) r.setProperty('--dim', c.dim);
-        if (c.heading) r.setProperty('--heading', c.heading);
-        if (c.codeBg) r.setProperty('--code-bg', c.codeBg);
-        if (c.codeInk) r.setProperty('--code-ink', c.codeInk);
-        if (c.inlineCode) r.setProperty('--inline-code', c.inlineCode);
-        if (c.link) r.setProperty('--link', c.link);
-        if (c.quote) r.setProperty('--quote', c.quote);
-        if (c.border) r.setProperty('--border', c.border);
-        if (c.accent) r.setProperty('--accent', c.accent);
-        if (c.fontUi) r.setProperty('--font-ui', c.fontUi);
-        if (c.fontMono) r.setProperty('--font-mono', c.fontMono);
-        if (c.fontSerif) r.setProperty('--font-serif', c.fontSerif);
+        var vars = {
+          bg: '--bg', text: '--text', dim: '--dim', heading: '--heading',
+          codeBg: '--code-bg', codeInk: '--code-ink', inlineCode: '--inline-code',
+          link: '--link', quote: '--quote', border: '--border', accent: '--accent',
+          fontUi: '--font-ui', fontMono: '--font-mono', fontSerif: '--font-serif',
+          tokKeyword: '--tok-keyword', tokString: '--tok-string', tokComment: '--tok-comment',
+          tokNumber: '--tok-number', tokFunc: '--tok-func', tokOperator: '--tok-operator',
+          tokTag: '--tok-tag'
+        };
+        for (var k in vars) { if (c[k]) r.setProperty(vars[k], c[k]); }
       } catch (e) {}
     }
     window.mdRender = mdRender;

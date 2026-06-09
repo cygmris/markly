@@ -155,14 +155,23 @@ Rectangle {
                             id: oc
                             x: 14; y: 12; width: parent.width - 28; spacing: 4
                             Text { text: "大纲"; color: Theme.faint; font.pixelSize: 11; font.bold: true; font.family: Theme.fontUi }
+                            Text {
+                                visible: (typeof Views === "undefined") || Views.outline.length === 0
+                                text: "（无标题）"; color: Theme.faint; font.pixelSize: 12; font.family: Theme.fontUi
+                            }
                             Repeater {
-                                model: ["解法", "复杂度", "相关题目"]
+                                model: (typeof Views !== "undefined") ? Views.outline : []
                                 delegate: Row {
-                                    required property string modelData
-                                    required property int index
+                                    required property var modelData
                                     height: 26; spacing: 8
-                                    Rectangle { anchors.verticalCenter: parent.verticalCenter; width: 3; height: 14; radius: 2; color: index === 0 ? Theme.accent : "transparent" }
-                                    Text { anchors.verticalCenter: parent.verticalCenter; text: modelData; color: index === 0 ? Theme.accent : Theme.dim; font.pixelSize: 13; font.weight: index === 0 ? Font.DemiBold : Font.Medium; font.family: Theme.fontUi }
+                                    Rectangle { anchors.verticalCenter: parent.verticalCenter; width: 3; height: 14; radius: 2; color: "transparent" }
+                                    Text {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        leftPadding: Math.max(0, modelData.level - 1) * 12
+                                        text: modelData.text; color: Theme.dim; font.pixelSize: 13; font.weight: modelData.level === 1 ? Font.DemiBold : Font.Medium; font.family: Theme.fontUi
+                                        elide: Text.ElideRight; width: oc.width - 20
+                                    }
+                                    MouseArea { anchors.fill: parent; onClicked: Views.gotoOutlineLine(modelData.line) }
                                 }
                             }
                         }

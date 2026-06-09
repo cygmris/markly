@@ -6,6 +6,7 @@ Item {
     property string label: ""
     property int level: 0
     property bool active: false
+    signal clicked()
 
     width: parent ? parent.width : 200
     height: 26
@@ -13,8 +14,9 @@ Item {
     Rectangle {
         anchors.fill: parent
         radius: 6
-        color: root.active ? Theme.selection : "transparent"
+        color: root.active ? Theme.selection : (hover.containsMouse ? Theme.hover : "transparent")
     }
+    MouseArea { id: hover; anchors.fill: parent; hoverEnabled: true; onClicked: root.clicked() }
     Text {
         anchors.verticalCenter: parent.verticalCenter
         x: 12 + root.level * 14

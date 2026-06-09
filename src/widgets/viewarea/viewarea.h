@@ -25,6 +25,7 @@ class ViewArea : public QObject {
   Q_PROPERTY(int statsLineCount READ statsLineCount NOTIFY statsChanged)
   Q_PROPERTY(int statsCharCount READ statsCharCount NOTIFY statsChanged)
   Q_PROPERTY(QString viewMode READ viewMode NOTIFY viewModeChanged)
+  Q_PROPERTY(QVariantList outline READ outline NOTIFY outlineChanged)
 public:
   explicit ViewArea(BufferMgr *p_bufferMgr, QObject *p_parent = nullptr);
 
@@ -57,6 +58,11 @@ public:
   // -1 means no pending jump. Set via MarklyApp::gotoLineRequested (e.g. search hit).
   Q_INVOKABLE int takePendingGotoLine();
 
+  // Outline (headings) of the active buffer; [{level, text, line}] (1-based line).
+  QVariantList outline() const;
+  // Jump the current editor to a line immediately (outline click) via gotoLineNow.
+  Q_INVOKABLE void gotoOutlineLine(int p_line);
+
   // Restore opened tabs from the session config.
   void restoreSession();
 
@@ -64,6 +70,9 @@ signals:
   void changed();
   void statsChanged();
   void viewModeChanged();
+  void outlineChanged();
+  // Jump the active editor to a 1-based line right now (outline / already-open hit).
+  void gotoLineNow(int p_line);
 
 private:
   struct Split {

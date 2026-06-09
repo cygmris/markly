@@ -93,3 +93,45 @@ body {
 #content th { background: var(--code-bg); font-weight: 700; }
 
 #content img { max-width: 100%; border-radius: 8px; }
+
+/* ---- preview-extras (#9b) ---- */
+
+/* Task lists */
+#content ul.contains-task-list { list-style: none; padding-left: 0.4em; }
+#content li.task-list-item { display: flex; align-items: flex-start; gap: 0.5em; }
+#content li.task-list-item input[type="checkbox"] { margin-top: 0.35em; accent-color: var(--accent); }
+
+/* Footnotes */
+#content .footnote-ref a { color: var(--accent); text-decoration: none; font-size: 0.8em; vertical-align: super; }
+#content hr.footnotes-sep { margin: 2.4em 0 1em; }
+#content section.footnotes { font-size: 0.9em; color: var(--dim); }
+#content .footnote-backref { text-decoration: none; }
+
+/* sub / sup / mark */
+#content sub, #content sup { font-size: 0.75em; }
+#content mark { background: color-mix(in srgb, var(--accent) 28%, transparent); color: var(--text); border-radius: 3px; padding: 0 2px; }
+
+/* emoji */
+#content .emoji { font-style: normal; }
+
+/* Heading anchors */
+#content .header-anchor, #content .vx-header-anchor { color: var(--dim); text-decoration: none; opacity: 0; margin-left: 0.3em; }
+#content h1:hover .header-anchor, #content h2:hover .header-anchor,
+#content h3:hover .header-anchor, #content h4:hover .header-anchor { opacity: 0.6; }
+
+/* ---- Prism token colors (theme-driven) ---- */
+#content code[class*="language-"], #content pre[class*="language-"] {
+  color: var(--code-ink); text-shadow: none; background: none;
+}
+#content pre[class*="language-"] { background: var(--code-bg); }
+.token.comment, .token.prolog, .token.doctype, .token.cdata { color: var(--tok-comment, #7a8b7a); font-style: italic; }
+.token.punctuation { color: var(--dim); }
+.token.keyword, .token.atrule, .token.important, .token.rule { color: var(--tok-keyword, #b06a9a); font-weight: 600; }
+.token.string, .token.char, .token.attr-value, .token.regex { color: var(--tok-string, #5a9a6a); }
+.token.number, .token.boolean, .token.constant, .token.symbol { color: var(--tok-number, #c08a4a); }
+.token.function, .token.class-name { color: var(--tok-func, #4a8ac0); }
+.token.operator, .token.entity, .token.url { color: var(--tok-operator, var(--text)); }
+.token.tag, .token.selector, .token.builtin { color: var(--tok-tag, #c06a5a); }
+.token.property, .token.attr-name { color: var(--tok-func, #4a8ac0); }
+.token.deleted { color: #c0524a; }
+.token.inserted { color: #5a9a6a; }

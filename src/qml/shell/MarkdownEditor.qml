@@ -244,6 +244,12 @@ Flickable {
         edit.select(bs, bs + out.length);
     }
 
+    // Outline / search jump-to-line for the already-open buffer (#9b).
+    Connections {
+        target: (typeof Views !== "undefined") ? Views : null
+        function onGotoLineNow(line) { root.gotoLine(line); }
+    }
+
     // Find / replace bar pinned to the visible top of the editor.
     C.FindReplaceBar {
         id: findBar
