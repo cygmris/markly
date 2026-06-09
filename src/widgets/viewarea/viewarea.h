@@ -20,6 +20,10 @@ class ViewArea : public QObject {
   Q_PROPERTY(QVariantList splits READ splits NOTIFY changed)
   Q_PROPERTY(int splitCount READ splitCount NOTIFY changed)
   Q_PROPERTY(bool hasOpenFile READ hasOpenFile NOTIFY changed)
+  Q_PROPERTY(int statsLine READ statsLine NOTIFY statsChanged)
+  Q_PROPERTY(int statsColumn READ statsColumn NOTIFY statsChanged)
+  Q_PROPERTY(int statsLineCount READ statsLineCount NOTIFY statsChanged)
+  Q_PROPERTY(int statsCharCount READ statsCharCount NOTIFY statsChanged)
 public:
   explicit ViewArea(BufferMgr *p_bufferMgr, QObject *p_parent = nullptr);
 
@@ -32,16 +36,24 @@ public:
   Q_INVOKABLE void closeTab(int p_splitIndex, double p_bufferId);
   Q_INVOKABLE void saveTab(double p_bufferId);
   Q_INVOKABLE void updateText(double p_bufferId, const QString &p_text);
+  Q_INVOKABLE QString textForBuffer(double p_bufferId) const;
   Q_INVOKABLE bool isTabDirty(double p_bufferId) const;
   Q_INVOKABLE void setActiveSplit(int p_index);
   Q_INVOKABLE void splitView();
   Q_INVOKABLE void unsplit(int p_index);
+
+  int statsLine() const { return m_statsLine; }
+  int statsColumn() const { return m_statsColumn; }
+  int statsLineCount() const { return m_statsLineCount; }
+  int statsCharCount() const { return m_statsCharCount; }
+  Q_INVOKABLE void setStats(int p_line, int p_column, int p_lineCount, int p_charCount);
 
   // Restore opened tabs from the session config.
   void restoreSession();
 
 signals:
   void changed();
+  void statsChanged();
 
 private:
   struct Split {
@@ -55,6 +67,11 @@ private:
   BufferMgr *m_bufferMgr = nullptr;
   QVector<Split> m_splits;
   int m_activeSplit = 0;
+
+  int m_statsLine = 0;
+  int m_statsColumn = 0;
+  int m_statsLineCount = 0;
+  int m_statsCharCount = 0;
 };
 } // namespace markly
 

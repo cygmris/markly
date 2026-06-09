@@ -228,8 +228,8 @@ Rectangle {
         C.StatusBar {
             width: parent.width
             Text { anchors.verticalCenter: parent.verticalCenter; text: "● 已保存"; color: Theme.accent; font.pixelSize: 12; font.weight: Font.DemiBold; font.family: Theme.fontMono }
-            Text { anchors.verticalCenter: parent.verticalCenter; text: "行 18, 列 32"; color: Theme.dim; font.pixelSize: 12; font.family: Theme.fontMono }
-            Text { anchors.verticalCenter: parent.verticalCenter; text: "23 行 · 412 字"; color: Theme.dim; font.pixelSize: 12; font.family: Theme.fontMono }
+            Text { anchors.verticalCenter: parent.verticalCenter; text: (typeof Views !== "undefined") ? ("行 " + Views.statsLine + ", 列 " + Views.statsColumn) : "行 1, 列 1"; color: Theme.dim; font.pixelSize: 12; font.family: Theme.fontMono }
+            Text { anchors.verticalCenter: parent.verticalCenter; text: (typeof Views !== "undefined") ? (Views.statsLineCount + " 行 · " + Views.statsCharCount + " 字") : "0 行"; color: Theme.dim; font.pixelSize: 12; font.family: Theme.fontMono }
             Item { width: 1; height: 1 }
             Text { anchors.verticalCenter: parent.verticalCenter; text: "UTF-8"; color: Theme.dim; font.pixelSize: 12; font.family: Theme.fontMono }
             Text { anchors.verticalCenter: parent.verticalCenter; text: "Markdown"; color: Theme.dim; font.pixelSize: 12; font.family: Theme.fontMono }

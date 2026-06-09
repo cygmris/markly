@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### markdown-editor-core (spec #7) — 2026-06-09
+* 真正的 Markdown 源码编辑器：语法高亮 + 行号 + 当前行高亮 + Tab/缩进 + Ctrl+S + 真实行列/字数统计。
+* 架构决策(spike 验证)：不嵌 QWidget(Wayland 不稳)，改用 QML TextEdit + C++ QSyntaxHighlighter 挂 QQuickTextDocument。
+* MarkdownHighlighter(QML 类型 Markly.Editor，规则 QRegularExpression，颜色取 ThemeMgr，主题变重高亮) + EditorConfig 字段 + EditorCfg 桥接 + MarkdownEditor.qml。
+* Views 统计(statsLine/Column/LineCount/CharCount)；三套外壳编辑区用 MarkdownEditor，A 状态栏真实统计。
+* test_editorconfig；ctest 8/8；截图验证(标题/代码/列表/链接/引用/强调全高亮 + 行号 + 真实统计)。
+
 ### buffer-view-area (spec #6) — 2026-06-09
 * 打开/视图层：Buffer/BufferMgr(按路径去重) + ViewArea 桥接(splits/tabs/currentText + 分屏) + EditorArea.qml(共享编辑区)。
 * 接住 #5 openFileRequested → 标签打开笔记，可编辑文本占位(#7 换编辑器内核)、保存、脏标记、基础左右分屏。

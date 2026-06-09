@@ -8,6 +8,7 @@ set(MARKLY_TESTS
     test_notebookcore
     test_notebookexplorer
     test_bufferview
+    test_editorconfig
 )
 
 foreach(test_name ${MARKLY_TESTS})

@@ -43,8 +43,6 @@ Rectangle {
         readonly property var split: (typeof Views !== "undefined" && Views.splits.length > splitIndex)
                                      ? Views.splits[splitIndex]
                                      : ({ tabs: [], currentBufferId: 0, currentText: "" })
-        property double cbid: split.currentBufferId
-        onCbidChanged: editor.text = split.currentText
 
         // Tab bar + save.
         Rectangle {
@@ -104,25 +102,12 @@ Rectangle {
             }
         }
 
-        // Editable text placeholder.
-        ScrollView {
-            width: pane.width; height: pane.height - 38
-            clip: true
-            TextArea {
-                id: editor
-                wrapMode: TextArea.Wrap
-                color: Theme.text
-                selectionColor: Theme.selection
-                font.family: root.editFont
-                font.pixelSize: 15
-                leftPadding: 24; topPadding: 16; rightPadding: 24
-                background: Rectangle { color: Theme.canvas }
-                onTextChanged: {
-                    if (pane.split.currentBufferId > 0 && text !== pane.split.currentText)
-                        Views.updateText(pane.split.currentBufferId, text);
-                }
-                Component.onCompleted: text = pane.split.currentText
-            }
+        // Markdown source editor (syntax highlight + line numbers).
+        MarkdownEditor {
+            width: pane.width
+            height: pane.height - 38
+            bufferId: pane.split.currentBufferId
+            content: pane.split.currentText
         }
     }
 }

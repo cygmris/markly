@@ -46,6 +46,10 @@ set(MARKLY_CORE_SOURCES
     widgets/explorer/dialoghelper.h
     widgets/viewarea/viewarea.cpp
     widgets/viewarea/viewarea.h
+    widgets/editors/markdownhighlighter.cpp
+    widgets/editors/markdownhighlighter.h
+    widgets/editors/editorcfgqml.cpp
+    widgets/editors/editorcfgqml.h
     core/notebook/nodevisual.h
     core/notebook/node.cpp
     core/notebook/node.h
@@ -83,6 +87,8 @@ target_link_libraries(markly_core PUBLIC
     Qt6::Widgets
     Qt6::Network
     Qt6::Sql
+    Qt6::Qml
+    Qt6::Quick
 )
 
 # Default config and other packaged resources.
@@ -121,6 +127,7 @@ qt_add_resources(markly "markly_qml"
         "qml/shell/NotebookSelector.qml"
         "qml/shell/EmptyState.qml"
         "qml/shell/EditorArea.qml"
+        "qml/shell/MarkdownEditor.qml"
         "qml/theme/ThemePreview.qml"
         "qml/theme/AppearancePanel.qml"
         "qml/icons/Icon.qml"

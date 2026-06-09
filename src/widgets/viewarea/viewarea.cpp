@@ -141,9 +141,22 @@ void ViewArea::updateText(double p_bufferId, const QString &p_text) {
   }
 }
 
+QString ViewArea::textForBuffer(double p_bufferId) const {
+  auto *buffer = m_bufferMgr ? m_bufferMgr->get(static_cast<ID>(p_bufferId)) : nullptr;
+  return buffer ? buffer->getContent() : QString();
+}
+
 bool ViewArea::isTabDirty(double p_bufferId) const {
   auto *buffer = m_bufferMgr ? m_bufferMgr->get(static_cast<ID>(p_bufferId)) : nullptr;
   return buffer && buffer->isDirty();
+}
+
+void ViewArea::setStats(int p_line, int p_column, int p_lineCount, int p_charCount) {
+  m_statsLine = p_line;
+  m_statsColumn = p_column;
+  m_statsLineCount = p_lineCount;
+  m_statsCharCount = p_charCount;
+  emit statsChanged();
 }
 
 void ViewArea::setActiveSplit(int p_index) {
