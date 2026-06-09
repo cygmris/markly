@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### export-system (spec #15) — 2026-06-09
+* 导出当前笔记为 Markdown/HTML/PDF：编辑器工具栏「导出」菜单→保存对话框→生成文件。复用 #9 预览渲染+#10 图片 data URI。
+* ExportHelper(context property Export)writeText/readResource;DialogHelper.saveFile;ViewArea.currentText。
+* ExportView.qml(隐藏 WebEngine A4):PDF 用 printToPdf;HTML 取 outerHTML→inline preview.css+删 script→自包含;图片渲染前 data URI 内联。
+* 自包含 HTML:图片内联+CSS 内联(readResource)+主题变量(html inline style)+删脚本→离线单文件可开。
+* ctest 15/15(新增 test_export)；MARKLY_EXPORT 离线验证 HTML(自包含)+PDF(PDF-1.4 1 页)生成。
+* 再规划：Pandoc/wkhtmltopdf/全合一/打印拆出 #15b export-advanced。
+
 ### snippet-template (spec #14) — 2026-06-09
 * 代码片段/魔法词/模板：左 dock「片段」页(列表+插入+删除+新增)，插入展开到编辑器光标；右键文件夹「从模板新建笔记」。
 * SnippetMgr(core):片段存 <config>/snippets/*.json;apply 展开魔法词(%date%/%time%/%datetime%/%note%/%uuid%)+$$ 选区+@@ 光标(移除记 offset);seedDefaults(日期/代码块)。

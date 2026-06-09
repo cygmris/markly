@@ -32,6 +32,14 @@ Item {
         if (loader.item) loader.item.leftPage = "snippet";
     }
 
+    // Dev/test hook: export the current note to path (#15 offline validation).
+    ExportView { id: shotExport }
+    function exportNoteTo(fmt, path) {
+        if (typeof Views === "undefined" || typeof Export === "undefined") return;
+        if (fmt === "md") Export.writeText(path, Views.currentText);
+        else shotExport.exportTo(fmt, Views.currentText, Views.currentFileDir, path, function(ok) {});
+    }
+
     Loader {
         id: loader
         anchors.fill: parent

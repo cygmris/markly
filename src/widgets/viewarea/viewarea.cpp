@@ -46,6 +46,14 @@ QString ViewArea::currentFileName() const {
   return buffer ? buffer->getName() : QString();
 }
 
+QString ViewArea::currentText() const {
+  if (m_activeSplit >= m_splits.size() || !m_bufferMgr) {
+    return QString();
+  }
+  auto *buffer = m_bufferMgr->get(m_splits[m_activeSplit].m_active);
+  return buffer ? buffer->getContent() : QString();
+}
+
 void ViewArea::requestInsert(const QString &p_text, int p_cursorOffset) {
   if (!p_text.isEmpty()) {
     emit insertText(p_text, p_cursorOffset);

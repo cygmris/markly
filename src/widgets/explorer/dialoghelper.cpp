@@ -15,6 +15,11 @@ QString DialogHelper::chooseDirectory(const QString &p_title) {
   return QFileDialog::getExistingDirectory(m_parent, p_title);
 }
 
+QString DialogHelper::saveFile(const QString &p_title, const QString &p_defaultName,
+                               const QString &p_filter) {
+  return QFileDialog::getSaveFileName(m_parent, p_title, p_defaultName, p_filter);
+}
+
 QString DialogHelper::promptText(const QString &p_title, const QString &p_label,
                                  const QString &p_default) {
   bool ok = false;

@@ -44,6 +44,8 @@ set(MARKLY_CORE_SOURCES
     widgets/quick/quickbridge.h
     widgets/snippet/snippetbridge.cpp
     widgets/snippet/snippetbridge.h
+    widgets/export/exporthelper.cpp
+    widgets/export/exporthelper.h
     core/buffer/buffer.cpp
     core/buffer/buffer.h
     core/buffer/buffermgr.cpp
@@ -173,6 +175,7 @@ qt_add_resources(markly "markly_qml"
         "qml/shell/TagsPanel.qml"
         "qml/shell/QuickAccessPanel.qml"
         "qml/shell/SnippetPanel.qml"
+        "qml/shell/ExportView.qml"
         "qml/shell/components/FindReplaceBar.qml"
         "qml/theme/ThemePreview.qml"
         "qml/theme/AppearancePanel.qml"

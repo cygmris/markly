@@ -15,6 +15,8 @@ public:
   explicit DialogHelper(QWidget *p_parent, QObject *p_objParent = nullptr);
 
   Q_INVOKABLE QString chooseDirectory(const QString &p_title);
+  Q_INVOKABLE QString saveFile(const QString &p_title, const QString &p_defaultName,
+                               const QString &p_filter);
   Q_INVOKABLE QString promptText(const QString &p_title, const QString &p_label,
                                  const QString &p_default);
   Q_INVOKABLE QString chooseColor(const QString &p_initial);

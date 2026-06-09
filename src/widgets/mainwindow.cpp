@@ -16,6 +16,7 @@
 
 #include "explorer/dialoghelper.h"
 #include "explorer/notebookexplorer.h"
+#include "export/exporthelper.h"
 #include "images/imagehelper.h"
 #include "quick/quickbridge.h"
 #include "search/searchbridge.h"
@@ -73,6 +74,8 @@ void MainWindow::setupContent() {
   // Snippets bridge (#14).
   m_quick->rootContext()->setContextProperty(
       QStringLiteral("Snippets"), new SnippetBridge(MarklyApp::getInst().getSnippetMgr(), this));
+  // Export bridge (#15).
+  m_quick->rootContext()->setContextProperty(QStringLiteral("Export"), new ExportHelper(this));
   // Markdown editor: QML-instantiable highlighter + editor config bridge.
   qmlRegisterType<MarkdownHighlighter>("Markly.Editor", 1, 0, "MarkdownHighlighter");
   m_quick->rootContext()->setContextProperty(QStringLiteral("EditorCfg"),
@@ -132,6 +135,23 @@ void MainWindow::setupContent() {
       }
       qApp->quit();
     });
+  }
+
+  // Offline export validation: MARKLY_EXPORT="fmt:path" exports the active note then quits.
+  const auto exportSpec = qEnvironmentVariable("MARKLY_EXPORT");
+  if (!exportSpec.isEmpty()) {
+    const int sep = exportSpec.indexOf(QLatin1Char(':'));
+    if (sep > 0) {
+      const auto fmt = exportSpec.left(sep);
+      const auto path = exportSpec.mid(sep + 1);
+      QTimer::singleShot(1000, this, [this, fmt, path]() {
+        if (auto *root = m_quick->rootObject()) {
+          QMetaObject::invokeMethod(root, "exportNoteTo", Q_ARG(QVariant, fmt),
+                                    Q_ARG(QVariant, path));
+        }
+      });
+      QTimer::singleShot(2500, qApp, &QCoreApplication::quit);
+    }
   }
 }
 

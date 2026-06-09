@@ -1,6 +1,8 @@
 // Markdown editor toolbar: tool button groups with separators + trailing actions.
 import QtQuick
+import QtQuick.Controls
 import "../../icons" as Icons
+import ".." as Shell
 
 Rectangle {
     id: root
@@ -9,6 +11,33 @@ Rectangle {
     color: barColor
 
     Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: Theme.border }
+
+    // Hidden render surface for HTML/PDF export (#15).
+    Shell.ExportView { id: exportView }
+
+    // Export the current note in the given format.
+    function doExport(fmt) {
+        if (typeof Views === "undefined" || Views.currentFileName.length === 0) return;
+        var base = Views.currentFileName.replace(/\.md$/i, "");
+        var ext = fmt === "pdf" ? ".pdf" : (fmt === "html" ? ".html" : ".md");
+        var filt = fmt === "pdf" ? "PDF (*.pdf)" : (fmt === "html" ? "HTML (*.html)" : "Markdown (*.md)");
+        var path = Dialogs.saveFile("导出", base + ext, filt);
+        if (path.length === 0) return;
+        if (fmt === "md") {
+            Dialogs.notify("导出", Export.writeText(path, Views.currentText) ? "已导出 Markdown" : "导出失败");
+        } else {
+            exportView.exportTo(fmt, Views.currentText, Views.currentFileDir, path, function(ok) {
+                Dialogs.notify("导出", ok ? ("已导出 " + fmt.toUpperCase()) : "导出失败");
+            });
+        }
+    }
+
+    Menu {
+        id: exportMenu
+        MenuItem { text: "导出 Markdown"; onTriggered: root.doExport("md") }
+        MenuItem { text: "导出 HTML"; onTriggered: root.doExport("html") }
+        MenuItem { text: "导出 PDF"; onTriggered: root.doExport("pdf") }
+    }
 
     component ToolBtn: Item {
         property string icon
@@ -66,6 +95,7 @@ Rectangle {
         anchors.rightMargin: 10
         anchors.verticalCenter: parent.verticalCenter
         spacing: 1
+        ToolBtn { icon: "export"; act: function() { exportMenu.popup() } }
         ToolBtn { icon: "search" }
         ToolBtn { icon: "moreV" }
     }
