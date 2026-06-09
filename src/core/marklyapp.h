@@ -117,6 +117,7 @@ private:
   NotebookMgr *m_notebookMgr = nullptr;
   HistoryMgr *m_historyMgr = nullptr;
   SnippetMgr *m_snippetMgr = nullptr;
+  TaskMgr *m_taskMgr = nullptr;
 
   // QObject managed.
   BufferMgr *m_bufferMgr = nullptr;

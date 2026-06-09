@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### task-system (spec #16) — 2026-06-09
+* 外部命令任务：TaskMgr(JSON 任务定义+变量展开+QProcess 执行)+工具栏「任务」菜单运行当前任务→notify 输出。
+* 变量 ${bufferPath}/${bufferName}/${bufferBaseName}/${bufferDir}/${notebookFolder}/${cwd}(对齐 vnote 子集),未知保留无值空。
+* run:QProcess(shell→sh -c 否则 program+args,cwd=notebookFolder||bufferDir,合并 stdout/stderr,超时 kill,FailedToStart 不崩)。seedDefaults 字数统计(wc)。
+* MarklyApp 持有真实 TaskMgr(替换 nullptr 占位);TaskBridge(context property Tasks)list+run。
+* ctest 16/16(新增 test_task:expand/run echo 真实 QProcess/缺失命令/seed)。
+* 再规划:异步流式输出/任务编辑 UI/任务快捷键待办。
+
 ### preview-math (spec #9c) — 2026-06-09
 * 预览数学公式：KaTeX(离线同步)+markdown-it-texmath 渲染 $...$ 行内/$$...$$ 块级公式。接入 #9 preview.html。
 * 资源:katex.min.js/css+20 woff2 字体+texmath 打包 QRC;defensive md.use(dollars,throwOnError:false)。preview.css 公式继承文本色。

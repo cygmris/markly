@@ -21,6 +21,7 @@
 #include "quick/quickbridge.h"
 #include "search/searchbridge.h"
 #include "snippet/snippetbridge.h"
+#include "task/taskbridge.h"
 #include "tags/tagbridge.h"
 #include "viewarea/viewarea.h"
 #include <core/configmgr.h>
@@ -76,6 +77,10 @@ void MainWindow::setupContent() {
       QStringLiteral("Snippets"), new SnippetBridge(MarklyApp::getInst().getSnippetMgr(), this));
   // Export bridge (#15).
   m_quick->rootContext()->setContextProperty(QStringLiteral("Export"), new ExportHelper(this));
+  // Task bridge (#16).
+  m_quick->rootContext()->setContextProperty(
+      QStringLiteral("Tasks"), new TaskBridge(MarklyApp::getInst().getTaskMgr(),
+                                              MarklyApp::getInst().getNotebookMgr(), this));
   // Markdown editor: QML-instantiable highlighter + editor config bridge.
   qmlRegisterType<MarkdownHighlighter>("Markly.Editor", 1, 0, "MarkdownHighlighter");
   m_quick->rootContext()->setContextProperty(QStringLiteral("EditorCfg"),

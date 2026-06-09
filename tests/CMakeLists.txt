@@ -16,6 +16,7 @@ set(MARKLY_TESTS
     test_history
     test_snippet
     test_export
+    test_task
 )
 
 foreach(test_name ${MARKLY_TESTS})

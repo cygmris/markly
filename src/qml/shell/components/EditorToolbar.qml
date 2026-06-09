@@ -39,6 +39,24 @@ Rectangle {
         MenuItem { text: "导出 PDF"; onTriggered: root.doExport("pdf") }
     }
 
+    // Task menu (#16): list tasks, run the chosen one on the current note.
+    Menu {
+        id: taskMenu
+        MenuItem { text: "（无任务）"; enabled: false; visible: (typeof Tasks === "undefined") || Tasks.list.length === 0 }
+        Instantiator {
+            model: (typeof Tasks !== "undefined") ? Tasks.list : []
+            delegate: MenuItem {
+                text: modelData.name
+                onTriggered: {
+                    var out = Tasks.run(modelData.name, Views.currentFileDir, Views.currentFileName);
+                    Dialogs.notify("任务: " + modelData.name, out);
+                }
+            }
+            onObjectAdded: function(index, object) { taskMenu.insertItem(index + 1, object) }
+            onObjectRemoved: function(index, object) { taskMenu.removeItem(object) }
+        }
+    }
+
     component ToolBtn: Item {
         property string icon
         property bool active: false
@@ -95,6 +113,7 @@ Rectangle {
         anchors.rightMargin: 10
         anchors.verticalCenter: parent.verticalCenter
         spacing: 1
+        ToolBtn { icon: "cmd"; act: function() { taskMenu.popup() } }
         ToolBtn { icon: "export"; act: function() { exportMenu.popup() } }
         ToolBtn { icon: "search" }
         ToolBtn { icon: "moreV" }

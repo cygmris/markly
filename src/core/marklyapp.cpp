@@ -7,6 +7,7 @@
 #include "historymgr.h"
 #include "notebookmgr.h"
 #include "snippet/snippetmgr.h"
+#include "task/taskmgr.h"
 #include "thememgr.h"
 
 using namespace markly;
@@ -22,6 +23,7 @@ MarklyApp::MarklyApp(QObject *p_parent) : QObject(p_parent) {
   // Every open (explorer / search / tags / history) records into history.
   connect(this, &MarklyApp::openFileRequested, m_historyMgr, &HistoryMgr::addToHistory);
   m_snippetMgr = new SnippetMgr(this);
+  m_taskMgr = new TaskMgr(this);
 }
 
 void MarklyApp::initThemeMgr() { m_themeMgr = new ThemeMgr(this); }
@@ -35,6 +37,7 @@ void MarklyApp::initLoad() {
   m_notebookMgr->loadNotebooks();
   m_historyMgr->load();
   m_snippetMgr->load();
+  m_taskMgr->load();
 }
 
 HistoryMgr *MarklyApp::getHistoryMgr() const { return m_historyMgr; }
@@ -47,10 +50,7 @@ NotebookMgr *MarklyApp::getNotebookMgr() const { return m_notebookMgr; }
 
 BufferMgr *MarklyApp::getBufferMgr() const { return m_bufferMgr; }
 
-TaskMgr *MarklyApp::getTaskMgr() const {
-  // Installed by spec #16 (task-system).
-  return nullptr;
-}
+TaskMgr *MarklyApp::getTaskMgr() const { return m_taskMgr; }
 
 void MarklyApp::setMainWindow(MainWindow *p_mainWindow) { m_mainWindow = p_mainWindow; }
 

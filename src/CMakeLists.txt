@@ -40,6 +40,10 @@ set(MARKLY_CORE_SOURCES
     core/historymgr.h
     core/snippet/snippetmgr.cpp
     core/snippet/snippetmgr.h
+    core/task/taskmgr.cpp
+    core/task/taskmgr.h
+    widgets/task/taskbridge.cpp
+    widgets/task/taskbridge.h
     widgets/quick/quickbridge.cpp
     widgets/quick/quickbridge.h
     widgets/snippet/snippetbridge.cpp
