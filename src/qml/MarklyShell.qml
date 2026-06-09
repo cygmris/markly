@@ -22,6 +22,11 @@ Item {
         if (tag.length > 0) Tags.selectTag(tag);
     }
 
+    // Dev/test hook: switch to the quick-access page.
+    function showQuick() {
+        if (loader.item) loader.item.leftPage = "quick";
+    }
+
     Loader {
         id: loader
         anchors.fill: parent

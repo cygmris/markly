@@ -50,6 +50,12 @@ public:
   QString getViewMode() const;
   void setViewMode(const QString &p_mode);
 
+  QStringList getHistory() const;
+  void setHistory(const QStringList &p_paths);
+
+  QStringList getQuickAccess() const;
+  void setQuickAccess(const QStringList &p_paths);
+
 private:
   QByteArray m_mainWindowGeometry;
 
@@ -66,6 +72,9 @@ private:
   QString m_currentFile;
 
   QString m_viewMode;
+
+  QStringList m_history;
+  QStringList m_quickAccess;
 };
 } // namespace markly
 

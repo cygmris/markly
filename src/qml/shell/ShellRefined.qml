@@ -74,6 +74,13 @@ Rectangle {
                         spacing: 5
                         Icons.Icon { anchors.verticalCenter: parent.verticalCenter; name: modelData.ic; size: 14; color: Theme.dim }
                         Text { anchors.verticalCenter: parent.verticalCenter; text: modelData.t; color: Theme.dim; font.pixelSize: 13; font.family: Theme.fontUi }
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                if (modelData.ic === "plus") shell.newRootNote();
+                                else if (modelData.ic === "flash") Quick.openFlash();
+                            }
+                        }
                     }
                 }
             }
@@ -108,7 +115,7 @@ Rectangle {
                     C.RailButton { icon: "tag"; active: shell.leftPage === "tags"; onClicked: shell.leftPage = "tags" }
                     C.RailButton { icon: "search"; active: shell.leftPage === "search"; onClicked: shell.leftPage = "search" }
                     C.RailButton { icon: "snippet" }
-                    C.RailButton { icon: "history" }
+                    C.RailButton { icon: "history"; active: shell.leftPage === "quick"; onClicked: shell.leftPage = "quick" }
                 }
                 C.RailButton { icon: "settings"; anchors.horizontalCenter: parent.horizontalCenter; anchors.bottom: parent.bottom; anchors.bottomMargin: 8 }
             }
@@ -122,6 +129,7 @@ Rectangle {
                 Rectangle { anchors.right: parent.right; width: 1; height: parent.height; color: Theme.border }
                 SearchPanel { anchors.fill: parent; visible: shell.leftPage === "search" }
                 TagsPanel { anchors.fill: parent; visible: shell.leftPage === "tags" }
+                QuickAccessPanel { anchors.fill: parent; visible: shell.leftPage === "quick" }
                 Column {
                     visible: shell.leftPage === "explorer"
                     anchors.fill: parent

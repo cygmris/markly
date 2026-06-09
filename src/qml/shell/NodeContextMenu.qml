@@ -55,6 +55,15 @@ Menu {
         }
     }
     MenuItem {
+        property string absPath: menu.targetType === "file" ? Explorer.nodeAbsPath(menu.targetId) : ""
+        text: Quick.isPinned(absPath) ? "取消固定" : "固定到快速访问"
+        visible: menu.targetType === "file"
+        onTriggered: {
+            if (Quick.isPinned(absPath)) Quick.unpin(absPath);
+            else Quick.pin(absPath);
+        }
+    }
+    MenuItem {
         text: "设置颜色"
         visible: !menu.targetIsExternal
         onTriggered: {

@@ -25,6 +25,8 @@ void SessionConfig::init() {
   m_openedFiles = readStringList(obj, QStringLiteral("opened_files"));
   m_currentFile = readString(obj, QStringLiteral("current_file"));
   m_viewMode = readString(obj, QStringLiteral("view_mode"));
+  m_history = readStringList(obj, QStringLiteral("history"));
+  m_quickAccess = readStringList(obj, QStringLiteral("quick_access"));
 }
 
 QJsonObject SessionConfig::toJson() const {
@@ -38,7 +40,18 @@ QJsonObject SessionConfig::toJson() const {
   writeStringList(obj, QStringLiteral("opened_files"), m_openedFiles);
   obj[QStringLiteral("current_file")] = m_currentFile;
   obj[QStringLiteral("view_mode")] = m_viewMode;
+  writeStringList(obj, QStringLiteral("history"), m_history);
+  writeStringList(obj, QStringLiteral("quick_access"), m_quickAccess);
   return obj;
+}
+
+QStringList SessionConfig::getHistory() const { return m_history; }
+void SessionConfig::setHistory(const QStringList &p_paths) {
+  updateConfig(m_history, p_paths, this);
+}
+QStringList SessionConfig::getQuickAccess() const { return m_quickAccess; }
+void SessionConfig::setQuickAccess(const QStringList &p_paths) {
+  updateConfig(m_quickAccess, p_paths, this);
 }
 
 void SessionConfig::writeToSettings() const { getMgr()->writeSessionSettings(toJson()); }

@@ -44,6 +44,7 @@ Rectangle {
                 width: 244; height: parent.height; color: Theme.rail
                 SearchPanel { anchors.fill: parent; visible: shell.leftPage === "search" }
                 TagsPanel { anchors.fill: parent; visible: shell.leftPage === "tags" }
+                QuickAccessPanel { anchors.fill: parent; visible: shell.leftPage === "quick" }
                 Column {
                     visible: shell.leftPage === "explorer"
                     anchors.fill: parent; anchors.margins: 10; spacing: 2
@@ -59,7 +60,7 @@ Rectangle {
                                 Text { anchors.verticalCenter: parent.verticalCenter; width: parent.width - 50; text: modelData.label; color: modelData.label === "收件箱" ? Theme.railActive : Theme.railDim; font.pixelSize: 13; font.family: Theme.fontUi }
                                 Text { anchors.verticalCenter: parent.verticalCenter; visible: modelData.count !== ""; text: modelData.count; color: Theme.railDim; font.pixelSize: 11; font.family: Theme.fontMono }
                             }
-                            MouseArea { anchors.fill: parent; onClicked: shell.leftPage = "explorer" }
+                            MouseArea { anchors.fill: parent; onClicked: shell.leftPage = (modelData.label === "最近") ? "quick" : "explorer" }
                         }
                     }
                     Rectangle { width: parent.width; height: 1; color: Theme.border; opacity: 0.6 }

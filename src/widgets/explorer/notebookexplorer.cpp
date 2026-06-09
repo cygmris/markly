@@ -301,6 +301,11 @@ QString NotebookExplorer::nodeTagsCsv(double p_nodeId) const {
   return node ? node->getTags().join(QStringLiteral(", ")) : QString();
 }
 
+QString NotebookExplorer::nodeAbsPath(double p_nodeId) const {
+  auto node = resolveNode(static_cast<ID>(p_nodeId));
+  return node ? node->fetchAbsolutePath() : QString();
+}
+
 void NotebookExplorer::setNodeTags(double p_nodeId, const QString &p_csv) {
   auto nb = currentNotebook();
   auto node = resolveNode(static_cast<ID>(p_nodeId));

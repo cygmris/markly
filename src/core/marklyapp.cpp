@@ -4,6 +4,7 @@
 #include <QDateTime>
 
 #include "buffer/buffermgr.h"
+#include "historymgr.h"
 #include "notebookmgr.h"
 #include "thememgr.h"
 
@@ -16,6 +17,9 @@ MarklyApp::MarklyApp(QObject *p_parent) : QObject(p_parent) {
   initThemeMgr();
   initNotebookMgr();
   initBufferMgr();
+  m_historyMgr = new HistoryMgr(this);
+  // Every open (explorer / search / tags / history) records into history.
+  connect(this, &MarklyApp::openFileRequested, m_historyMgr, &HistoryMgr::addToHistory);
 }
 
 void MarklyApp::initThemeMgr() { m_themeMgr = new ThemeMgr(this); }
@@ -27,7 +31,10 @@ void MarklyApp::initBufferMgr() { m_bufferMgr = new BufferMgr(this); }
 void MarklyApp::initLoad() {
   // Restore previously open notebooks (good to call after MainWindow is shown).
   m_notebookMgr->loadNotebooks();
+  m_historyMgr->load();
 }
+
+HistoryMgr *MarklyApp::getHistoryMgr() const { return m_historyMgr; }
 
 ThemeMgr &MarklyApp::getThemeMgr() const { return *m_themeMgr; }
 

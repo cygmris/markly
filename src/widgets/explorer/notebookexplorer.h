@@ -57,6 +57,9 @@ public:
   Q_INVOKABLE QString nodeTagsCsv(double p_nodeId) const;
   Q_INVOKABLE void setNodeTags(double p_nodeId, const QString &p_csv);
 
+  // Absolute on-disk path of a node ("" if not resolvable). For quick-access pin (#13).
+  Q_INVOKABLE QString nodeAbsPath(double p_nodeId) const;
+
 signals:
   void changed();
 

@@ -13,6 +13,7 @@ set(MARKLY_TESTS
     test_editorinput
     test_tags
     test_images
+    test_history
 )
 
 foreach(test_name ${MARKLY_TESTS})

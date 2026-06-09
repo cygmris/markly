@@ -11,6 +11,7 @@ class MainWindow;
 class ThemeMgr;
 class NotebookMgr;
 class BufferMgr;
+class HistoryMgr;
 class TaskMgr;
 
 // Central singleton coordinator (counterpart of VNote's VNoteX).
@@ -35,6 +36,8 @@ public:
   NotebookMgr *getNotebookMgr() const;
 
   BufferMgr *getBufferMgr() const;
+
+  HistoryMgr *getHistoryMgr() const;
 
   // Placeholder until the owning spec lands.
   TaskMgr *getTaskMgr() const;
@@ -109,6 +112,7 @@ private:
 
   // QObject managed.
   NotebookMgr *m_notebookMgr = nullptr;
+  HistoryMgr *m_historyMgr = nullptr;
 
   // QObject managed.
   BufferMgr *m_bufferMgr = nullptr;

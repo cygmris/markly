@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### quickaccess-history-flash (spec #13) — 2026-06-09
+* 快速访问/历史/闪念：左 dock「快速访问」页(已固定 + 最近 MRU)，右键笔记「固定到快速访问」，「快速记录」一键打开闪念 flash.md。
+* HistoryMgr(core,markly_core):addToHistory(MRU 去重+cap 50)/pin/unpin/isPinned/ensureFlashFile(AppConfigLocation/flash.md);MarklyApp connect openFileRequested→addToHistory(所有打开来源进历史)。
+* SessionConfig 加 history/quick_access 持久化;QuickBridge(context property Quick)history/quickAccess+open/pin/unpin/isPinned/openFlash;NotebookExplorer.nodeAbsPath。
+* QuickAccessPanel.qml(已固定/最近两区+空状态);三外壳 history 按钮/「最近」nav→leftPage=quick;A「快速记录」→openFlash。
+* ctest 13/13(新增 test_history)；截图验证快速访问页固定+最近列表。
+* 再规划：QuickAccess 文件夹/历史时间戳/Flash 多页 → 后续小迭代。
+
 ### images-local (spec #10) — 2026-06-09
 * 本地图片：编辑器 Ctrl+V 粘贴 / 拖入图片 → 存到笔记 vx_images/ → 插入 ![](rel) → 预览内联显示。
 * ImageHelper(context property Images) clipboardHasImage/pasteImage/importImage/toDataUri；ViewArea.currentFileDir(Q_PROPERTY)。

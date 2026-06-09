@@ -36,6 +36,10 @@ set(MARKLY_CORE_SOURCES
     core/theme/stylesheetgenerator.h
     core/notebookmgr.cpp
     core/notebookmgr.h
+    core/historymgr.cpp
+    core/historymgr.h
+    widgets/quick/quickbridge.cpp
+    widgets/quick/quickbridge.h
     core/buffer/buffer.cpp
     core/buffer/buffer.h
     core/buffer/buffermgr.cpp
@@ -163,6 +167,7 @@ qt_add_resources(markly "markly_qml"
         "qml/shell/PreviewPane.qml"
         "qml/shell/SearchPanel.qml"
         "qml/shell/TagsPanel.qml"
+        "qml/shell/QuickAccessPanel.qml"
         "qml/shell/components/FindReplaceBar.qml"
         "qml/theme/ThemePreview.qml"
         "qml/theme/AppearancePanel.qml"
