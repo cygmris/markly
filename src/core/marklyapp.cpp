@@ -2,6 +2,11 @@
 
 #include <QCoreApplication>
 #include <QDateTime>
+#include <QLocale>
+#include <QTranslator>
+
+#include "configmgr.h"
+#include "widgetconfig.h"
 
 #include "buffer/buffermgr.h"
 #include "historymgr.h"
@@ -43,6 +48,36 @@ void MarklyApp::initLoad() {
 HistoryMgr *MarklyApp::getHistoryMgr() const { return m_historyMgr; }
 
 SnippetMgr *MarklyApp::getSnippetMgr() const { return m_snippetMgr; }
+
+void MarklyApp::applyLanguage(const QString &p_language) {
+  // Resolve "auto" to the system locale name.
+  QString resolved = p_language;
+  if (resolved.isEmpty() || resolved == QStringLiteral("auto")) {
+    resolved = QLocale::system().name(); // e.g. "en_US", "zh_CN"
+  }
+
+  if (m_translator) {
+    QCoreApplication::removeTranslator(m_translator);
+    delete m_translator;
+    m_translator = nullptr;
+  }
+
+  // Chinese is the source language — no .qm needed; fall back to source strings.
+  if (resolved.startsWith(QStringLiteral("zh"))) {
+    return;
+  }
+
+  // Map to a packaged catalog (only en_US shipped for now).
+  QString catalog = resolved.startsWith(QStringLiteral("en")) ? QStringLiteral("en_US")
+                                                              : resolved;
+  auto *tr = new QTranslator(this);
+  if (tr->load(QStringLiteral(":/i18n/markly_%1.qm").arg(catalog))) {
+    QCoreApplication::installTranslator(tr);
+    m_translator = tr;
+  } else {
+    delete tr;
+  }
+}
 
 ThemeMgr &MarklyApp::getThemeMgr() const { return *m_themeMgr; }
 

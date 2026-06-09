@@ -16,18 +16,19 @@ Item {
     function hide() { visible = false; if (typeof Search !== "undefined") Search.clear(); }
 
     // Static command list. Each has a label + run() closure.
+    property string lang: (typeof Locale !== "undefined") ? Locale.language : "auto"
     readonly property var commands: [
-        { label: "新建笔记", run: function(){ if (root.actions.newNote) root.actions.newNote() } },
-        { label: "快速记录（闪念）", run: function(){ if (typeof Quick !== "undefined") Quick.openFlash() } },
-        { label: "打开设置", run: function(){ if (root.actions.openSettings) root.actions.openSettings() } },
-        { label: "切换 深色/浅色", run: function(){ if (typeof Appearance !== "undefined") Appearance.theme = Appearance.resolvedDark ? 0 : 1 } },
-        { label: "聚焦：搜索", run: function(){ if (root.actions.setPage) root.actions.setPage("search") } },
-        { label: "聚焦：标签", run: function(){ if (root.actions.setPage) root.actions.setPage("tags") } },
-        { label: "聚焦：快速访问", run: function(){ if (root.actions.setPage) root.actions.setPage("quick") } },
-        { label: "聚焦：片段", run: function(){ if (root.actions.setPage) root.actions.setPage("snippet") } },
-        { label: "导出 PDF", run: function(){ root.doExport("pdf") } },
-        { label: "导出 HTML", run: function(){ root.doExport("html") } },
-        { label: "导出 Markdown", run: function(){ root.doExport("md") } }
+        { label: qsTr("新建笔记"), run: function(){ if (root.actions.newNote) root.actions.newNote() } },
+        { label: qsTr("快速记录（闪念）"), run: function(){ if (typeof Quick !== "undefined") Quick.openFlash() } },
+        { label: qsTr("打开设置"), run: function(){ if (root.actions.openSettings) root.actions.openSettings() } },
+        { label: qsTr("切换 深色/浅色"), run: function(){ if (typeof Appearance !== "undefined") Appearance.theme = Appearance.resolvedDark ? 0 : 1 } },
+        { label: qsTr("聚焦：搜索"), run: function(){ if (root.actions.setPage) root.actions.setPage("search") } },
+        { label: qsTr("聚焦：标签"), run: function(){ if (root.actions.setPage) root.actions.setPage("tags") } },
+        { label: qsTr("聚焦：快速访问"), run: function(){ if (root.actions.setPage) root.actions.setPage("quick") } },
+        { label: qsTr("聚焦：片段"), run: function(){ if (root.actions.setPage) root.actions.setPage("snippet") } },
+        { label: qsTr("导出 PDF"), run: function(){ root.doExport("pdf") } },
+        { label: qsTr("导出 HTML"), run: function(){ root.doExport("html") } },
+        { label: qsTr("导出 Markdown"), run: function(){ root.doExport("md") } }
     ]
 
     // Self-contained export (same as EditorToolbar.doExport, reuses ExportView/#15).
@@ -103,7 +104,7 @@ Item {
                     id: field
                     anchors.fill: parent; anchors.leftMargin: 12; anchors.rightMargin: 12
                     verticalAlignment: TextInput.AlignVCenter
-                    placeholderText: "跳转、搜索或运行命令…"
+                    placeholderText: qsTr("跳转、搜索或运行命令…")
                     color: Theme.text; placeholderTextColor: Theme.faint
                     font.pixelSize: 14; font.family: Theme.fontUi; background: Item {}
                     onTextChanged: {

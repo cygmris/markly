@@ -25,3 +25,13 @@ void WidgetConfig::setAppearance(const AppearanceConfig &p_appearance) {
   ++m_revision;
   writeToSettings();
 }
+
+QString WidgetConfig::getLanguage() const {
+  return m_jobj.value(QStringLiteral("language")).toString(QStringLiteral("auto"));
+}
+
+void WidgetConfig::setLanguage(const QString &p_language) {
+  m_jobj[QStringLiteral("language")] = p_language;
+  ++m_revision;
+  writeToSettings();
+}

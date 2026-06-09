@@ -17,6 +17,7 @@ set(MARKLY_TESTS
     test_snippet
     test_export
     test_task
+    test_locale
 )
 
 foreach(test_name ${MARKLY_TESTS})

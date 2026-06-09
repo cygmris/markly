@@ -21,6 +21,10 @@ public:
   AppearanceConfig getAppearance() const;
   void setAppearance(const AppearanceConfig &p_appearance);
 
+  // UI language: "auto" / "zh_CN" / "en_US" (i18n spec #20).
+  QString getLanguage() const;
+  void setLanguage(const QString &p_language);
+
 private:
   QJsonObject m_jobj;
 };

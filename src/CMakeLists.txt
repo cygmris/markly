@@ -44,6 +44,8 @@ set(MARKLY_CORE_SOURCES
     core/task/taskmgr.h
     widgets/task/taskbridge.cpp
     widgets/task/taskbridge.h
+    widgets/locale/localebridge.cpp
+    widgets/locale/localebridge.h
     widgets/quick/quickbridge.cpp
     widgets/quick/quickbridge.h
     widgets/snippet/snippetbridge.cpp
@@ -124,6 +126,12 @@ target_link_libraries(markly_core PUBLIC
 qt_add_resources(markly_core "markly_data"
     PREFIX "/"
     FILES "data/core/markly.json"
+)
+
+# Translations (#20). In markly_core so tests can access :/i18n/*.qm.
+qt_add_resources(markly_core "markly_i18n"
+    PREFIX "/"
+    FILES "i18n/markly_en_US.qm"
 )
 
 # Main executable.

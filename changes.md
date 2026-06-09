@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### i18n (spec #20) — 2026-06-09
+* 国际化基础设施:QTranslator 加载链路+语言偏好(WidgetConfig.language)+设置内语言切换(engine.retranslate 即时)+qsTr 子集(SettingsDialog/UnitedEntry)+英文 .ts/.qm。
+* MarklyApp.applyLanguage(auto→系统/zh 源/en_US 加载 :/i18n/markly_en_US.qm);main 启动前安装;LocaleBridge(context property Locale)setLanguage→配置+applyLanguage+retranslate。
+* 分类用稳定 key(editor/appearance/about)匹配避免 retranslate key 失配;langseg 字符串值控件切语言。
+* markly_en_US.ts(32 条,context=QML 文件名)lrelease 生成 .qm 打包 markly_core QRC。
+* ctest 17/17(新增 test_locale:language 往返+QTranslator translate 设置→Settings/新建笔记→New note);截图验证 en_US 设置对话框全英文。
+* 再规划:系统托盘/更新检查/文件关联/NavigationMode 拆出 #20b tray-update;全量 qsTr 覆盖持续任务。
+
 ### united-entry (spec #17) — 2026-06-09
 * 统一入口命令面板：Ctrl+P 覆盖层,输入运行命令或跳转笔记(名称搜索复用 #12 Search)。纯 QML 复用既有桥接,无新 C++。
 * UnitedEntry.qml:命令模型(新建笔记/快速记录/打开设置/切换深浅/聚焦页/导出 PDF·HTML·MD)+笔记结果混排+类型徽章+键盘导航(上下/回车)。导出命令内嵌 ExportView 自包含。

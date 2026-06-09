@@ -6,6 +6,7 @@
 #include <application/application.h>
 #include <application/commandlineoptions.h>
 #include <core/configmgr.h>
+#include <core/widgetconfig.h>
 #include <core/exception.h>
 #include <core/logger.h>
 #include <core/marklyapp.h>
@@ -69,6 +70,9 @@ int main(int argc, char *argv[]) {
 
   // Logger after app info and config are ready.
   Logger::init(cmdOptions.m_verbose, cmdOptions.m_logToStderr);
+
+  // Install the UI translator per the saved language (#20), before any UI is built.
+  MarklyApp::getInst().applyLanguage(ConfigMgr::getInst().getWidgetConfig().getLanguage());
 
   qInfo() << QStringLiteral("%1 (v%2) started at %3 (%4)")
                  .arg(ConfigMgr::c_appName, app.applicationVersion(),

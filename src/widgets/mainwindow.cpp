@@ -18,6 +18,7 @@
 #include "explorer/notebookexplorer.h"
 #include "export/exporthelper.h"
 #include "images/imagehelper.h"
+#include "locale/localebridge.h"
 #include "quick/quickbridge.h"
 #include "search/searchbridge.h"
 #include "snippet/snippetbridge.h"
@@ -87,6 +88,9 @@ void MainWindow::setupContent() {
                                              new EditorCfgQml(this));
   m_quick->rootContext()->setContextProperty(QStringLiteral("EditInput"),
                                              new EditInputQml(this));
+  // Language switch bridge (#20).
+  m_quick->rootContext()->setContextProperty(QStringLiteral("Locale"),
+                                             new LocaleBridge(m_quick->engine(), this));
   m_quick->setSource(QUrl(QStringLiteral("qrc:/qml/MarklyShell.qml")));
   if (m_quick->status() == QQuickWidget::Error) {
     qCritical() << "failed to load MarklyShell.qml:" << m_quick->errors();

@@ -8,7 +8,7 @@ Item {
     anchors.fill: parent
     visible: false
 
-    property string category: "编辑器"
+    property string category: "editor"
 
     function show() { visible = true; searchField.text = ""; searchField.forceActiveFocus(); }
     function hide() { visible = false; }
@@ -19,35 +19,45 @@ Item {
         { id: "rose", hex: "#d4488a" }, { id: "green", hex: "#3f9142" }
     ]
 
-    // Setting items. get/set are closures; type drives the control.
+    // Setting items. get/set are closures; type drives the control. lang ties retranslate.
+    // cat is a stable key (not translated); display label comes from catLabel().
+    property string lang: (typeof Locale !== "undefined") ? Locale.language : "auto"
     readonly property var items: [
-        { cat: "编辑器", label: "字号", type: "stepper", min: 8, max: 32,
+        { cat: "editor", label: qsTr("字号"), type: "stepper", min: 8, max: 32,
           get: function(){ return EditorCfg.fontSize }, set: function(v){ EditorCfg.fontSize = v } },
-        { cat: "编辑器", label: "Tab 宽度", type: "stepper", min: 1, max: 8,
+        { cat: "editor", label: qsTr("Tab 宽度"), type: "stepper", min: 1, max: 8,
           get: function(){ return EditorCfg.tabWidth }, set: function(v){ EditorCfg.tabWidth = v } },
-        { cat: "编辑器", label: "空格展开 Tab", type: "toggle",
+        { cat: "editor", label: qsTr("空格展开 Tab"), type: "toggle",
           get: function(){ return EditorCfg.expandTab }, set: function(v){ EditorCfg.expandTab = v } },
-        { cat: "编辑器", label: "显示行号", type: "toggle",
+        { cat: "editor", label: qsTr("显示行号"), type: "toggle",
           get: function(){ return EditorCfg.lineNumber }, set: function(v){ EditorCfg.lineNumber = v } },
-        { cat: "编辑器", label: "高亮当前行", type: "toggle",
+        { cat: "editor", label: qsTr("高亮当前行"), type: "toggle",
           get: function(){ return EditorCfg.highlightCurrentLine }, set: function(v){ EditorCfg.highlightCurrentLine = v } },
-        { cat: "编辑器", label: "自动缩进", type: "toggle",
+        { cat: "editor", label: qsTr("自动缩进"), type: "toggle",
           get: function(){ return EditorCfg.autoIndent }, set: function(v){ EditorCfg.autoIndent = v } },
-        { cat: "编辑器", label: "列表续行", type: "toggle",
+        { cat: "editor", label: qsTr("列表续行"), type: "toggle",
           get: function(){ return EditorCfg.continueList }, set: function(v){ EditorCfg.continueList = v } },
-        { cat: "编辑器", label: "括号自动配对", type: "toggle",
+        { cat: "editor", label: qsTr("括号自动配对"), type: "toggle",
           get: function(){ return EditorCfg.autoPair }, set: function(v){ EditorCfg.autoPair = v } },
-        { cat: "外观", label: "界面风格", type: "seg", options: [{v:0,t:"精炼"},{v:1,t:"沉浸"},{v:2,t:"工作台"}],
+        { cat: "appearance", label: qsTr("界面风格"), type: "seg", options: [{v:0,t:"精炼"},{v:1,t:"沉浸"},{v:2,t:"工作台"}],
           get: function(){ return Appearance.style }, set: function(v){ Appearance.style = v } },
-        { cat: "外观", label: "主题", type: "seg", options: [{v:0,t:"浅色"},{v:1,t:"深色"},{v:2,t:"跟随系统"}],
+        { cat: "appearance", label: qsTr("主题"), type: "seg", options: [{v:0,t:"浅色"},{v:1,t:"深色"},{v:2,t:"跟随系统"}],
           get: function(){ return Appearance.theme }, set: function(v){ Appearance.theme = v } },
-        { cat: "外观", label: "强调色", type: "swatch",
+        { cat: "appearance", label: qsTr("强调色"), type: "swatch",
           get: function(){ return Appearance.accent }, set: function(v){ Appearance.accent = v } },
-        { cat: "外观", label: "显示左栏", type: "toggle",
+        { cat: "appearance", label: qsTr("语言"), type: "langseg",
+          get: function(){ return root.lang }, set: function(v){ if (typeof Locale !== "undefined") Locale.setLanguage(v) } },
+        { cat: "appearance", label: qsTr("显示左栏"), type: "toggle",
           get: function(){ return Appearance.showLeft }, set: function(v){ Appearance.showLeft = v } },
-        { cat: "外观", label: "显示右栏", type: "toggle",
+        { cat: "appearance", label: qsTr("显示右栏"), type: "toggle",
           get: function(){ return Appearance.showRight }, set: function(v){ Appearance.showRight = v } },
-        { cat: "关于", label: "Markly", type: "about", text: "Qt 6.8 · QML 外壳 · QWebEngine 预览 · SQLite FTS5 · v0.1" }
+        { cat: "about", label: "Markly", type: "about", text: "Qt 6.8 · QML 外壳 · QWebEngine 预览 · SQLite FTS5 · v0.1" }
+    ]
+    // Category key -> display label (retranslated via lang).
+    readonly property var categories: [
+        { key: "editor", label: qsTr("编辑器") },
+        { key: "appearance", label: qsTr("外观") },
+        { key: "about", label: qsTr("关于") }
     ]
 
     function visibleItems() {
@@ -83,7 +93,7 @@ Item {
             Item {
                 width: parent.width; height: 32
                 Text { anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter
-                       text: "设置"; color: Theme.heading; font.pixelSize: 18; font.bold: true; font.family: Theme.fontUi }
+                       text: qsTr("设置"); color: Theme.heading; font.pixelSize: 18; font.bold: true; font.family: Theme.fontUi }
                 Rectangle {
                     anchors.centerIn: parent; width: 240; height: 30; radius: 8; color: Theme.card
                     border.color: searchField.activeFocus ? Theme.accent : Theme.border; border.width: 1
@@ -91,7 +101,7 @@ Item {
                         id: searchField
                         anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8
                         verticalAlignment: TextInput.AlignVCenter
-                        placeholderText: "搜索设置…"; color: Theme.text; placeholderTextColor: Theme.faint
+                        placeholderText: qsTr("搜索设置…"); color: Theme.text; placeholderTextColor: Theme.faint
                         font.pixelSize: 13; font.family: Theme.fontUi; background: Item {}
                     }
                 }
@@ -115,16 +125,16 @@ Item {
                     spacing: 4
                     visible: searchField.text.trim().length === 0
                     Repeater {
-                        model: ["编辑器", "外观", "关于"]
+                        model: root.categories
                         Rectangle {
                             width: parent.width; height: 34; radius: 8
-                            property bool sel: root.category === modelData
+                            property bool sel: root.category === modelData.key
                             color: sel ? Theme.accentSoft : (catHover.hovered ? Theme.hover : "transparent")
                             Text { anchors.left: parent.left; anchors.leftMargin: 12; anchors.verticalCenter: parent.verticalCenter
-                                   text: modelData; color: parent.sel ? Theme.accent : Theme.text
+                                   text: modelData.label; color: parent.sel ? Theme.accent : Theme.text
                                    font.pixelSize: 13; font.family: Theme.fontUi; font.bold: parent.sel }
                             HoverHandler { id: catHover }
-                            MouseArea { anchors.fill: parent; onClicked: root.category = modelData }
+                            MouseArea { anchors.fill: parent; onClicked: root.category = modelData.key }
                         }
                     }
                 }
@@ -152,6 +162,7 @@ Item {
                             sourceComponent: modelData.type === "toggle" ? toggleC
                                            : modelData.type === "stepper" ? stepperC
                                            : modelData.type === "seg" ? segC
+                                           : modelData.type === "langseg" ? langsegC
                                            : modelData.type === "swatch" ? swatchC : aboutC
                             property var item: modelData
                         }
@@ -198,6 +209,26 @@ Item {
                 model: item.options
                 Rectangle {
                     width: 60; height: 26; radius: 7
+                    property bool sel: parent.val === modelData.v
+                    color: sel ? Theme.accent : Theme.card
+                    border.color: sel ? Theme.accent : Theme.border; border.width: 1
+                    Text { anchors.centerIn: parent; text: modelData.t; color: parent.sel ? Theme.accentText : Theme.dim
+                           font.pixelSize: 11; font.family: Theme.fontUi }
+                    MouseArea { anchors.fill: parent; onClicked: { item.set(modelData.v); parent.parent.val = item.get() } }
+                }
+            }
+        }
+    }
+    // String-valued segmented control for language (#20).
+    Component {
+        id: langsegC
+        Row {
+            spacing: 4
+            property string val: item.get()
+            Repeater {
+                model: [{ v: "auto", t: qsTr("跟随系统") }, { v: "zh_CN", t: "中文" }, { v: "en_US", t: "English" }]
+                Rectangle {
+                    width: 66; height: 26; radius: 7
                     property bool sel: parent.val === modelData.v
                     color: sel ? Theme.accent : Theme.card
                     border.color: sel ? Theme.accent : Theme.border; border.width: 1

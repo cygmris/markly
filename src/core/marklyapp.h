@@ -6,6 +6,8 @@
 #include "global.h"
 #include "noncopyable.h"
 
+class QTranslator;
+
 namespace markly {
 class MainWindow;
 class ThemeMgr;
@@ -41,6 +43,9 @@ public:
   HistoryMgr *getHistoryMgr() const;
 
   SnippetMgr *getSnippetMgr() const;
+
+  // Install the UI translator for the given language ("auto"/"zh_CN"/"en_US") (#20).
+  void applyLanguage(const QString &p_language);
 
   // Placeholder until the owning spec lands.
   TaskMgr *getTaskMgr() const;
@@ -118,6 +123,7 @@ private:
   HistoryMgr *m_historyMgr = nullptr;
   SnippetMgr *m_snippetMgr = nullptr;
   TaskMgr *m_taskMgr = nullptr;
+  QTranslator *m_translator = nullptr;
 
   // QObject managed.
   BufferMgr *m_bufferMgr = nullptr;
