@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### notebook-core (spec #4) — 2026-06-09
+* 笔记本数据层（纯 core）：磁盘格式 vx_notebook.json + 每目录 vx.json + SQLite 三表(node/tag/tag_node)，严格兼容 VNote v3.x。
+* INotebookBackend/LocalNotebookBackend、NotebookConfig、vx_node_config 序列化、Node/NodeVisual、NotebookDatabaseAccess、NotebookTagMgr、DummyVersionController、Notebook(CRUD 门面)、NotebookMgr。
+* 节点 CRUD 三处双写（磁盘→vx.json→SQLite）：新建/重命名/移动回收站/永久删除/颜色自定义/标签；懒加载子文件夹；node.id 由 DB autoincrement 回写 vx.json。
+* NotebookMgr 多笔记本 + 当前 + 持久化(SessionConfig)，接入 MarklyApp::getNotebookMgr()（替换 spec#1 nullptr 占位）。
+* 架构精简：单实现接口合并（VXNode→Node、BundleNotebook/configmgr→Notebook、工厂→NotebookMgr）。ExternalNode 延后 #5。
+* test_notebookcore 5 例（三处一致 + 重开懒加载 + VNote v3 兼容样例读取）；ctest 5/5。
+
 ### app-shell-ui (spec #3) — 2026-06-09
 * 无边框自绘主窗口 FramelessMainWindow（startSystemMove/Resize，QML 经 Win.* 控制）。
 * QML 外壳 MarklyShell：Loader 按 Appearance.style 切三套布局 ShellRefined(A)/ShellFocus(B)/ShellWorkbench(C)，1:1 复刻设计稿整窗。

@@ -34,6 +34,25 @@ set(MARKLY_CORE_SOURCES
     core/theme/appearance.h
     core/theme/stylesheetgenerator.cpp
     core/theme/stylesheetgenerator.h
+    core/notebookmgr.cpp
+    core/notebookmgr.h
+    core/notebook/nodevisual.h
+    core/notebook/node.cpp
+    core/notebook/node.h
+    core/notebook/notebookdatabaseaccess.cpp
+    core/notebook/notebookdatabaseaccess.h
+    core/notebook/notebooktagmgr.cpp
+    core/notebook/notebooktagmgr.h
+    core/notebook/notebook.cpp
+    core/notebook/notebook.h
+    core/versioncontroller/iversioncontroller.h
+    core/notebookbackend/inotebookbackend.h
+    core/notebookbackend/localnotebookbackend.cpp
+    core/notebookbackend/localnotebookbackend.h
+    core/notebookconfigmgr/vxnodeconfig.cpp
+    core/notebookconfigmgr/vxnodeconfig.h
+    core/notebookconfigmgr/notebookconfig.cpp
+    core/notebookconfigmgr/notebookconfig.h
     utils/colorutils.cpp
     utils/colorutils.h
     utils/fileutils.cpp
@@ -53,6 +72,7 @@ target_link_libraries(markly_core PUBLIC
     Qt6::Gui
     Qt6::Widgets
     Qt6::Network
+    Qt6::Sql
 )
 
 # Default config and other packaged resources.

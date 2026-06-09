@@ -20,6 +20,8 @@ void SessionConfig::init() {
   m_mainWindowState = readByteArray(obj, QStringLiteral("main_window_state"));
   m_newNotebookDefaultRootFolderPath =
       readString(obj, QStringLiteral("new_notebook_default_root_folder_path"));
+  m_notebookRootPaths = readStringList(obj, QStringLiteral("notebook_root_paths"));
+  m_currentNotebookRootPath = readString(obj, QStringLiteral("current_notebook_root_path"));
 }
 
 QJsonObject SessionConfig::toJson() const {
@@ -28,6 +30,8 @@ QJsonObject SessionConfig::toJson() const {
   writeByteArray(obj, QStringLiteral("main_window_state"), m_mainWindowState);
   obj[QStringLiteral("new_notebook_default_root_folder_path")] =
       m_newNotebookDefaultRootFolderPath;
+  writeStringList(obj, QStringLiteral("notebook_root_paths"), m_notebookRootPaths);
+  obj[QStringLiteral("current_notebook_root_path")] = m_currentNotebookRootPath;
   return obj;
 }
 
@@ -51,4 +55,16 @@ const QString &SessionConfig::getNewNotebookDefaultRootFolderPath() const {
 
 void SessionConfig::setNewNotebookDefaultRootFolderPath(const QString &p_path) {
   updateConfig(m_newNotebookDefaultRootFolderPath, p_path, this);
+}
+
+QStringList SessionConfig::getNotebookRootPaths() const { return m_notebookRootPaths; }
+
+void SessionConfig::setNotebookRootPaths(const QStringList &p_paths) {
+  updateConfig(m_notebookRootPaths, p_paths, this);
+}
+
+QString SessionConfig::getCurrentNotebookRootPath() const { return m_currentNotebookRootPath; }
+
+void SessionConfig::setCurrentNotebookRootPath(const QString &p_path) {
+  updateConfig(m_currentNotebookRootPath, p_path, this);
 }

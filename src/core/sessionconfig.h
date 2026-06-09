@@ -5,6 +5,7 @@
 
 #include <QByteArray>
 #include <QString>
+#include <QStringList>
 
 namespace markly {
 // Session configuration (stored in a separate session.json, its own top config).
@@ -32,12 +33,23 @@ public:
   const QString &getNewNotebookDefaultRootFolderPath() const;
   void setNewNotebookDefaultRootFolderPath(const QString &p_path);
 
+  // Open notebook root paths + the current one (notebook-core spec).
+  QStringList getNotebookRootPaths() const;
+  void setNotebookRootPaths(const QStringList &p_paths);
+
+  QString getCurrentNotebookRootPath() const;
+  void setCurrentNotebookRootPath(const QString &p_path);
+
 private:
   QByteArray m_mainWindowGeometry;
 
   QByteArray m_mainWindowState;
 
   QString m_newNotebookDefaultRootFolderPath;
+
+  QStringList m_notebookRootPaths;
+
+  QString m_currentNotebookRootPath;
 };
 } // namespace markly
 

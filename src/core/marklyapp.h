@@ -32,8 +32,9 @@ public:
 
   ThemeMgr &getThemeMgr() const;
 
-  // Placeholders until the owning specs land.
   NotebookMgr *getNotebookMgr() const;
+
+  // Placeholders until the owning specs land.
   BufferMgr *getBufferMgr() const;
   TaskMgr *getTaskMgr() const;
 
@@ -86,10 +87,15 @@ private:
 
   void initThemeMgr();
 
+  void initNotebookMgr();
+
   MainWindow *m_mainWindow = nullptr;
 
   // QObject managed.
   ThemeMgr *m_themeMgr = nullptr;
+
+  // QObject managed.
+  NotebookMgr *m_notebookMgr = nullptr;
 
   ID m_instanceId = 0;
 };

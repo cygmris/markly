@@ -5,6 +5,7 @@ set(MARKLY_TESTS
     test_commandlineoptions
     test_singleinstanceguard
     test_thememodel
+    test_notebookcore
 )
 
 foreach(test_name ${MARKLY_TESTS})
