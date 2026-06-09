@@ -16,6 +16,7 @@
 
 #include "explorer/dialoghelper.h"
 #include "explorer/notebookexplorer.h"
+#include "images/imagehelper.h"
 #include "search/searchbridge.h"
 #include "tags/tagbridge.h"
 #include "viewarea/viewarea.h"
@@ -61,6 +62,9 @@ void MainWindow::setupContent() {
   // Tags panel bridge (#11).
   auto *tags = new TagBridge(MarklyApp::getInst().getNotebookMgr(), this);
   m_quick->rootContext()->setContextProperty(QStringLiteral("Tags"), tags);
+  // Local image paste/drop bridge (#10).
+  m_quick->rootContext()->setContextProperty(QStringLiteral("Images"),
+                                             new ImageHelper(this));
   // Markdown editor: QML-instantiable highlighter + editor config bridge.
   qmlRegisterType<MarkdownHighlighter>("Markly.Editor", 1, 0, "MarkdownHighlighter");
   m_quick->rootContext()->setContextProperty(QStringLiteral("EditorCfg"),

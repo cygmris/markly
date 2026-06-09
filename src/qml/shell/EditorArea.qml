@@ -126,6 +126,7 @@ Rectangle {
                 width: parent.mode === "split" ? parent.width / 2 : parent.width
                 height: parent.height
                 content: pane.split.currentText
+                baseDir: (typeof Views !== "undefined") ? Views.currentFileDir : ""
             }
         }
     }

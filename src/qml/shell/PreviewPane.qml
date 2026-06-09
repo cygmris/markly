@@ -5,9 +5,16 @@ import QtWebEngine
 Item {
     id: root
     property string content: ""
+    property string baseDir: ""
     property bool ready: false
 
     onContentChanged: debounce.restart()
+    onBaseDirChanged: { pushBase(); pushContent(); }
+
+    function pushBase() {
+        if (root.ready)
+            web.runJavaScript("mdSetBase(" + JSON.stringify(root.baseDir) + ")");
+    }
 
     function hex(c) {
         function h(v) { var s = Math.round(v * 255).toString(16); return s.length < 2 ? "0" + s : s; }
@@ -15,8 +22,18 @@ Item {
     }
 
     function pushContent() {
-        if (root.ready)
-            web.runJavaScript("mdRender(" + JSON.stringify(root.content) + ")");
+        if (!root.ready) return;
+        web.runJavaScript("mdRender(" + JSON.stringify(root.resolveContent()) + ")");
+    }
+    // Pre-resolve local image paths in the markdown to inline data URIs (via the Images
+    // bridge) before rendering. Synchronous + render-mode independent (no QWebEngine
+    // file:// access, no async round-trip).
+    function resolveContent() {
+        if (typeof Images === "undefined" || root.baseDir.length === 0) return root.content;
+        return root.content.replace(/(!\[[^\]]*\]\()([^)\s]+)/g, function(m, pre, path) {
+            var uri = Images.toDataUri(path, root.baseDir);
+            return uri.length > 0 ? (pre + uri) : m;
+        });
     }
     function pushTheme() {
         if (!root.ready || typeof Theme === "undefined") return;
@@ -45,6 +62,7 @@ Item {
             if (info.status === WebEngineView.LoadSucceededStatus) {
                 root.ready = true;
                 root.pushTheme();
+                root.pushBase();
                 root.pushContent();
             }
         }

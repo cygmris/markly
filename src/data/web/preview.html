@@ -35,6 +35,31 @@
 
     var content = document.getElementById('content');
 
+    // Base directory of the current note, for resolving relative image paths (#10).
+    var baseDir = "";
+    function mdSetBase(d) { baseDir = d || ""; }
+
+    // Local image references that need resolving to data URIs (filled by C++).
+    function listLocalImages() {
+      var out = [];
+      var imgs = content.querySelectorAll('img');
+      for (var i = 0; i < imgs.length; ++i) {
+        var src = imgs[i].getAttribute('src') || "";
+        if (/^(https?:|data:)/.test(src)) continue;
+        out.push(src);
+      }
+      return JSON.stringify(out);
+    }
+    // Replace every img whose src equals `orig` with the given data URI.
+    function setLocalImage(orig, dataUri) {
+      var imgs = content.querySelectorAll('img');
+      for (var i = 0; i < imgs.length; ++i) {
+        if ((imgs[i].getAttribute('src') || "") === orig) imgs[i].setAttribute('src', dataUri);
+      }
+    }
+    window.listLocalImages = listLocalImages;
+    window.setLocalImage = setLocalImage;
+
     // Render markdown text to the content area.
     function mdRender(text) {
       try {
@@ -69,6 +94,7 @@
     }
     window.mdRender = mdRender;
     window.mdSetTheme = mdSetTheme;
+    window.mdSetBase = mdSetBase;
   </script>
 </body>
 </html>

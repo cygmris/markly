@@ -53,6 +53,8 @@ set(MARKLY_CORE_SOURCES
     widgets/search/searchbridge.h
     widgets/tags/tagbridge.cpp
     widgets/tags/tagbridge.h
+    widgets/images/imagehelper.cpp
+    widgets/images/imagehelper.h
     widgets/editors/markdownhighlighter.cpp
     widgets/editors/markdownhighlighter.h
     widgets/editors/editorcfgqml.cpp

@@ -27,6 +27,17 @@ ViewArea::ViewArea(BufferMgr *p_bufferMgr, QObject *p_parent)
   connect(this, &ViewArea::changed, this, &ViewArea::outlineChanged);
 }
 
+QString ViewArea::currentFileDir() const {
+  if (m_activeSplit >= m_splits.size() || !m_bufferMgr) {
+    return QString();
+  }
+  auto *buffer = m_bufferMgr->get(m_splits[m_activeSplit].m_active);
+  if (!buffer || buffer->getPath().isEmpty()) {
+    return QString();
+  }
+  return QFileInfo(buffer->getPath()).absolutePath();
+}
+
 QVariantList ViewArea::outline() const {
   QVariantList items;
   if (m_activeSplit >= m_splits.size() || !m_bufferMgr) {

@@ -26,6 +26,7 @@ class ViewArea : public QObject {
   Q_PROPERTY(int statsCharCount READ statsCharCount NOTIFY statsChanged)
   Q_PROPERTY(QString viewMode READ viewMode NOTIFY viewModeChanged)
   Q_PROPERTY(QVariantList outline READ outline NOTIFY outlineChanged)
+  Q_PROPERTY(QString currentFileDir READ currentFileDir NOTIFY changed)
 public:
   explicit ViewArea(BufferMgr *p_bufferMgr, QObject *p_parent = nullptr);
 
@@ -57,6 +58,9 @@ public:
   // Pending jump-to-line (1-based), consumed by the editor when a buffer loads.
   // -1 means no pending jump. Set via MarklyApp::gotoLineRequested (e.g. search hit).
   Q_INVOKABLE int takePendingGotoLine();
+
+  // Absolute directory of the active note's file ("" if none). For image saving (#10).
+  QString currentFileDir() const;
 
   // Outline (headings) of the active buffer; [{level, text, line}] (1-based line).
   QVariantList outline() const;

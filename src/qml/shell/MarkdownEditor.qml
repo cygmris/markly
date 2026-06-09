@@ -152,6 +152,18 @@ Flickable {
                         if (typeof Views !== "undefined") Views.saveTab(root.bufferId);
                         event.accepted = true; return;
                     }
+                    // Paste image from clipboard (#10): only intercept when an image is present.
+                    if (event.key === Qt.Key_V && ctrl && typeof Images !== "undefined" &&
+                        typeof Views !== "undefined" && Images.clipboardHasImage()) {
+                        var dir = Views.currentFileDir;
+                        if (dir.length > 0) {
+                            var rel = Images.pasteImage(dir);
+                            if (rel.length > 0) {
+                                edit.insert(edit.cursorPosition, "![](" + rel + ")");
+                                event.accepted = true; return;
+                            }
+                        }
+                    }
                     // Find / replace.
                     if (event.key === Qt.Key_F && ctrl) { findBar.open(false); event.accepted = true; return; }
                     if (event.key === Qt.Key_H && ctrl) { findBar.open(true); event.accepted = true; return; }
@@ -248,6 +260,26 @@ Flickable {
     Connections {
         target: (typeof Views !== "undefined") ? Views : null
         function onGotoLineNow(line) { root.gotoLine(line); }
+    }
+
+    // Drag-and-drop image files (#10): copy into vx_images and insert image syntax.
+    DropArea {
+        anchors.fill: parent
+        keys: ["text/uri-list"]
+        onDropped: function(drop) {
+            if (typeof Images === "undefined" || typeof Views === "undefined") return;
+            var dir = Views.currentFileDir;
+            if (dir.length === 0 || !drop.hasUrls) return;
+            var inserted = "";
+            for (var i = 0; i < drop.urls.length; ++i) {
+                var rel = Images.importImage(drop.urls[i], dir);
+                if (rel.length > 0) inserted += "![](" + rel + ")\n";
+            }
+            if (inserted.length > 0) {
+                edit.insert(edit.cursorPosition, inserted);
+                drop.accept();
+            }
+        }
     }
 
     // Find / replace bar pinned to the visible top of the editor.

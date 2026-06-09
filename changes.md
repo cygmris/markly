@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### images-local (spec #10) — 2026-06-09
+* 本地图片：编辑器 Ctrl+V 粘贴 / 拖入图片 → 存到笔记 vx_images/ → 插入 ![](rel) → 预览内联显示。
+* ImageHelper(context property Images) clipboardHasImage/pasteImage/importImage/toDataUri；ViewArea.currentFileDir(Q_PROPERTY)。
+* MarkdownEditor Ctrl+V(仅剪贴板有图才拦)+DropArea(text/uri-list)；PreviewPane resolveContent 渲染前把本地图片预解析为 base64 data URI。
+* 关键决策：data URI 而非 file://——QWebEngine qrc 页跨源禁止加载 file:// 图片(设置/flag 均无效),内联 data URI 与渲染模式无关;currentFileDir 由 Q_INVOKABLE 改 Q_PROPERTY(NOTIFY)才随视图刷新(图片不显示真正根因)。
+* ctest 12/12(新增 test_images)；截图验证预览内联显示本地图片。
+* 再规划：图床上传拆出 #10b imagehost-upload(GitHub/Gitee+token 配置)；GIF/imsize 等待办。
+
 ### preview-extras (spec #9b) — 2026-06-09
 * 预览渲染增强：markdown-it 插件(footnote/sub/sup/mark/emoji/task-lists/anchor/toc,防御式 use)+ Prism 代码块语法高亮(token 配色随主题 CSS 变量)。复用源 web 资源。
 * 真实大纲：ViewArea 解析当前 buffer 标题(跳过围栏代码块内 #)→ Q_PROPERTY outline；三外壳大纲面板接真实数据(替换 DemoData)，点击经 gotoLineNow 即时跳转(补 #8 已激活 buffer 跳转缺口)。
