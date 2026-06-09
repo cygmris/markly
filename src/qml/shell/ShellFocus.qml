@@ -111,61 +111,7 @@ Rectangle {
             Rectangle {
                 width: parent.width - 52 - (Appearance.showLeft ? 312 : 0)
                 height: parent.height; color: Theme.canvas; clip: true
-                Flickable {
-                    anchors.fill: parent
-                    contentHeight: paper.implicitHeight * Theme.contentZoom
-                    Column {
-                        id: paper
-                        width: Math.min(680, parent.width / Theme.contentZoom - 64)
-                        scale: Theme.contentZoom
-                        transformOrigin: Item.TopLeft
-                        x: Math.max(32, (parent.width / Theme.contentZoom - width) / 2)
-                        y: 60
-                        spacing: 20
-                        Row {
-                            spacing: 10
-                            Text { text: "算法"; color: Theme.faint; font.pixelSize: 13; font.family: Theme.fontUi }
-                            Icons.Icon { anchors.verticalCenter: parent.verticalCenter; name: "chevR"; size: 12; color: Theme.faint }
-                            Text { text: "二叉树"; color: Theme.faint; font.pixelSize: 13; font.family: Theme.fontUi }
-                        }
-                        Text { text: "二叉树的最大路径和"; color: Theme.text; font.pixelSize: 38; font.weight: Font.DemiBold; font.family: Theme.fontSerif }
-                        Text { text: "更新于 6 月 9 日 · 612 字 · 约 3 分钟"; color: Theme.faint; font.pixelSize: 13; font.family: Theme.fontMono }
-                        Text {
-                            width: parent.width
-                            wrapMode: Text.WordWrap
-                            text: "给定一个二叉树的根节点 root，返回其最大路径和。同一个节点在一条路径序列中至多出现一次，且路径至少包含一个节点，不一定经过根节点。"
-                            color: Theme.text; font.pixelSize: 19; font.family: Theme.fontSerif; lineHeight: 1.6
-                        }
-                        Rectangle {
-                            width: parent.width; implicitHeight: quote.implicitHeight + 16
-                            color: Theme.accentSoft; radius: 8
-                            Rectangle { width: 3; height: parent.height; color: Theme.accent }
-                            Text {
-                                id: quote
-                                x: 22; width: parent.width - 40; y: 8
-                                wrapMode: Text.WordWrap
-                                text: "路径 被定义为一条从树中任意节点出发，沿父—子连接走过的节点序列。"
-                                color: Theme.dim; font.pixelSize: 18; font.italic: true; font.family: Theme.fontSerif; lineHeight: 1.5
-                            }
-                        }
-                        Text { text: "思路"; color: Theme.text; font.pixelSize: 25; font.weight: Font.DemiBold; font.family: Theme.fontSerif }
-                        Text {
-                            width: parent.width; wrapMode: Text.WordWrap
-                            text: "对每个节点，递归计算它对父节点的「最大贡献值」——即以该节点为端点、向下延伸的最大路径和。负贡献直接舍弃。"
-                            color: Theme.text; font.pixelSize: 19; font.family: Theme.fontSerif; lineHeight: 1.6
-                        }
-                        Rectangle {
-                            width: parent.width; implicitHeight: code.implicitHeight + 36; radius: 12
-                            color: Theme.codeBg; border.color: Theme.border; border.width: 1
-                            Text {
-                                id: code
-                                x: 20; y: 18; width: parent.width - 40
-                                text: "int dfs(TreeNode* node) {\n  if (!node) return 0;\n  int l = max(0, dfs(node->left));\n  int r = max(0, dfs(node->right));\n  ans = max(ans, node->val + l + r);\n  return node->val + max(l, r);\n}"
-                                color: Theme.codeInk; font.pixelSize: 14; font.family: Theme.fontMono; lineHeight: 1.6
-                            }
-                        }
-                    }
-                }
+                EditorArea { anchors.fill: parent }
                 // Floating word count
                 Rectangle {
                     anchors.right: parent.right; anchors.bottom: parent.bottom; anchors.margins: 18

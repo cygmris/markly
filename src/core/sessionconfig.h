@@ -40,6 +40,13 @@ public:
   QString getCurrentNotebookRootPath() const;
   void setCurrentNotebookRootPath(const QString &p_path);
 
+  // Opened files + current (buffer-view-area spec).
+  QStringList getOpenedFiles() const;
+  void setOpenedFiles(const QStringList &p_files);
+
+  QString getCurrentFile() const;
+  void setCurrentFile(const QString &p_file);
+
 private:
   QByteArray m_mainWindowGeometry;
 
@@ -50,6 +57,10 @@ private:
   QStringList m_notebookRootPaths;
 
   QString m_currentNotebookRootPath;
+
+  QStringList m_openedFiles;
+
+  QString m_currentFile;
 };
 } // namespace markly
 

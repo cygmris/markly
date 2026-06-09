@@ -11,6 +11,7 @@
 
 #include "explorer/dialoghelper.h"
 #include "explorer/notebookexplorer.h"
+#include "viewarea/viewarea.h"
 #include <core/configmgr.h>
 #include <core/marklyapp.h>
 #include <core/sessionconfig.h>
@@ -43,6 +44,10 @@ void MainWindow::setupContent() {
   auto *dialogs = new DialogHelper(this, this);
   m_quick->rootContext()->setContextProperty(QStringLiteral("Explorer"), explorer);
   m_quick->rootContext()->setContextProperty(QStringLiteral("Dialogs"), dialogs);
+  // View/tab/split area; catches openFileRequested.
+  m_views = new ViewArea(MarklyApp::getInst().getBufferMgr(), this);
+  m_quick->rootContext()->setContextProperty(QStringLiteral("Views"), m_views);
+  connect(&MarklyApp::getInst(), &MarklyApp::openFileRequested, m_views, &ViewArea::openFile);
   m_quick->setSource(QUrl(QStringLiteral("qrc:/qml/MarklyShell.qml")));
   if (m_quick->status() == QQuickWidget::Error) {
     qCritical() << "failed to load MarklyShell.qml:" << m_quick->errors();
@@ -88,6 +93,10 @@ void MainWindow::saveStateAndGeometry() {
 }
 
 void MainWindow::kickOffOnStart(const QStringList &p_paths) {
+  // Restore previously open tabs.
+  if (m_views) {
+    m_views->restoreSession();
+  }
   if (!p_paths.isEmpty()) {
     openFiles(p_paths);
   }

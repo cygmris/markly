@@ -34,8 +34,9 @@ public:
 
   NotebookMgr *getNotebookMgr() const;
 
-  // Placeholders until the owning specs land.
   BufferMgr *getBufferMgr() const;
+
+  // Placeholder until the owning spec lands.
   TaskMgr *getTaskMgr() const;
 
   void setMainWindow(MainWindow *p_mainWindow);
@@ -89,6 +90,8 @@ private:
 
   void initNotebookMgr();
 
+  void initBufferMgr();
+
   MainWindow *m_mainWindow = nullptr;
 
   // QObject managed.
@@ -96,6 +99,9 @@ private:
 
   // QObject managed.
   NotebookMgr *m_notebookMgr = nullptr;
+
+  // QObject managed.
+  BufferMgr *m_bufferMgr = nullptr;
 
   ID m_instanceId = 0;
 };

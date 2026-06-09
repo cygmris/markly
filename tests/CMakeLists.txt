@@ -7,6 +7,7 @@ set(MARKLY_TESTS
     test_thememodel
     test_notebookcore
     test_notebookexplorer
+    test_bufferview
 )
 
 foreach(test_name ${MARKLY_TESTS})

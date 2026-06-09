@@ -8,6 +8,8 @@
 class QQuickWidget;
 
 namespace markly {
+class ViewArea;
+
 // Frameless main window hosting the full QML shell (MarklyShell.qml): title bar /
 // activity rail / docks / status bar, with live A/B/C style + theme switching.
 class MainWindow : public FramelessMainWindow {
@@ -36,6 +38,7 @@ private:
   void setupContent();
 
   QQuickWidget *m_quick = nullptr;
+  ViewArea *m_views = nullptr;
 };
 } // namespace markly
 

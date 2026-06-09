@@ -172,72 +172,10 @@ Rectangle {
                 clip: true
                 Column {
                     anchors.fill: parent
-                    // Tabs
-                    Rectangle {
-                        width: parent.width; height: 38; color: Theme.bar
-                        Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: Theme.border }
-                        Row {
-                            Repeater {
-                                model: Demo.TABS
-                                delegate: C.EditorTab {
-                                    required property var modelData
-                                    label: modelData.label; active: modelData.active === true; dirty: modelData.dirty === true
-                                }
-                            }
-                        }
-                    }
-                    // Toolbar
                     C.EditorToolbar { width: parent.width }
-                    // Editor source
-                    Flickable {
+                    EditorArea {
                         width: parent.width
-                        height: parent.height - 38 - 42
-                        contentHeight: srcCol.implicitHeight * Theme.contentZoom
-                        clip: true
-                        Column {
-                            id: srcCol
-                            width: parent.width / Theme.contentZoom
-                            scale: Theme.contentZoom
-                            transformOrigin: Item.TopLeft
-                            y: 14
-                            Repeater {
-                                model: Demo.EDITOR_LINES
-                                delegate: Row {
-                                    required property var modelData
-                                    required property int index
-                                    width: srcCol.width
-                                    height: 26
-                                    Text {
-                                        width: 46
-                                        horizontalAlignment: Text.AlignRight
-                                        rightPadding: 14
-                                        text: (index + 1)
-                                        color: Theme.gutter
-                                        font.pixelSize: 13
-                                        font.family: Theme.fontMono
-                                        verticalAlignment: Text.AlignVCenter
-                                        height: 26
-                                    }
-                                    Row {
-                                        height: 26
-                                        Repeater {
-                                            model: modelData
-                                            delegate: Text {
-                                                required property var modelData
-                                                height: 26
-                                                verticalAlignment: Text.AlignVCenter
-                                                text: modelData.t
-                                                color: shell.roleColor(modelData.role)
-                                                font.pixelSize: modelData.h1 ? 19 : (modelData.h2 ? 16 : 14)
-                                                font.bold: modelData.bold === true || modelData.h1 === true || modelData.h2 === true
-                                                font.italic: modelData.italic === true
-                                                font.family: (modelData.role === "codeInline" || modelData.role === "codeInk") ? Theme.fontMono : Theme.fontUi
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        height: parent.height - 42
                     }
                 }
             }

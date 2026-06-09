@@ -121,45 +121,8 @@ Rectangle {
                         }
                     }
                     // Editor
-                    Flickable {
+                    EditorArea {
                         width: parent.width; height: parent.height - (hdr.implicitHeight + 36)
-                        contentHeight: ed.implicitHeight * Theme.contentZoom; clip: true
-                        Column {
-                            id: ed
-                            width: Math.min(720, parent.width / Theme.contentZoom - 80)
-                            scale: Theme.contentZoom; transformOrigin: Item.TopLeft
-                            x: 40; y: 28; spacing: 18
-                            Text {
-                                width: parent.width; wrapMode: Text.WordWrap
-                                text: "给定一个二叉树的根节点 root，返回其最大路径和。路径至少包含一个节点，且不一定经过根节点。"
-                                color: Theme.text; font.pixelSize: 16; font.family: Theme.fontUi; lineHeight: 1.6
-                            }
-                            Rectangle {
-                                width: parent.width; implicitHeight: callout.implicitHeight + 28; radius: 12; color: Theme.accentSoft
-                                Row {
-                                    x: 16; y: 14; width: parent.width - 32; spacing: 12
-                                    Icons.Icon { name: "flash"; size: 18; color: Theme.accent }
-                                    Text { id: callout; width: parent.width - 30; wrapMode: Text.WordWrap; text: "关键洞察 — 对每个节点计算「最大贡献值」，负贡献取 0 舍弃，再用 val + left + right 更新全局答案。"; color: Theme.text; font.pixelSize: 14; font.family: Theme.fontUi; lineHeight: 1.5 }
-                                }
-                            }
-                            Text { text: "解法"; color: Theme.text; font.pixelSize: 22; font.weight: Font.DemiBold; font.family: Theme.fontDisplay }
-                            Rectangle {
-                                width: parent.width; implicitHeight: cc.implicitHeight + 50; radius: 12; color: Theme.codeBg; border.color: Theme.border; border.width: 1
-                                Row {
-                                    x: 14; y: 9; spacing: 5
-                                    Rectangle { width: 9; height: 9; radius: 5; color: Theme.pink }
-                                    Rectangle { width: 9; height: 9; radius: 5; color: Theme.amber }
-                                    Rectangle { width: 9; height: 9; radius: 5; color: Theme.lime }
-                                    Text { text: "maxPathSum.cpp"; color: Theme.faint; font.pixelSize: 12; font.family: Theme.fontMono; leftPadding: 4 }
-                                }
-                                Text {
-                                    id: cc
-                                    x: 18; y: 34; width: parent.width - 36
-                                    text: "int dfs(TreeNode* node) {\n  if (!node) return 0;\n  int l = max(0, dfs(node->left));\n  int r = max(0, dfs(node->right));\n  ans = max(ans, node->val + l + r);\n  return node->val + max(l, r);\n}"
-                                    color: Theme.codeInk; font.pixelSize: 14; font.family: Theme.fontMono; lineHeight: 1.7
-                                }
-                            }
-                        }
                     }
                 }
             }

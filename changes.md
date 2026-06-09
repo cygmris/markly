@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### buffer-view-area (spec #6) — 2026-06-09
+* 打开/视图层：Buffer/BufferMgr(按路径去重) + ViewArea 桥接(splits/tabs/currentText + 分屏) + EditorArea.qml(共享编辑区)。
+* 接住 #5 openFileRequested → 标签打开笔记，可编辑文本占位(#7 换编辑器内核)、保存、脏标记、基础左右分屏。
+* 会话恢复：SessionConfig opened_files/current_file，重启恢复上次标签。
+* MarklyApp.getBufferMgr() 返回真实(替换 #1 nullptr)；三套外壳编辑区嵌入 EditorArea 显示真实内容。
+* test_bufferview(去重/dirty/save/标签/分屏/会话)；ctest 7/7；截图验证(预开两文件→两标签+真实内容)。
+
 ### node-explorer-ui (spec #5) — 2026-06-09
 * 笔记本数据层接到三套外壳：真实笔记本树替换占位（A 树/B 笔记列表/C 笔记本导航）。
 * NotebookExplorer 桥接（QObject context property，visibleNodes 展平树 + Q_INVOKABLE 交互）+ DialogHelper（原生对话框）。

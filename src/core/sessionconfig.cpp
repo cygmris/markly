@@ -22,6 +22,8 @@ void SessionConfig::init() {
       readString(obj, QStringLiteral("new_notebook_default_root_folder_path"));
   m_notebookRootPaths = readStringList(obj, QStringLiteral("notebook_root_paths"));
   m_currentNotebookRootPath = readString(obj, QStringLiteral("current_notebook_root_path"));
+  m_openedFiles = readStringList(obj, QStringLiteral("opened_files"));
+  m_currentFile = readString(obj, QStringLiteral("current_file"));
 }
 
 QJsonObject SessionConfig::toJson() const {
@@ -32,6 +34,8 @@ QJsonObject SessionConfig::toJson() const {
       m_newNotebookDefaultRootFolderPath;
   writeStringList(obj, QStringLiteral("notebook_root_paths"), m_notebookRootPaths);
   obj[QStringLiteral("current_notebook_root_path")] = m_currentNotebookRootPath;
+  writeStringList(obj, QStringLiteral("opened_files"), m_openedFiles);
+  obj[QStringLiteral("current_file")] = m_currentFile;
   return obj;
 }
 
@@ -67,4 +71,16 @@ QString SessionConfig::getCurrentNotebookRootPath() const { return m_currentNote
 
 void SessionConfig::setCurrentNotebookRootPath(const QString &p_path) {
   updateConfig(m_currentNotebookRootPath, p_path, this);
+}
+
+QStringList SessionConfig::getOpenedFiles() const { return m_openedFiles; }
+
+void SessionConfig::setOpenedFiles(const QStringList &p_files) {
+  updateConfig(m_openedFiles, p_files, this);
+}
+
+QString SessionConfig::getCurrentFile() const { return m_currentFile; }
+
+void SessionConfig::setCurrentFile(const QString &p_file) {
+  updateConfig(m_currentFile, p_file, this);
 }

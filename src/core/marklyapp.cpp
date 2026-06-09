@@ -3,6 +3,7 @@
 #include <QCoreApplication>
 #include <QDateTime>
 
+#include "buffer/buffermgr.h"
 #include "notebookmgr.h"
 #include "thememgr.h"
 
@@ -14,11 +15,14 @@ MarklyApp::MarklyApp(QObject *p_parent) : QObject(p_parent) {
 
   initThemeMgr();
   initNotebookMgr();
+  initBufferMgr();
 }
 
 void MarklyApp::initThemeMgr() { m_themeMgr = new ThemeMgr(this); }
 
 void MarklyApp::initNotebookMgr() { m_notebookMgr = new NotebookMgr(this); }
+
+void MarklyApp::initBufferMgr() { m_bufferMgr = new BufferMgr(this); }
 
 void MarklyApp::initLoad() {
   // Restore previously open notebooks (good to call after MainWindow is shown).
@@ -29,10 +33,7 @@ ThemeMgr &MarklyApp::getThemeMgr() const { return *m_themeMgr; }
 
 NotebookMgr *MarklyApp::getNotebookMgr() const { return m_notebookMgr; }
 
-BufferMgr *MarklyApp::getBufferMgr() const {
-  // Installed by spec #6 (buffer-view-area).
-  return nullptr;
-}
+BufferMgr *MarklyApp::getBufferMgr() const { return m_bufferMgr; }
 
 TaskMgr *MarklyApp::getTaskMgr() const {
   // Installed by spec #16 (task-system).

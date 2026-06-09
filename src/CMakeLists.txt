@@ -36,10 +36,16 @@ set(MARKLY_CORE_SOURCES
     core/theme/stylesheetgenerator.h
     core/notebookmgr.cpp
     core/notebookmgr.h
+    core/buffer/buffer.cpp
+    core/buffer/buffer.h
+    core/buffer/buffermgr.cpp
+    core/buffer/buffermgr.h
     widgets/explorer/notebookexplorer.cpp
     widgets/explorer/notebookexplorer.h
     widgets/explorer/dialoghelper.cpp
     widgets/explorer/dialoghelper.h
+    widgets/viewarea/viewarea.cpp
+    widgets/viewarea/viewarea.h
     core/notebook/nodevisual.h
     core/notebook/node.cpp
     core/notebook/node.h
@@ -114,6 +120,7 @@ qt_add_resources(markly "markly_qml"
         "qml/shell/NodeContextMenu.qml"
         "qml/shell/NotebookSelector.qml"
         "qml/shell/EmptyState.qml"
+        "qml/shell/EditorArea.qml"
         "qml/theme/ThemePreview.qml"
         "qml/theme/AppearancePanel.qml"
         "qml/icons/Icon.qml"
