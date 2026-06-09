@@ -16,6 +16,21 @@ Rectangle {
     SettingsDialog { id: settingsDialog; z: 100 }
     function openSettings() { settingsDialog.show() }
 
+    function newRootNote() {
+        var name = Dialogs.promptText("新建笔记", "笔记名称（含 .md）", "新笔记.md");
+        if (name.length > 0) { var e = Explorer.newNote(0, name); if (e.length > 0) Dialogs.notify("操作失败", e); }
+    }
+    UnitedEntry {
+        id: unitedEntry; z: 110
+        actions: ({
+            openSettings: function(){ settingsDialog.show() },
+            setPage: function(p){ shell.leftPage = p },
+            newNote: function(){ shell.newRootNote() }
+        })
+    }
+    function openEntry() { unitedEntry.show() }
+    Shortcut { sequences: ["Ctrl+P"]; onActivated: unitedEntry.show() }
+
     Column {
         anchors.fill: parent
 
@@ -31,7 +46,7 @@ Rectangle {
             Item {
                 anchors.centerIn: parent; width: Math.min(380, parent.width * 0.5); height: 30
                 C.Omnibar { anchors.fill: parent }
-                MouseArea { anchors.fill: parent; onClicked: shell.leftPage = "search" }
+                MouseArea { anchors.fill: parent; onClicked: unitedEntry.show() }
             }
             Icons.Icon {
                 anchors.right: winCtl.left; anchors.rightMargin: 12; anchors.verticalCenter: parent.verticalCenter

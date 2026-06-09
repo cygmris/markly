@@ -37,6 +37,11 @@ Item {
         if (loader.item && loader.item.openSettings) loader.item.openSettings();
     }
 
+    // Dev/test hook: open the united entry palette.
+    function showEntry() {
+        if (loader.item && loader.item.openEntry) loader.item.openEntry();
+    }
+
     // Dev/test hook: export the current note to path (#15 offline validation).
     ExportView { id: shotExport }
     function exportNoteTo(fmt, path) {

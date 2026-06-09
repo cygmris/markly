@@ -138,6 +138,13 @@ void MainWindow::setupContent() {
         }
       });
     }
+    if (!qEnvironmentVariable("MARKLY_SHOT_ENTRY").isEmpty()) {
+      QTimer::singleShot(800, this, [this]() {
+        if (auto *root = m_quick->rootObject()) {
+          QMetaObject::invokeMethod(root, "showEntry");
+        }
+      });
+    }
     QTimer::singleShot(1200, this, [this, shotPath]() {
       const QImage img = m_quick->grabFramebuffer();
       if (img.save(shotPath)) {

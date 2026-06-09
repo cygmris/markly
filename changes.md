@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### united-entry (spec #17) — 2026-06-09
+* 统一入口命令面板：Ctrl+P 覆盖层,输入运行命令或跳转笔记(名称搜索复用 #12 Search)。纯 QML 复用既有桥接,无新 C++。
+* UnitedEntry.qml:命令模型(新建笔记/快速记录/打开设置/切换深浅/聚焦页/导出 PDF·HTML·MD)+笔记结果混排+类型徽章+键盘导航(上下/回车)。导出命令内嵌 ExportView 自包含。
+* 三外壳挂 UnitedEntry(actions 注入 settingsDialog/leftPage/newRootNote)+Ctrl+P Shortcut;工作台 Omnibar 点击打开(占位终成真)。
+* ctest 16/16(不回归)；截图验证命令面板(命令列表+徽章+高亮)。
+* 再规划:OS 全局热键(QHotkey,Wayland 受限)拆出 #17b global-hotkey。
+
 ### task-system (spec #16) — 2026-06-09
 * 外部命令任务：TaskMgr(JSON 任务定义+变量展开+QProcess 执行)+工具栏「任务」菜单运行当前任务→notify 输出。
 * 变量 ${bufferPath}/${bufferName}/${bufferBaseName}/${bufferDir}/${notebookFolder}/${cwd}(对齐 vnote 子集),未知保留无值空。

@@ -11,6 +11,21 @@ Rectangle {
     SettingsDialog { id: settingsDialog; z: 100 }
     function openSettings() { settingsDialog.show() }
 
+    function newRootNote() {
+        var name = Dialogs.promptText("新建笔记", "笔记名称（含 .md）", "新笔记.md");
+        if (name.length > 0) { var e = Explorer.newNote(0, name); if (e.length > 0) Dialogs.notify("操作失败", e); }
+    }
+    UnitedEntry {
+        id: unitedEntry; z: 110
+        actions: ({
+            openSettings: function(){ settingsDialog.show() },
+            setPage: function(p){ shell.leftPage = p },
+            newNote: function(){ shell.newRootNote() }
+        })
+    }
+    function openEntry() { unitedEntry.show() }
+    Shortcut { sequences: ["Ctrl+P"]; onActivated: unitedEntry.show() }
+
     // Left dock page: "explorer" (notes list) or "search".
     property string leftPage: "explorer"
 
