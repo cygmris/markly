@@ -102,14 +102,21 @@ Rectangle {
             }
         }
 
-        // Editor / preview / split by Views.viewMode.
+        // Editor / preview / split by Views.viewMode, or a viewer for pdf/html (#18).
         Item {
             width: pane.width
             height: pane.height - 38
             readonly property string mode: (typeof Views !== "undefined") ? Views.viewMode : "edit"
+            // Non-markdown viewer type by the active tab's extension.
+            readonly property string viewerType: {
+                var n = pane.split.currentName || "";
+                if (/\.pdf$/i.test(n)) return "pdf";
+                if (/\.html?$/i.test(n)) return "html";
+                return "";
+            }
 
             MarkdownEditor {
-                visible: parent.mode !== "read"
+                visible: parent.viewerType === "" && parent.mode !== "read"
                 x: 0
                 width: parent.mode === "split" ? parent.width / 2 : parent.width
                 height: parent.height
@@ -117,16 +124,22 @@ Rectangle {
                 content: pane.split.currentText
             }
             Rectangle {
-                visible: parent.mode === "split"
+                visible: parent.viewerType === "" && parent.mode === "split"
                 x: parent.width / 2; width: 1; height: parent.height; color: Theme.border
             }
             PreviewPane {
-                visible: parent.mode !== "edit"
+                visible: parent.viewerType === "" && parent.mode !== "edit"
                 x: parent.mode === "split" ? parent.width / 2 : 0
                 width: parent.mode === "split" ? parent.width / 2 : parent.width
                 height: parent.height
                 content: pane.split.currentText
                 baseDir: (typeof Views !== "undefined") ? Views.currentFileDir : ""
+            }
+            ViewerPane {
+                visible: parent.viewerType !== ""
+                anchors.fill: parent
+                kind: parent.viewerType
+                path: pane.split.currentPath || ""
             }
         }
     }

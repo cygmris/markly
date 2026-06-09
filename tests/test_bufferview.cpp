@@ -64,6 +64,7 @@ private slots:
     auto s0 = splits.at(0).toMap();
     QCOMPARE(s0.value("tabs").toList().size(), 1);
     QCOMPARE(s0.value("currentText").toString(), QStringLiteral("AAA"));
+    QCOMPARE(s0.value("currentPath").toString(), p1); // viewer (#18) uses this path
 
     va.openFile(p2);
     s0 = va.splits().at(0).toMap();

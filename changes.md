@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### extra-viewers (spec #18) — 2026-06-09
+* 额外查看器：打开 .pdf/.html 节点时编辑区显示 ViewerPane(QWebEngine)只读查看器而非 Markdown 编辑器。
+* ViewArea.splits 加 currentPath；ViewerPane.qml(WebEngineView pdfViewerEnabled+localContentCanAccessFileUrls,file:// 加载)；EditorArea 按扩展名 viewerType 切换。
+* PDF 内建查看器,HTML 直接渲染；页面 origin=文件本身(file://)无跨源(区别 #10 预览 qrc 需 data URI)。
+* ctest 17/17(test_bufferview 加 currentPath 断言)；截图验证打开 .html 显 ViewerPane 渲染(自定义 CSS 生效)。
+* 再规划：思维导图编辑器拆出 #18b mindmap-viewer。
+
 ### i18n (spec #20) — 2026-06-09
 * 国际化基础设施:QTranslator 加载链路+语言偏好(WidgetConfig.language)+设置内语言切换(engine.retranslate 即时)+qsTr 子集(SettingsDialog/UnitedEntry)+英文 .ts/.qm。
 * MarklyApp.applyLanguage(auto→系统/zh 源/en_US 加载 :/i18n/markly_en_US.qm);main 启动前安装;LocaleBridge(context property Locale)setLanguage→配置+applyLanguage+retranslate。

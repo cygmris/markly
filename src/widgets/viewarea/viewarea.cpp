@@ -125,7 +125,7 @@ QVariantList ViewArea::splits() const {
     sm[QStringLiteral("currentBufferId")] = static_cast<double>(split.m_active);
 
     QVariantList tabs;
-    QString curName, curText;
+    QString curName, curText, curPath;
     for (const auto id : split.m_tabs) {
       auto *buffer = m_bufferMgr ? m_bufferMgr->get(id) : nullptr;
       if (!buffer) {
@@ -140,11 +140,13 @@ QVariantList ViewArea::splits() const {
       if (id == split.m_active) {
         curName = buffer->getName();
         curText = buffer->getContent();
+        curPath = buffer->getPath();
       }
     }
     sm[QStringLiteral("tabs")] = tabs;
     sm[QStringLiteral("currentName")] = curName;
     sm[QStringLiteral("currentText")] = curText;
+    sm[QStringLiteral("currentPath")] = curPath;
     list.append(sm);
   }
   return list;
