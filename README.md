@@ -52,6 +52,18 @@
 |---|---|
 | ![欢迎页](docs/screenshots/welcome.png) | ![工作台](docs/screenshots/workbench.png) |
 
+## 界面设计
+
+Markly 由一套完整的高保真设计稿驱动开发，提供多种界面方向与亮/暗主题：
+
+| 工作台 · 浅色 | 工作台 · 深色 |
+|---|---|
+| ![工作台浅色设计](docs/screenshots/design-workbench-light.png) | ![工作台深色设计](docs/screenshots/design-workbench-dark.png) |
+
+| 沉浸阅读 · 衬线排版 | 首页 · 工作台仪表盘 |
+|---|---|
+| ![沉浸阅读设计](docs/screenshots/design-reader-focus.png) | ![首页仪表盘设计](docs/screenshots/design-home-dashboard.png) |
+
 ## 构建
 
 **依赖**：Qt ≥ 6.8（base / declarative / webengine）、CMake ≥ 3.20、Ninja、Hunspell。
