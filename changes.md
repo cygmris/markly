@@ -335,3 +335,9 @@
 ### fix: toolbar icon rendering (#icon-joined) — 2026-06-09
 * `src/qml/icons/IconPaths.js` `joined()`：修复多子路径图标错位。Lucide 每个子路径是独立 `<path>`，其首个相对 `m dx dy` 以原点为基准（=绝对 dx,dy）；拼成单条路径后该 `m` 变成相对上一子路径终点而被甩飞（code 右半 `>` 变成乱团、search 手柄错位）。修复：非首子路径的首个 `m` 改绝对 `M`，其后隐式坐标对补显式 `l` 保持相对，几何不变。影响 code/search/snippet 等。
 * 验证：独立 QML harness 渲染 code=`< >`、sigma=`Σ`、link=🔗、search=🔍、snippet=`</>` 均正常；build + ctest 26/26。
+
+### 公开发布准备 (public-release) — 2026-06-10
+* 品牌：logo 字标 V→M（4 个 shell + 欢迎页），重绘 128x128 应用图标（青绿圆角 + 白 M）；欢迎语与包描述改中性表述。
+* 新增公开 README（特性/截图/构建/打包）与 MIT LICENSE（Copyright Cygmris）；实机截图收录 docs/screenshots/。
+* commit log 全量清理特定字眼（filter-branch msg-filter，验证 0 残留）；分支 master→main。
+* 仓库公开发布：https://github.com/cygmris/markly（public，作者全 Chris，ctest 26/26）。
