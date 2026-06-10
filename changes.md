@@ -341,3 +341,12 @@
 * 新增公开 README（特性/截图/构建/打包）与 MIT LICENSE（Copyright Cygmris）；实机截图收录 docs/screenshots/。
 * commit log 全量清理特定字眼（filter-branch msg-filter，验证 0 残留）；分支 master→main。
 * 仓库公开发布：https://github.com/cygmris/markly（public，作者全 Chris，ctest 26/26）。
+
+### UI 修复与 VNote 快捷键对齐 (ui-polish) — 2026-06-11
+* **Ctrl+T 编辑/阅读切换**（VNote `EditRead` 对齐）：三套 shell 加窗口级 Shortcut；根因修复——Vi NORMAL 模式把 Ctrl/Alt/Meta 组合键也喂给 Vi 引擎并整体吞掉，现在带修饰键的按键绕过 Vi 引擎，Ctrl+T/S/F 等在 NORMAL 模式下恢复可用。
+* **Ctrl+S 全局保存**：原先只在编辑器持焦点时有效（藏在编辑器 Keys 里）；加窗口级 Shortcut 保存活动分屏当前笔记（思维导图模式下停用避免与 MindmapPane 的 Ctrl+S 冲突）。
+* **分屏分割线**：分割线被 PreviewPane(WebEngine) 覆盖看不见——移到 Preview 之后声明并提升 z，编辑|预览交界处恢复 1px 分割线。
+* **左栏激活指示条**（VNote 风格对齐）：RailButton 指示条原在 x:-10 被栏裁切永不可见；移入按钮内左缘（任何栏内边距都不再裁切），激活项现显示青色竖条。齿轮按钮下边距统一为 12。
+* **工具栏按钮接线**：heading/bold/italic/strike/列表/任务/引用/代码块/公式/链接/表格/图片 经 `Views.requestInsert` 插入对应 Markdown；search 按钮经新增 `Views.requestEditorFind()` 打开编辑器查找栏。
+* **分屏双写修复**：`onInsertText`/`onGotoLineNow` 原先无活动分屏守卫，双分屏时片段插入会同时写两个编辑器；新增 `Views.activeSplitIndex` 属性 + 编辑器 `splitIndex`，仅活动分屏编辑器响应。
+* 验证：build + ctest 26/26；实机截图验证 Ctrl+T 切换、分割线、激活指示条（本机指针注入当日失效，工具栏按钮为代码同构推证，待手点复验）。

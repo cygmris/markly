@@ -19,6 +19,7 @@ class ViewArea : public QObject {
   Q_OBJECT
   Q_PROPERTY(QVariantList splits READ splits NOTIFY changed)
   Q_PROPERTY(int splitCount READ splitCount NOTIFY changed)
+  Q_PROPERTY(int activeSplitIndex READ activeSplitIndex NOTIFY changed)
   Q_PROPERTY(bool hasOpenFile READ hasOpenFile NOTIFY changed)
   Q_PROPERTY(int statsLine READ statsLine NOTIFY statsChanged)
   Q_PROPERTY(int statsColumn READ statsColumn NOTIFY statsChanged)
@@ -34,6 +35,7 @@ public:
 
   QVariantList splits() const;
   int splitCount() const { return m_splits.size(); }
+  int activeSplitIndex() const { return m_activeSplit; }
   bool hasOpenFile() const;
 
   Q_INVOKABLE void openFile(const QString &p_path);
@@ -71,6 +73,8 @@ public:
   Q_INVOKABLE void requestInsert(const QString &p_text, int p_cursorOffset);
   // Ask the visible mindmap pane to serialize itself back to its buffer (#18c).
   Q_INVOKABLE void requestSaveMindmap();
+  // Open the find bar of the active editor (toolbar search button).
+  Q_INVOKABLE void requestEditorFind();
 
   // Outline (headings) of the active buffer; [{level, text, line}] (1-based line).
   QVariantList outline() const;
@@ -91,6 +95,8 @@ signals:
   void insertText(const QString &p_text, int p_cursorOffset);
   // Request the active/visible mindmap pane save its tree back to the note (#18c).
   void saveMindmapRequested();
+  // Open the active editor's find bar (toolbar search button).
+  void editorFindRequested();
 
 private:
   struct Split {

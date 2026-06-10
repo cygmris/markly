@@ -85,28 +85,28 @@ Rectangle {
             active: (typeof Views !== "undefined") && Views.viewMode !== "edit"
             act: function() { if (typeof Views !== "undefined") Views.cycleViewMode() }
         }
-        ToolBtn { icon: "image" }
+        ToolBtn { icon: "image"; act: function(){ if (typeof Views !== "undefined") Views.requestInsert("![]()", 2) } }
         Item { width: 8; height: 1 }
         Sep {}
         Item { width: 8; height: 1 }
-        ToolBtn { icon: "heading" }
-        ToolBtn { icon: "bold" }
-        ToolBtn { icon: "italic" }
-        ToolBtn { icon: "strike" }
+        ToolBtn { icon: "heading"; act: function(){ if (typeof Views !== "undefined") Views.requestInsert("# ", 2) } }
+        ToolBtn { icon: "bold"; act: function(){ if (typeof Views !== "undefined") Views.requestInsert("****", 2) } }
+        ToolBtn { icon: "italic"; act: function(){ if (typeof Views !== "undefined") Views.requestInsert("**", 1) } }
+        ToolBtn { icon: "strike"; act: function(){ if (typeof Views !== "undefined") Views.requestInsert("~~~~", 2) } }
         Item { width: 8; height: 1 }
         Sep {}
         Item { width: 8; height: 1 }
-        ToolBtn { icon: "listU" }
-        ToolBtn { icon: "listO" }
-        ToolBtn { icon: "check" }
-        ToolBtn { icon: "quote" }
+        ToolBtn { icon: "listU"; act: function(){ if (typeof Views !== "undefined") Views.requestInsert("- ", 2) } }
+        ToolBtn { icon: "listO"; act: function(){ if (typeof Views !== "undefined") Views.requestInsert("1. ", 3) } }
+        ToolBtn { icon: "check"; act: function(){ if (typeof Views !== "undefined") Views.requestInsert("- [ ] ", 6) } }
+        ToolBtn { icon: "quote"; act: function(){ if (typeof Views !== "undefined") Views.requestInsert("> ", 2) } }
         Item { width: 8; height: 1 }
         Sep {}
         Item { width: 8; height: 1 }
-        ToolBtn { icon: "code" }
-        ToolBtn { icon: "sigma" }
-        ToolBtn { icon: "link" }
-        ToolBtn { icon: "table" }
+        ToolBtn { icon: "code"; act: function(){ if (typeof Views !== "undefined") Views.requestInsert("```\n\n```", 4) } }
+        ToolBtn { icon: "sigma"; act: function(){ if (typeof Views !== "undefined") Views.requestInsert("$$\n\n$$", 3) } }
+        ToolBtn { icon: "link"; act: function(){ if (typeof Views !== "undefined") Views.requestInsert("[]()", 1) } }
+        ToolBtn { icon: "table"; act: function(){ if (typeof Views !== "undefined") Views.requestInsert("| 列1 | 列2 |\n| --- | --- |\n|  |  |\n", 2) } }
     }
     Row {
         anchors.right: parent.right
@@ -115,7 +115,7 @@ Rectangle {
         spacing: 1
         ToolBtn { icon: "cmd"; act: function() { taskMenu.popup() } }
         ToolBtn { icon: "export"; act: function() { exportMenu.popup() } }
-        ToolBtn { icon: "search" }
+        ToolBtn { icon: "search"; act: function(){ if (typeof Views !== "undefined") Views.requestEditorFind() } }
         ToolBtn { icon: "moreV" }
     }
 }

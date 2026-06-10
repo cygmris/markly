@@ -30,6 +30,16 @@ Rectangle {
     }
     function openEntry() { unitedEntry.show() }
     Shortcut { sequences: ["Ctrl+P"]; onActivated: unitedEntry.show() }
+    // VNote parity: Ctrl+T toggles edit/read (EditRead).
+    Shortcut { sequences: ["Ctrl+T"]; onActivated: if (typeof Views !== "undefined") Views.setViewMode(Views.viewMode === "edit" ? "read" : "edit") }
+    // VNote parity: Ctrl+S saves the active note regardless of focus.
+    // Disabled in mindmap mode, where MindmapPane owns Ctrl+S (avoids ambiguity).
+    Shortcut {
+        sequences: ["Ctrl+S"]
+        enabled: (typeof Views !== "undefined") && Views.viewMode !== "mindmap"
+        onActivated: if (Views.splits.length > Views.activeSplitIndex)
+                         Views.saveTab(Views.splits[Views.activeSplitIndex].currentBufferId)
+    }
 
     Column {
         anchors.fill: parent

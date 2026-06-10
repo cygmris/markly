@@ -25,6 +25,16 @@ Rectangle {
     }
     function openEntry() { unitedEntry.show() }
     Shortcut { sequences: ["Ctrl+P"]; onActivated: unitedEntry.show() }
+    // VNote parity: Ctrl+T toggles edit/read (EditRead).
+    Shortcut { sequences: ["Ctrl+T"]; onActivated: if (typeof Views !== "undefined") Views.setViewMode(Views.viewMode === "edit" ? "read" : "edit") }
+    // VNote parity: Ctrl+S saves the active note regardless of focus.
+    // Disabled in mindmap mode, where MindmapPane owns Ctrl+S (avoids ambiguity).
+    Shortcut {
+        sequences: ["Ctrl+S"]
+        enabled: (typeof Views !== "undefined") && Views.viewMode !== "mindmap"
+        onActivated: if (Views.splits.length > Views.activeSplitIndex)
+                         Views.saveTab(Views.splits[Views.activeSplitIndex].currentBufferId)
+    }
 
     // Left dock page: "explorer" (notes list) or "search".
     property string leftPage: "explorer"
@@ -78,7 +88,7 @@ Rectangle {
                     C.RailButton { icon: "snippet"; active: shell.leftPage === "snippet"; iconSize: 20; onClicked: shell.leftPage = "snippet" }
                     C.RailButton { icon: "history"; active: shell.leftPage === "quick"; iconSize: 20; onClicked: shell.leftPage = "quick" }
                 }
-                C.RailButton { icon: "settings"; iconSize: 20; anchors.horizontalCenter: parent.horizontalCenter; anchors.bottom: parent.bottom; anchors.bottomMargin: 10; onClicked: settingsDialog.show() }
+                C.RailButton { icon: "settings"; iconSize: 20; anchors.horizontalCenter: parent.horizontalCenter; anchors.bottom: parent.bottom; anchors.bottomMargin: 12; onClicked: settingsDialog.show() }
             }
 
             // Notes list

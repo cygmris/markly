@@ -121,11 +121,8 @@ Rectangle {
                 width: parent.mode === "split" ? parent.width / 2 : parent.width
                 height: parent.height
                 bufferId: pane.split.currentBufferId
+                splitIndex: pane.splitIndex
                 content: pane.split.currentText
-            }
-            Rectangle {
-                visible: parent.viewerType === "" && parent.mode === "split"
-                x: parent.width / 2; width: 1; height: parent.height; color: Theme.border
             }
             PreviewPane {
                 visible: parent.viewerType === "" && parent.mode !== "edit" && parent.mode !== "mindmap"
@@ -134,6 +131,13 @@ Rectangle {
                 height: parent.height
                 content: pane.split.currentText
                 baseDir: (typeof Views !== "undefined") ? Views.currentFileDir : ""
+            }
+            // Split divider — declared after the preview and z-raised so the
+            // WebEngineView can't paint over it.
+            Rectangle {
+                visible: parent.viewerType === "" && parent.mode === "split"
+                x: parent.width / 2; width: 1; height: parent.height; z: 5
+                color: Theme.border
             }
             ViewerPane {
                 visible: parent.viewerType !== "" && parent.mode !== "mindmap"

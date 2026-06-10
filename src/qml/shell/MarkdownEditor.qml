@@ -8,6 +8,7 @@ import "components" as C
 Flickable {
     id: root
     property double bufferId: 0
+    property int splitIndex: 0
     property string content: ""
 
     readonly property bool autoIndent: (typeof EditorCfg !== "undefined") ? EditorCfg.autoIndent : true
@@ -212,7 +213,10 @@ Flickable {
 
                     // Vi input (#8b): in Normal/Visual mode the engine consumes keys; in
                     // Insert mode only Esc is routed through (other keys type normally).
+                    // Ctrl/Alt/Meta combos bypass the engine — it has no chord commands,
+                    // and routing them would swallow app shortcuts (Ctrl+T/S/F…).
                     if (typeof Vi !== "undefined" && Vi.enabled() &&
+                        !(event.modifiers & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier)) &&
                         (Vi.mode !== 1 || event.key === Qt.Key_Escape)) {
                         var r = Vi.handleKey(edit.text, edit.cursorPosition,
                                              edit.selectionStart, edit.selectionEnd,
@@ -341,14 +345,22 @@ Flickable {
     }
 
     // Outline / search jump-to-line for the already-open buffer (#9b); snippet insert (#14).
+    // Guarded to the active split's editor — every split instantiates this component, so
+    // an unguarded handler would insert into all of them at once.
+    readonly property bool isActiveEditor: (typeof Views !== "undefined")
+        && Views.activeSplitIndex === root.splitIndex
     Connections {
         target: (typeof Views !== "undefined") ? Views : null
-        function onGotoLineNow(line) { root.gotoLine(line); }
+        function onGotoLineNow(line) { if (root.isActiveEditor) root.gotoLine(line); }
         function onInsertText(text, off) {
+            if (!root.isActiveEditor) return;
             var p = edit.cursorPosition;
             edit.insert(p, text);
             edit.cursorPosition = p + off;
             edit.forceActiveFocus();
+        }
+        function onEditorFindRequested() {
+            if (root.isActiveEditor) findBar.open(false);
         }
     }
 

@@ -19,13 +19,14 @@ Item {
         radius: 9
         color: root.active ? Theme.selection : (hover.containsMouse ? Theme.hover : "transparent")
     }
-    // Active left indicator bar.
+    // Active left indicator bar (VNote-style edge bar). Kept inside the button so it
+    // is never clipped by the rail, whatever the rail's horizontal inset is.
     Rectangle {
         visible: root.active
-        x: -10
-        y: 12
+        x: 0
+        y: 10
         width: 3
-        height: parent.height - 24
+        height: parent.height - 20
         radius: 3
         color: Theme.accent
     }

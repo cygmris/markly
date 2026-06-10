@@ -64,6 +64,10 @@ void ViewArea::requestSaveMindmap() {
   emit saveMindmapRequested();
 }
 
+void ViewArea::requestEditorFind() {
+  emit editorFindRequested();
+}
+
 QVariantList ViewArea::outline() const {
   QVariantList items;
   if (m_activeSplit >= m_splits.size() || !m_bufferMgr) {
