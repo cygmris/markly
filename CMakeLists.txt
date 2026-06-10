@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 project(Markly
     VERSION 1.0.0
-    DESCRIPTION "A pleasant note-taking platform (Qt 6 rewrite of VNote)"
+    DESCRIPTION "A pleasant Markdown note-taking app built with Qt 6"
     LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)

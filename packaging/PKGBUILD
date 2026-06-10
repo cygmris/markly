@@ -4,9 +4,9 @@
 pkgname=markly
 pkgver=1.0.0
 pkgrel=1
-pkgdesc="Markly — Qt 6 Markdown note app (vnote-inspired)"
+pkgdesc="Markly — a pleasant Qt 6 Markdown note app"
 arch=('x86_64')
-url="https://example.com/markly"
+url="https://github.com/cygmris/markly"
 license=('MIT')
 depends=('qt6-base' 'qt6-declarative' 'qt6-webengine' 'hunspell')
 makedepends=('cmake' 'ninja')

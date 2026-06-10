@@ -13,7 +13,7 @@ Rectangle {
         Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
             width: 64; height: 64; radius: 16; color: Theme.accent
-            Text { anchors.centerIn: parent; text: "V"; color: Theme.accentText; font.pixelSize: 36; font.bold: true; font.family: Theme.fontDisplay }
+            Text { anchors.centerIn: parent; text: "M"; color: Theme.accentText; font.pixelSize: 36; font.bold: true; font.family: Theme.fontDisplay }
         }
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
@@ -24,7 +24,7 @@ Rectangle {
             width: parent.width
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.WordWrap
-            text: "创建一个新笔记本，或打开一个已有的 VNote/Markly 笔记本目录开始。"
+            text: "创建一个新笔记本，或打开一个已有的 Markly 笔记本目录开始。"
             color: Theme.dim; font.pixelSize: 14; font.family: Theme.fontUi
         }
         Row {

@@ -41,7 +41,7 @@ Rectangle {
             Rectangle {
                 anchors.left: parent.left; anchors.leftMargin: 14; anchors.verticalCenter: parent.verticalCenter
                 width: 19; height: 19; radius: 6; color: Theme.accent
-                Text { anchors.centerIn: parent; text: "V"; color: "#ffffff"; font.pixelSize: 12; font.bold: true; font.family: Theme.fontDisplay }
+                Text { anchors.centerIn: parent; text: "M"; color: "#ffffff"; font.pixelSize: 12; font.bold: true; font.family: Theme.fontDisplay }
             }
             Item {
                 anchors.centerIn: parent; width: Math.min(380, parent.width * 0.5); height: 30
