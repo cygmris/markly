@@ -358,3 +358,10 @@
 * 右键菜单按设计重写（accent 打开/danger 删除/复制路径），新增 Dialogs.copyText 剪贴板桥。
 * Ctrl+S 保存 toast（实测√）；状态栏右移 110px 避让右下外观浮钮（设计 chat2 确认的遮挡修复）。
 * 验证：构建 + ctest 26/26，启动无 QML 报错；详见 docs/refined-dialogs-menus/README.md。
+
+### editor-content-dialogs (编辑器内容对话框 · 设计第二期) — 2026-06-11
+* 插入链接/图片（含本地浏览，新增 Dialogs.chooseFile 桥）/表格（行列可配）/字数统计 四个设计系统对话框入 AppDialogs。
+* 编辑器「更多」菜单（moreV）：字数统计/查看思维导图/编辑模式。
+* 工具栏 image/link/table/moreV 改走新增 Views.requestContentDialog(kind) 信号链。
+* spec 走完整 approvals 自助审批（requirements/design/tasks 三阶段 request→approve→delete）。
+* 验证：构建 + ctest 26/26，启动零 QML 报错。

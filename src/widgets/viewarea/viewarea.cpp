@@ -68,6 +68,10 @@ void ViewArea::requestEditorFind() {
   emit editorFindRequested();
 }
 
+void ViewArea::requestContentDialog(const QString &p_kind) {
+  emit contentDialogRequested(p_kind);
+}
+
 QVariantList ViewArea::outline() const {
   QVariantList items;
   if (m_activeSplit >= m_splits.size() || !m_bufferMgr) {

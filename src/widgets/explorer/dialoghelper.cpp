@@ -49,3 +49,7 @@ void DialogHelper::notify(const QString &p_title, const QString &p_text) {
 void markly::DialogHelper::copyText(const QString &p_text) {
   QGuiApplication::clipboard()->setText(p_text);
 }
+
+QString markly::DialogHelper::chooseFile(const QString &p_title, const QString &p_filter) {
+  return QFileDialog::getOpenFileName(m_parent, p_title, QString(), p_filter);
+}

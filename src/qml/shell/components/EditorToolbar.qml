@@ -85,7 +85,7 @@ Rectangle {
             active: (typeof Views !== "undefined") && Views.viewMode !== "edit"
             act: function() { if (typeof Views !== "undefined") Views.cycleViewMode() }
         }
-        ToolBtn { icon: "image"; act: function(){ if (typeof Views !== "undefined") Views.requestInsert("![]()", 2) } }
+        ToolBtn { icon: "image"; act: function(){ if (typeof Views !== "undefined") Views.requestContentDialog("image") } }
         Item { width: 8; height: 1 }
         Sep {}
         Item { width: 8; height: 1 }
@@ -105,8 +105,8 @@ Rectangle {
         Item { width: 8; height: 1 }
         ToolBtn { icon: "code"; act: function(){ if (typeof Views !== "undefined") Views.requestInsert("```\n\n```", 4) } }
         ToolBtn { icon: "sigma"; act: function(){ if (typeof Views !== "undefined") Views.requestInsert("$$\n\n$$", 3) } }
-        ToolBtn { icon: "link"; act: function(){ if (typeof Views !== "undefined") Views.requestInsert("[]()", 1) } }
-        ToolBtn { icon: "table"; act: function(){ if (typeof Views !== "undefined") Views.requestInsert("| 列1 | 列2 |\n| --- | --- |\n|  |  |\n", 2) } }
+        ToolBtn { icon: "link"; act: function(){ if (typeof Views !== "undefined") Views.requestContentDialog("link") } }
+        ToolBtn { icon: "table"; act: function(){ if (typeof Views !== "undefined") Views.requestContentDialog("table") } }
     }
     Row {
         anchors.right: parent.right
@@ -116,6 +116,6 @@ Rectangle {
         ToolBtn { icon: "cmd"; act: function() { taskMenu.popup() } }
         ToolBtn { icon: "export"; act: function() { exportMenu.popup() } }
         ToolBtn { icon: "search"; act: function(){ if (typeof Views !== "undefined") Views.requestEditorFind() } }
-        ToolBtn { icon: "moreV" }
+        ToolBtn { icon: "moreV"; act: function(){ if (typeof Views !== "undefined") Views.requestContentDialog("more") } }
     }
 }

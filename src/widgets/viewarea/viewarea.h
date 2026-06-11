@@ -75,6 +75,8 @@ public:
   Q_INVOKABLE void requestSaveMindmap();
   // Open the find bar of the active editor (toolbar search button).
   Q_INVOKABLE void requestEditorFind();
+  // Open a content-insert dialog (image|link|table|more) hosted by the shell.
+  Q_INVOKABLE void requestContentDialog(const QString &p_kind);
 
   // Outline (headings) of the active buffer; [{level, text, line}] (1-based line).
   QVariantList outline() const;
@@ -97,6 +99,8 @@ signals:
   void saveMindmapRequested();
   // Open the active editor's find bar (toolbar search button).
   void editorFindRequested();
+  // Open a shell-hosted content dialog of the given kind (#editor-content-dialogs).
+  void contentDialogRequested(const QString &p_kind);
 
 private:
   struct Split {

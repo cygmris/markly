@@ -21,6 +21,20 @@ Rectangle {
     NotebookSelector { id: nbSelector }
     SettingsDialog { id: settingsDialog; z: 100 }
     AppDialogs { id: appDialogs }
+    // 编辑器「更多」菜单（工具栏 moreV）：右上角锚定。
+    C.MklMenu {
+        id: editorMoreMenu
+        menuWidth: 250
+        x: shell.width - 262; y: 84
+        C.MklMenuItem { icon: "word"; label: "字数统计…"; onClicked: { editorMoreMenu.close(); appDialogs.openWordCount() } }
+        C.MklMenuSep {}
+        C.MklMenuItem { icon: "grid"; label: "查看思维导图"; onClicked: { editorMoreMenu.close(); Views.setViewMode("mindmap") } }
+        C.MklMenuItem { icon: "edit"; label: "编辑模式"; shortcut: "Ctrl+T"; onClicked: { editorMoreMenu.close(); Views.setViewMode("edit") } }
+    }
+    Connections {
+        target: (typeof Views !== "undefined") ? Views : null
+        function onContentDialogRequested(kind) { if (kind === "more") editorMoreMenu.open() }
+    }
     C.MklMenu {
         id: newMenu
         menuWidth: 248
