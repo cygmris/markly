@@ -1,5 +1,8 @@
 #include "dialoghelper.h"
 
+#include <QClipboard>
+#include <QGuiApplication>
+
 #include <QColor>
 #include <QColorDialog>
 #include <QFileDialog>
@@ -41,4 +44,8 @@ bool DialogHelper::confirm(const QString &p_title, const QString &p_text) {
 
 void DialogHelper::notify(const QString &p_title, const QString &p_text) {
   QMessageBox::information(m_parent, p_title, p_text);
+}
+
+void markly::DialogHelper::copyText(const QString &p_text) {
+  QGuiApplication::clipboard()->setText(p_text);
 }

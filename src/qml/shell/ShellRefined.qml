@@ -17,9 +17,19 @@ Rectangle {
         return c !== undefined ? c : Theme.text;
     }
 
-    NodeContextMenu { id: nodeMenu }
+    NodeContextMenu { id: nodeMenu; dialogs: appDialogs }
     NotebookSelector { id: nbSelector }
     SettingsDialog { id: settingsDialog; z: 100 }
+    AppDialogs { id: appDialogs }
+    C.MklMenu {
+        id: newMenu
+        menuWidth: 248
+        C.MklMenuLabel { label: "在当前笔记本中" }
+        C.MklMenuItem { icon: "filePlus"; label: "新建笔记"; sub: "Markdown 文档"; accent: true; onClicked: { newMenu.close(); appDialogs.openNewNote(0) } }
+        C.MklMenuItem { icon: "folderPlus"; label: "新建文件夹"; onClicked: { newMenu.close(); appDialogs.openNewFolder(0) } }
+        C.MklMenuSep {}
+        C.MklMenuItem { icon: "notebook"; label: "新建笔记本…"; onClicked: { newMenu.close(); appDialogs.openNewNotebook() } }
+    }
     function openSettings() { settingsDialog.show() }
 
     UnitedEntry {
@@ -34,13 +44,17 @@ Rectangle {
     Shortcut { sequences: ["Ctrl+P"]; onActivated: unitedEntry.show() }
     // VNote parity: Ctrl+T toggles edit/read (EditRead).
     Shortcut { sequences: ["Ctrl+T"]; onActivated: if (typeof Views !== "undefined") Views.setViewMode(Views.viewMode === "edit" ? "read" : "edit") }
+    // 分屏预览（左编辑右渲染）专属快捷键。
+    Shortcut { sequences: ["Ctrl+E"]; onActivated: if (typeof Views !== "undefined") Views.setViewMode("split") }
     // VNote parity: Ctrl+S saves the active note regardless of focus.
     // Disabled in mindmap mode, where MindmapPane owns Ctrl+S (avoids ambiguity).
     Shortcut {
         sequences: ["Ctrl+S"]
         enabled: (typeof Views !== "undefined") && Views.viewMode !== "mindmap"
-        onActivated: if (Views.splits.length > Views.activeSplitIndex)
-                         Views.saveTab(Views.splits[Views.activeSplitIndex].currentBufferId)
+        onActivated: if (Views.splits.length > Views.activeSplitIndex) {
+                         Views.saveTab(Views.splits[Views.activeSplitIndex].currentBufferId);
+                         appDialogs.toast("已保存");
+                     }
     }
 
     function newRootNote() {
@@ -163,8 +177,12 @@ Rectangle {
                         Row {
                             anchors.right: parent.right; anchors.rightMargin: 8; anchors.verticalCenter: parent.verticalCenter; spacing: 1
                             Icons.Icon {
+                                id: plusBtn
                                 name: "plus"; size: 15; color: Theme.dim
-                                MouseArea { anchors.fill: parent; anchors.margins: -4; onClicked: shell.newRootNote() }
+                                MouseArea {
+                                    anchors.fill: parent; anchors.margins: -4
+                                    onClicked: { var pt = plusBtn.mapToItem(shell, 0, plusBtn.height + 6); newMenu.x = Math.min(pt.x, shell.width - newMenu.width - 8); newMenu.y = pt.y; newMenu.open() }
+                                }
                             }
                             Icons.Icon { name: "sort"; size: 15; color: Theme.dim }
                             Icons.Icon { name: "more"; size: 15; color: Theme.dim }

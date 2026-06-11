@@ -32,6 +32,8 @@ Rectangle {
     Shortcut { sequences: ["Ctrl+P"]; onActivated: unitedEntry.show() }
     // VNote parity: Ctrl+T toggles edit/read (EditRead).
     Shortcut { sequences: ["Ctrl+T"]; onActivated: if (typeof Views !== "undefined") Views.setViewMode(Views.viewMode === "edit" ? "read" : "edit") }
+    // 分屏预览（左编辑右渲染）专属快捷键。
+    Shortcut { sequences: ["Ctrl+E"]; onActivated: if (typeof Views !== "undefined") Views.setViewMode("split") }
     // VNote parity: Ctrl+S saves the active note regardless of focus.
     // Disabled in mindmap mode, where MindmapPane owns Ctrl+S (avoids ambiguity).
     Shortcut {

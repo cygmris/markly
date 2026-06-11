@@ -1,0 +1,132 @@
+// Design-system dialogs + toast for the Refined shell (spec refined-dialogs-menus).
+// Replaces native QInputDialog prompts for new note/folder/notebook, rename, delete.
+import QtQuick
+import "components" as C
+
+Item {
+    id: root
+    anchors.fill: parent
+    z: 150
+
+    function reportError(err) { if (err && err.length > 0) Dialogs.notify("操作失败", err) }
+    function toast(msg) { toastBox.show(msg) }
+
+    // Target container for new note/folder (0 = notebook root).
+    property double containerId: 0
+    // Rename/delete target.
+    property double targetId: 0
+    property string targetName: ""
+    property string targetType: "file"
+
+    function openNewNote(container) { containerId = container || 0; noteField.text = "新笔记"; newNoteDlg.open(); noteField.takeFocus() }
+    function openNewFolder(container) { containerId = container || 0; folderField.text = "新文件夹"; newFolderDlg.open(); folderField.takeFocus() }
+    function openNewNotebook() { nbDir.text = ""; nbName.text = "我的笔记本"; newNotebookDlg.open(); nbName.takeFocus() }
+    function openRename(id, name, type) { targetId = id; targetName = name; targetType = type; renameField.text = name; renameDlg.open(); renameField.takeFocus() }
+    function openDelete(id, name, type) { targetId = id; targetName = name; targetType = type; deleteDlg.open() }
+
+    // ---- 新建笔记 ----
+    C.MklModal {
+        id: newNoteDlg
+        title: "新建笔记"; subtitle: "Markdown 文档"; iconName: "filePlus"
+        C.MklMenuLabel { label: "名称" }
+        C.MklTextField { id: noteField; suffix: ".md"; onAccepted: newNoteDlg.confirm() }
+        footer: [
+            C.MklButton { label: "取消"; onClicked: newNoteDlg.close() },
+            C.MklButton { label: "创建"; primary: true; onClicked: newNoteDlg.confirm() }
+        ]
+        function confirm() {
+            var n = noteField.text.trim();
+            if (n.length === 0) return;
+            if (!/\.md$/i.test(n)) n += ".md";
+            root.reportError(Explorer.newNote(root.containerId, n));
+            newNoteDlg.close(); root.toast("已创建 " + n);
+        }
+    }
+
+    // ---- 新建文件夹 ----
+    C.MklModal {
+        id: newFolderDlg
+        title: "新建文件夹"; iconName: "folderPlus"
+        C.MklMenuLabel { label: "名称" }
+        C.MklTextField { id: folderField; onAccepted: newFolderDlg.confirm() }
+        footer: [
+            C.MklButton { label: "取消"; onClicked: newFolderDlg.close() },
+            C.MklButton { label: "创建"; primary: true; onClicked: newFolderDlg.confirm() }
+        ]
+        function confirm() {
+            var n = folderField.text.trim();
+            if (n.length === 0) return;
+            root.reportError(Explorer.newFolder(root.containerId, n));
+            newFolderDlg.close(); root.toast("已创建文件夹 " + n);
+        }
+    }
+
+    // ---- 新建笔记本 ----
+    C.MklModal {
+        id: newNotebookDlg
+        title: "新建笔记本"; subtitle: "选择一个空目录作为根目录"; iconName: "notebook"
+        C.MklMenuLabel { label: "根目录" }
+        Row {
+            width: parent.width; spacing: 8
+            C.MklTextField { id: nbDir; width: parent.width - 84; mono: true; placeholder: "~/Notebooks/my-notebook" }
+            C.MklButton { label: "浏览…"; onClicked: { var d = Dialogs.chooseDirectory("选择笔记本根目录"); if (d.length > 0) nbDir.text = d } }
+        }
+        Item { width: 1; height: 12 }
+        C.MklMenuLabel { label: "名称" }
+        C.MklTextField { id: nbName; onAccepted: newNotebookDlg.confirm() }
+        footer: [
+            C.MklButton { label: "取消"; onClicked: newNotebookDlg.close() },
+            C.MklButton { label: "创建"; primary: true; onClicked: newNotebookDlg.confirm() }
+        ]
+        function confirm() {
+            var d = nbDir.text.trim(), n = nbName.text.trim();
+            if (d.length === 0 || n.length === 0) return;
+            if (!Explorer.newNotebookAt(d, n, "")) Dialogs.notify("失败", "无法在该目录创建笔记本。");
+            else root.toast("已创建笔记本 " + n);
+            newNotebookDlg.close();
+        }
+    }
+
+    // ---- 重命名 ----
+    C.MklModal {
+        id: renameDlg
+        title: "重命名"; iconName: "edit"
+        C.MklMenuLabel { label: "名称" }
+        C.MklTextField { id: renameField; onAccepted: renameDlg.confirm() }
+        footer: [
+            C.MklButton { label: "取消"; onClicked: renameDlg.close() },
+            C.MklButton { label: "重命名"; primary: true; onClicked: renameDlg.confirm() }
+        ]
+        function confirm() {
+            var n = renameField.text.trim();
+            if (n.length === 0 || n === root.targetName) { renameDlg.close(); return }
+            root.reportError(Explorer.renameNode(root.targetId, n));
+            renameDlg.close(); root.toast("已重命名");
+        }
+    }
+
+    // ---- 删除确认 ----
+    C.MklModal {
+        id: deleteDlg
+        title: "删除" + (root.targetType === "folder" ? "文件夹" : "笔记")
+        subtitle: root.targetName
+        iconName: "trash"
+        Text {
+            width: parent.width
+            wrapMode: Text.Wrap
+            text: "将从磁盘删除「" + root.targetName + "」" +
+                  (root.targetType === "folder" ? " 及其全部内容" : "") + "，此操作不可恢复。"
+            color: Theme.dim; font.pixelSize: 13; font.family: Theme.fontUi
+        }
+        footer: [
+            C.MklButton { label: "取消"; onClicked: deleteDlg.close() },
+            C.MklButton { label: "删除"; primary: true; danger: true; onClicked: deleteDlg.confirm() }
+        ]
+        function confirm() {
+            Explorer.removeToRecycle(root.targetId);
+            deleteDlg.close(); root.toast("已删除");
+        }
+    }
+
+    C.Toast { id: toastBox }
+}

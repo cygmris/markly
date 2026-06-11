@@ -16,7 +16,7 @@ Rectangle {
         id: row
         anchors.fill: parent
         anchors.leftMargin: 12
-        anchors.rightMargin: 12
+        anchors.rightMargin: 110  // clear of the floating 外观 button (design chat2)
         spacing: root.spacingValue
     }
 }

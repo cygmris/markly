@@ -350,3 +350,11 @@
 * **工具栏按钮接线**：heading/bold/italic/strike/列表/任务/引用/代码块/公式/链接/表格/图片 经 `Views.requestInsert` 插入对应 Markdown；search 按钮经新增 `Views.requestEditorFind()` 打开编辑器查找栏。
 * **分屏双写修复**：`onInsertText`/`onGotoLineNow` 原先无活动分屏守卫，双分屏时片段插入会同时写两个编辑器；新增 `Views.activeSplitIndex` 属性 + 编辑器 `splitIndex`，仅活动分屏编辑器响应。
 * 验证：build + ctest 26/26；实机截图验证 Ctrl+T 切换、分割线、激活指示条（本机指针注入当日失效，工具栏按钮为代码同构推证，待手点复验）。
+
+### refined-dialogs-menus (设计系统菜单与对话框 · 第一期) — 2026-06-11
+* 拉取最新 Claude Design 交付（refined-kit/menus/dialogs/panels/extras + chat2）至 .claude-design（本地）。
+* 新增 QML 设计系统组件：MklModal/MklMenu/MklMenuItem/MklMenuSep/MklMenuLabel/MklTextField/MklButton/Toast。
+* 「+」按钮 → 设计样式新建菜单；新建笔记/文件夹/笔记本、重命名、删除确认五个对话框（AppDialogs.qml）替代原生 QInputDialog。
+* 右键菜单按设计重写（accent 打开/danger 删除/复制路径），新增 Dialogs.copyText 剪贴板桥。
+* Ctrl+S 保存 toast（实测√）；状态栏右移 110px 避让右下外观浮钮（设计 chat2 确认的遮挡修复）。
+* 验证：构建 + ctest 26/26，启动无 QML 报错；详见 docs/refined-dialogs-menus/README.md。

@@ -63,6 +63,8 @@
     <message><source>检查失败：</source><translation>Check failed: </translation></message>
     <message><source>有新版本：</source><translation>New version: </translation></message>
     <message><source>已是最新版本</source><translation>Already up to date</translation></message>
+    <message><source>分屏预览（左编辑右渲染）</source><translation>Split preview (edit left, render right)</translation></message>
+    <message><source>阅读模式</source><translation>Read mode</translation></message>
     <message><source>查看思维导图</source><translation>View mind map</translation></message>
     <message><source>保存思维导图到笔记</source><translation>Save mind map to note</translation></message>
     <message><source>编辑模式</source><translation>Edit mode</translation></message>

@@ -22,6 +22,7 @@ public:
   Q_INVOKABLE QString chooseColor(const QString &p_initial);
   Q_INVOKABLE bool confirm(const QString &p_title, const QString &p_text);
   Q_INVOKABLE void notify(const QString &p_title, const QString &p_text);
+  Q_INVOKABLE void copyText(const QString &p_text);
 
 private:
   QWidget *m_parent = nullptr;

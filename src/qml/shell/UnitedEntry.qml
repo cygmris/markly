@@ -32,6 +32,8 @@ Item {
         { label: qsTr("导出 Markdown"), run: function(){ root.doExport("md") } },
         { label: qsTr("上传图片到图床"), run: function(){ root.uploadImages() } },
         { label: qsTr("检查更新"), run: function(){ if (typeof Update !== "undefined") Update.check() } },
+        { label: qsTr("分屏预览（左编辑右渲染）"), run: function(){ if (typeof Views !== "undefined") Views.setViewMode("split") } },
+        { label: qsTr("阅读模式"), run: function(){ if (typeof Views !== "undefined") Views.setViewMode("read") } },
         { label: qsTr("查看思维导图"), run: function(){ if (typeof Views !== "undefined") Views.setViewMode("mindmap") } },
         { label: qsTr("保存思维导图到笔记"), run: function(){ if (typeof Views !== "undefined") Views.requestSaveMindmap() } },
         { label: qsTr("编辑模式"), run: function(){ if (typeof Views !== "undefined") Views.setViewMode("edit") } }
