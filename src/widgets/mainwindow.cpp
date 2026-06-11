@@ -160,6 +160,19 @@ void MainWindow::setupContent() {
     qApp->setStyleSheet(MarklyApp::getInst().getThemeMgr().fetchQtStyleSheet());
   });
 
+  // Dev dialog hook (independent of MARKLY_SHOT): MARKLY_SHOT_DIALOG=<kind> opens a
+  // dialog after launch so it can be screenshotted with an external grabber. Stays open.
+  {
+    const auto dlgKind = qEnvironmentVariable("MARKLY_SHOT_DIALOG");
+    if (!dlgKind.isEmpty()) {
+      QTimer::singleShot(4500, this, [this, dlgKind]() {
+        if (auto *root = m_quick->rootObject()) {
+          QMetaObject::invokeMethod(root, "showDialog", Q_ARG(QVariant, dlgKind));
+        }
+      });
+    }
+  }
+
   // Dev screenshot hook: MARKLY_SHOT=/path.png grabs the shell then quits.
   const auto shotPath = qEnvironmentVariable("MARKLY_SHOT");
   if (!shotPath.isEmpty()) {

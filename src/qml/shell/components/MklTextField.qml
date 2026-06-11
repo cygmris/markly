@@ -1,11 +1,13 @@
 // Design-system text input (refined-kit TextField): 38h, accent focus ring, suffix text.
 import QtQuick
 import QtQuick.Controls
+import "../../icons" as Icons
 
 Rectangle {
     id: root
     property alias text: input.text
     property alias placeholder: input.placeholderText
+    property string prefix: ""   // icon name
     property string suffix: ""
     property bool mono: false
     signal accepted()
@@ -21,6 +23,7 @@ Rectangle {
     TextField {
         id: input
         anchors.fill: parent
+        anchors.leftMargin: prefixIcon.visible ? 34 : 0
         anchors.rightMargin: suffixLabel.visible ? suffixLabel.width + 16 : 0
         leftPadding: 11
         verticalAlignment: TextInput.AlignVCenter
@@ -30,6 +33,13 @@ Rectangle {
         font.family: root.mono ? Theme.fontMono : Theme.fontUi
         background: Item {}
         onAccepted: root.accepted()
+    }
+    Icons.Icon {
+        id: prefixIcon
+        visible: root.prefix.length > 0
+        anchors.left: parent.left; anchors.leftMargin: 11; anchors.verticalCenter: parent.verticalCenter
+        name: root.prefix; size: 15
+        color: input.activeFocus ? Theme.accent : Theme.faint
     }
     Text {
         id: suffixLabel

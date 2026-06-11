@@ -104,7 +104,7 @@ Rectangle {
         Sep {}
         Item { width: 8; height: 1 }
         ToolBtn { icon: "code"; act: function(){ if (typeof Views !== "undefined") Views.requestInsert("```\n\n```", 4) } }
-        ToolBtn { icon: "sigma"; act: function(){ if (typeof Views !== "undefined") Views.requestInsert("$$\n\n$$", 3) } }
+        ToolBtn { icon: "sigma"; act: function(){ if (typeof Views !== "undefined") Views.requestContentDialog("math") } }
         ToolBtn { icon: "link"; act: function(){ if (typeof Views !== "undefined") Views.requestContentDialog("link") } }
         ToolBtn { icon: "table"; act: function(){ if (typeof Views !== "undefined") Views.requestContentDialog("table") } }
     }

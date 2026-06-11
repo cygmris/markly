@@ -54,6 +54,16 @@ Rectangle {
             newNote: function(){ shell.newRootNote() }
         })
     }
+    function openDialog(kind) {
+        if (kind === "image") appDialogs.openInsertImage();
+        else if (kind === "link") appDialogs.openInsertLink();
+        else if (kind === "table") appDialogs.openInsertTable();
+        else if (kind === "math") appDialogs.openInsertMath();
+        else if (kind === "export") appDialogs.openExportDialog();
+        else if (kind === "new-note") appDialogs.openNewNote(0);
+        else if (kind === "new-notebook") appDialogs.openNewNotebook();
+        else if (kind === "wordcount") appDialogs.openWordCount();
+    }
     function openEntry() { unitedEntry.show() }
     Shortcut { sequences: ["Ctrl+P"]; onActivated: unitedEntry.show() }
     // VNote parity: Ctrl+T toggles edit/read (EditRead).

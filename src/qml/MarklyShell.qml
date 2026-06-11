@@ -41,6 +41,9 @@ Item {
     }
 
     // Dev/test hook: open the united entry palette.
+    function showDialog(kind) {
+        if (loader.item && loader.item.openDialog) loader.item.openDialog(kind);
+    }
     function showEntry() {
         if (loader.item && loader.item.openEntry) loader.item.openEntry();
     }

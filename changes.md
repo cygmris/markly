@@ -365,3 +365,10 @@
 * 工具栏 image/link/table/moreV 改走新增 Views.requestContentDialog(kind) 信号链。
 * spec 走完整 approvals 自助审批（requirements/design/tasks 三阶段 request→approve→delete）。
 * 验证：构建 + ctest 26/26，启动零 QML 报错。
+
+### design-fidelity-alignment 第一批 (kit + 4 编辑器对话框) — 2026-06-11
+* 拉取最新设计 handoff（isng7y4i49q8Ol…）对比确认设计稿未变——是实现没对齐。建 col颗粒化 spec（8 task，完整自助审批）。
+* 补齐 kit：MklField/TextArea/Segmented/Toggle/Checkbox/Stepper/Dropzone + TextField prefix + Button icon + Modal dlgWidth。
+* 插入图片/链接/表格/公式四对话框严格对齐 refined-editor-dialogs.jsx，逐一 env 钩子截图比对设计稿通过。
+* 新增 MARKLY_SHOT_DIALOG 截图验证钩子。修复多个根因：font.pixelSize 必须 int（白屏元凶）、AUTORCC 陈旧、color 不可拼字符串。
+* 验证：build + ctest 26/26；4 对话框截图与设计稿一致。待续：导出对话框、新建系列对齐（task 7-8）。

@@ -14,7 +14,8 @@ Popup {
 
     parent: Overlay.overlay
     anchors.centerIn: parent
-    width: Math.min(460, parent ? parent.width - 48 : 460)
+    property int dlgWidth: 460
+    width: Math.min(dlgWidth, parent ? parent.width - 48 : dlgWidth)
     modal: true
     focus: true
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
