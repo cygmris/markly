@@ -372,3 +372,10 @@
 * 插入图片/链接/表格/公式四对话框严格对齐 refined-editor-dialogs.jsx，逐一 env 钩子截图比对设计稿通过。
 * 新增 MARKLY_SHOT_DIALOG 截图验证钩子。修复多个根因：font.pixelSize 必须 int（白屏元凶）、AUTORCC 陈旧、color 不可拼字符串。
 * 验证：build + ctest 26/26；4 对话框截图与设计稿一致。待续：导出对话框、新建系列对齐（task 7-8）。
+
+### offscreen-test-bridge (后台无头自测桥) — 2026-06-12
+* 新增 TestBridge（QLocalServer 行协议，env MARKLY_TEST_SOCKET 门控）：offscreen 运行时经 socket 驱动 app——dialog/content/viewmode/insert/text/shot/wait/quit。
+* MarklyShell 薄封装 testViewMode/testInsert/testContent/testNoteText；截图用 QQuickWidget::grabFramebuffer（能抓 Popup 浮层）。
+* scripts/markly-test.sh 客户端（socat/python）。
+* 价值：chrome-devtools 式协议驱动，无窗口/无焦点/无 Wayland 注入，后台自测全 UI。端到端验证：offscreen 打开插入图片对话框并截图（含模态遮罩）、insert→text 往返。
+* 验证：build + ctest 26/26。

@@ -191,6 +191,8 @@ qt_add_executable(markly
     application/application.h
     widgets/mainwindow.cpp
     widgets/mainwindow.h
+    widgets/test/testbridge.cpp
+    widgets/test/testbridge.h
     widgets/framelessmainwindow/framelessmainwindow.cpp
     widgets/framelessmainwindow/framelessmainwindow.h
 )

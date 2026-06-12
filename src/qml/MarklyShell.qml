@@ -41,6 +41,11 @@ Item {
     }
 
     // Dev/test hook: open the united entry palette.
+    // Test bridge helpers (#offscreen-test-bridge): thin wrappers over Views.
+    function testViewMode(m) { if (typeof Views !== "undefined") Views.setViewMode(m) }
+    function testInsert(t) { if (typeof Views !== "undefined") Views.requestInsert(t, 0) }
+    function testContent(k) { if (typeof Views !== "undefined") Views.requestContentDialog(k) }
+    function testNoteText() { return (typeof Views !== "undefined") ? Views.currentText : "" }
     function showDialog(kind) {
         if (loader.item && loader.item.openDialog) loader.item.openDialog(kind);
     }

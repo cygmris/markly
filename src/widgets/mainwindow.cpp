@@ -15,6 +15,8 @@
 #include "editors/editorcfgqml.h"
 #include "editors/markdownhighlighter.h"
 #include <QQuickWidget>
+
+#include "test/testbridge.h"
 #include <QUrl>
 
 #include "explorer/dialoghelper.h"
@@ -159,6 +161,15 @@ void MainWindow::setupContent() {
   connect(&themeMgr, &ThemeMgr::themeChanged, this, []() {
     qApp->setStyleSheet(MarklyApp::getInst().getThemeMgr().fetchQtStyleSheet());
   });
+
+  // Offscreen automation bridge (#offscreen-test-bridge): only when env is set.
+  {
+    const auto tsock = qEnvironmentVariable("MARKLY_TEST_SOCKET");
+    if (!tsock.isEmpty()) {
+      m_testBridge = new TestBridge(m_quick, this);
+      m_testBridge->start(tsock);
+    }
+  }
 
   // Dev dialog hook (independent of MARKLY_SHOT): MARKLY_SHOT_DIALOG=<kind> opens a
   // dialog after launch so it can be screenshotted with an external grabber. Stays open.

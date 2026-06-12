@@ -6,6 +6,8 @@
 #include "framelessmainwindow/framelessmainwindow.h"
 
 class QQuickWidget;
+namespace markly { class TestBridge; }
+using markly::TestBridge;
 class QSystemTrayIcon;
 
 namespace markly {
@@ -42,6 +44,7 @@ private:
   void setupTray();
 
   QQuickWidget *m_quick = nullptr;
+  TestBridge *m_testBridge = nullptr;
   ViewArea *m_views = nullptr;
   QSystemTrayIcon *m_trayIcon = nullptr;
   GlobalHotkey *m_hotkey = nullptr;
